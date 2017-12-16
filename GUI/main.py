@@ -5,7 +5,7 @@ from kivy.app import App
 from kivy.graphics import *
 
 from kivy.uix.widget import Widget
-from kivy.uix.floatlayout import FloatLayout 
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.behaviors import DragBehavior
@@ -15,6 +15,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.popup import Popup
 from kivy.uix.spinner import Spinner
+from kivy.clock import Clock
 
 from functools import partial
 
@@ -23,7 +24,7 @@ class Node(Widget):
 #HEY NOTE: I'm sorry, but event bubbling's a pain, so just don't add children to this widget that need touch. It shouldn't have 'em anyways.
 #ALSO: Always follow a pattern of create -> adjust relevant prev_node/next_node and head/tail -> add_widget, which calls setup, which relies on these
 #And don't attach/remove/reattach to something. I haven't tried it but I bet things will break.
-    
+
     def __init__(self, x, y):   #Pass in x,y of center of node, not corner like usual
         Widget.__init__(self)
         self.MIN_DRAG_VAL = (20)**2   #squared so I don't need to take a root later
@@ -40,7 +41,7 @@ class Node(Widget):
 
         self.command_list = []
 
-        self._setup = partial(self.setup, x, y) 
+        self._setup = partial(self.setup, x, y)
         self.bind(parent=self._setup)   #used to call setup ONCE when this is first attached to a thingy.
 
     def setup(self, x, y, _self, _parent): #DON'T unattach and reattach to anything
@@ -76,7 +77,7 @@ class Node(Widget):
         self.bind(pos=self.redraw, size=self.redraw)
 
     def conv_pos(self, pos):
-        self.pos_hint = { 'x' : pos[0] / self.parent.size[0] - self.SIZE/2, 'y': pos[1] / self.parent.size[1] - self.SIZE/2 }
+        self.pos_hint = { "x" : pos[0] / self.parent.size[0] - self.SIZE/2, "y" : pos[1] / self.parent.size[1] - self.SIZE/2 }
 
     def redraw(self, pointless_variable_because_apparently_self_is_getting_passed_twice_for_some_reason, other_args_question_mark):
         self.bg_rect.pos = self.pos
@@ -194,12 +195,13 @@ class SideButtons(DragBehavior, BoxLayout):
         self.encode = Button(text="Encode");
         def encode_callback(instance):
             #self.parent.dont_check = True
+            output_file = "output"
+            f = open("save/" + output_file, 'w')
             x = self.parent.head
             while x is not None:
-                print("Node at: >", x.pos_hint)
+                f.write("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
                 for i in x.command_list:
-                    print("Command: >", i)
-                print("")
+                   f.write("Comm> " + i + "\n")
                 x = x.next_node
         self.encode.bind(on_press=encode_callback)
         self.add_widget(self.encode)
@@ -213,7 +215,6 @@ class SideButtons(DragBehavior, BoxLayout):
                 f = open("save/" + blah.content.text, 'r')
                 node = None
                 for line in f:
-                    print(line[:6])
                     if line[:6] == "Node> ":
                         x = line[6:].split(", ")
                         node = Node(float(x[0].split(":")[1])*self.parent.width, float(x[1].split(":")[1])*self.parent.height)
@@ -227,14 +228,24 @@ class SideButtons(DragBehavior, BoxLayout):
                             self.parent.tail = self.parent.tail.next_node
                         self.parent.add_widget(self.parent.tail)
                     elif line[:6] == "Comm> ":
-                        self.parent.tail.command_list.append(line[6:])
+                        self.parent.tail.command_list.append(line[6:-1])
                     else:
                         print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
                 blah.dismiss()
+                Clock.schedule_once(f, 0)
             blah.content.bind(on_text_validate=choose)
             blah.open()
         self.importer.bind(on_press=importer_callback)
         self.add_widget(self.importer)
+    def f(_a1 = 0, _a2 = 0, _self = None, _a3 = 0, _a4 = 0 ):
+        if _self is not None:
+            self = _self
+        node = self.parent.head
+        if node is None:
+            return
+        while node.next_node is not None:
+            node.next_node.prev_line.points=[node.center_x, node.center_y, node.next_node.center_x, node.next_node.center_y]
+            node = node.next_node
 
     def drag_set(self, _1, _2):
         self.drag_rectangle = [self.x, self.y, self.width, self.height]
@@ -253,7 +264,7 @@ class CommandMenu(BoxLayout):
             self.bg_rect.size = self.size
         self.bind(pos=temp_labeller_redraw, size=temp_labeller_redraw)
 
-        self.add_below = Label(size_hint=(1, None), height=0.36*self.height, text = "Node\nX: %(x).3f\nY: %(y).3f" % self.node.pos_hint, font_size=20) 
+        self.add_below = Label(size_hint=(1, None), height=0.36*self.height, text = "Node\nX: %(x).3f\nY: %(y).3f" % self.node.pos_hint, font_size=20)
         def add_below_callback(thing, instance):
             if self.add_below.collide_point(*instance.pos):
                self.parent.dont_check = True
@@ -280,6 +291,7 @@ class CommandMenu(BoxLayout):
             i.height = 0.2*self.height
 
     def store_list(self):
+        self.node.command_list = []
         for i in self.grid.children:
             if i.command != "" and i.command != "(Set Command)":
                 self.node.command_list.append(i.command)
@@ -312,7 +324,7 @@ class SetCommandButton(GridLayout):
         self.add_down = MiniButton(Button(text="Add Command Below"))
         self.add_down.widget.bind(on_press=self.add_down_callback)
 
-        self.command = ""
+        self.command = val
 
     def main_callback(self, instance):
         for i in self.parent.children:
@@ -345,7 +357,7 @@ class SetCommandButton(GridLayout):
     def redraw(self, _1, _2):
         for i in self.children:
             i.height = 0.15*self.parent.parent.height
-        
+
 
 class MyScreen(FloatLayout):
     def __init__(self):
@@ -362,11 +374,13 @@ class MyScreen(FloatLayout):
         self.buttons = SideButtons()
         self.add_widget(self.buttons)
 
+        self.bind(width=partial(SideButtons.f, 0,0,self.buttons), height=partial(SideButtons.f, 0,0,self.buttons))
+
     def on_touch_down(self, touch):
         if not super(MyScreen, self).on_touch_down(touch):
             pass
     def on_touch_up(self, touch):
-        if not super(MyScreen, self).on_touch_up(touch): 
+        if not super(MyScreen, self).on_touch_up(touch):
             if self.dont_check: #Note: Draggable seems to make this less of an issue now
                 self.dont_check = False
             elif self.click_type:
