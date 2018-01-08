@@ -232,20 +232,11 @@ class SideButtons(DragBehavior, BoxLayout):
                     else:
                         print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
                 blah.dismiss()
-                Clock.schedule_once(f, 0)
-            blah.content.bind(on_text_validate=choose)
+                blah.content.bind(on_text_validate=choose)
             blah.open()
         self.importer.bind(on_press=importer_callback)
         self.add_widget(self.importer)
-    def f(_a1 = 0, _a2 = 0, _self = None, _a3 = 0, _a4 = 0 ):
-        if _self is not None:
-            self = _self
-        node = self.parent.head
-        if node is None:
-            return
-        while node.next_node is not None:
-            node.next_node.prev_line.points=[node.center_x, node.center_y, node.next_node.center_x, node.next_node.center_y]
-            node = node.next_node
+
 
     def drag_set(self, _1, _2):
         self.drag_rectangle = [self.x, self.y, self.width, self.height]
@@ -374,7 +365,13 @@ class MyScreen(FloatLayout):
         self.buttons = SideButtons()
         self.add_widget(self.buttons)
 
-        self.bind(width=partial(SideButtons.f, 0,0,self.buttons), height=partial(SideButtons.f, 0,0,self.buttons))
+
+
+        '''def f(window, width, height):
+            print("resize")
+        Window.bind(on_resize=self.f)'''
+
+        #self.bind(width=partial(SideButtons.f, 0,0,self.buttons), height=partial(SideButtons.f, 0,0,self.buttons))
 
     def on_touch_down(self, touch):
         if not super(MyScreen, self).on_touch_down(touch):
@@ -399,7 +396,6 @@ class MyScreen(FloatLayout):
                     self.remove_widget(self.command_menu)
                     self.command_menu.store_list()
                     self.command_menu = None
-
 
 class MyApp(App):
 
