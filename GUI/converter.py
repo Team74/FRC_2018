@@ -1,12 +1,17 @@
-import math
-
-commandOptions = {
- 'Turn On Camera': "2,1",
- 'Turn Off Camera': "2,0"
-}
 width = 100		#width in whatever units you want it to be
 height = 100		#height, same
-outputName = "test.txt"	#if you want it stored in a file, put it here. leave it as None if you want it to print to console
+outputName = None#"test.txt"	#if you want it stored in a file, put it here. leave it as None if you want it to print to console
+
+
+#---------------------------------------------------------------------
+
+import math
+
+commandOptions = {}
+comm = open("commands.dat", "r")
+for i in comm:
+	x = i.split(":")
+	commandOptions[x[0]] = x[1][0:-1]
 
 
 filename = input("Save Name> ")
@@ -37,7 +42,7 @@ for i in commandlist:
 if outputName is None:
 	print(outputstring)
 else:
-	zing = open(outputName, "w" )
+	zing = open("convert/" + outputName, "w" )
 	zing.write(outputstring)
 
 
