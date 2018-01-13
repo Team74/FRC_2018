@@ -16,6 +16,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.popup import Popup
 from kivy.uix.spinner import Spinner
 from kivy.clock import Clock
+from kivy.core.window import Window
 
 from functools import partial
 
@@ -283,7 +284,7 @@ class CommandMenu(BoxLayout):
 
     def store_list(self):
         self.node.command_list = []
-        for i in self.grid.children:
+        for i in reversed(self.grid.children):
             if i.command != "" and i.command != "(Set Command)":
                 self.node.command_list.append(i.command)
 
@@ -365,11 +366,15 @@ class MyScreen(FloatLayout):
         self.buttons = SideButtons()
         self.add_widget(self.buttons)
 
-
-
-        '''def f(window, width, height):
-            print("resize")
-        Window.bind(on_resize=self.f)'''
+        def f(window, width, height):
+            node = self.head
+            if node is None:
+                return
+            while node.next_node is not None:
+                node = node.next_node
+                node.prev_line.points=[node.prev_node.center_x, node.prev_node.center_y, node.center_x, node.center_y]
+        Window.bind(on_resize=f)
+        
 
         #self.bind(width=partial(SideButtons.f, 0,0,self.buttons), height=partial(SideButtons.f, 0,0,self.buttons))
 
