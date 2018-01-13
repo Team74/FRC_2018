@@ -1,11 +1,10 @@
+"""
+File Name: xbox.py
+File Purpose: Allows usage of an Xbox controller, with sensible names for xbox specific buttons and axes.
+"""
 from wpilib import Joystick, Timer
 
 class XboxController(object):
-    """
-        Allows usage of an Xbox controller, with sensible names for xbox
-        specific buttons and axes.
-
-    """
 
     def __init__(self, port):
         """
