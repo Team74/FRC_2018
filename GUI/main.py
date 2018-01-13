@@ -195,22 +195,25 @@ class SideButtons(DragBehavior, BoxLayout):
 
         self.encode = Button(text="Encode");
         def encode_callback(instance):
-            #self.parent.dont_check = True
-            output_file = "output"
-            f = open("save/" + output_file, 'w')
-            x = self.parent.head
-            while x is not None:
-                f.write("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
-                for i in x.command_list:
-                   f.write("Comm> " + i + "\n")
-                x = x.next_node
+            blah = Popup(title="Choose input file", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
+            def choose(thing):
+                f = open("save/" + blah.content.text, 'w')
+                x = self.parent.head
+                while x is not None:
+                    f.write("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
+                    for i in x.command_list:
+                       f.write("Comm> " + i + "\n")
+                    x = x.next_node
+                    blah.dismiss()
+            blah.content.bind(on_text_validate=choose)
+            blah.open()
         self.encode.bind(on_press=encode_callback)
         self.add_widget(self.encode)
 
         self.importer = Button(text="Import");
         def importer_callback(instance):
             #self.parent.dont_check = True
-            blah = Popup(title="Choose Command", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
+            blah = Popup(title="Choose input file", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
             def choose(thing):
                 clear_callback(None)
                 f = open("save/" + blah.content.text, 'r')
@@ -232,8 +235,10 @@ class SideButtons(DragBehavior, BoxLayout):
                         self.parent.tail.command_list.append(line[6:-1])
                     else:
                         print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
+                def godihatehowlimitedlambdaexpressionsare(_ugh): self.parent.take_two(Window, Window.width, Window.height); 
+                Clock.schedule_once(godihatehowlimitedlambdaexpressionsare)
                 blah.dismiss()
-                blah.content.bind(on_text_validate=choose)
+            blah.content.bind(on_text_validate=choose)
             blah.open()
         self.importer.bind(on_press=importer_callback)
         self.add_widget(self.importer)
@@ -365,18 +370,16 @@ class MyScreen(FloatLayout):
 
         self.buttons = SideButtons()
         self.add_widget(self.buttons)
-
-        def f(window, width, height):
-            node = self.head
-            if node is None:
-                return
-            while node.next_node is not None:
-                node = node.next_node
-                node.prev_line.points=[node.prev_node.center_x, node.prev_node.center_y, node.center_x, node.center_y]
-        Window.bind(on_resize=f)
         
+        Window.bind(on_resize=self.take_two)
 
-        #self.bind(width=partial(SideButtons.f, 0,0,self.buttons), height=partial(SideButtons.f, 0,0,self.buttons))
+    def take_two(self, window, width, height):
+        node = self.head
+        if node is None:
+            return
+        while node.next_node is not None:
+            node = node.next_node
+            node.prev_line.points=[node.prev_node.center_x, node.prev_node.center_y, node.center_x, node.center_y]
 
     def on_touch_down(self, touch):
         if not super(MyScreen, self).on_touch_down(touch):
