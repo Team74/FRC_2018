@@ -56,3 +56,16 @@ class driveTrain():
                 self.shifter.set(True)
             else:
                 pass
+
+    def autonDrive(self, leftSpeed, rightSpeed):
+        self.left.set(leftSpeed)
+		self.right.set(rightSpeed)
+
+    def autonTurn(self, turnAngle):#Angle is in degrees
+        ROBOT_WIDTH = 24.3
+
+        def getSpeeds(angle, radius, speed=1):
+	        return [speed, speed*(lambda x: x[1]/x[0])(getDistances(angle, radius))
+
+        def getDistances(angle, radius):
+	        return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
