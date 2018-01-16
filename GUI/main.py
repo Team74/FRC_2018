@@ -367,6 +367,12 @@ class MyScreen(FloatLayout):
     def __init__(self):
         FloatLayout.__init__(self)
 
+        self.background = Rectangle(pos=self.pos, size=self.size, source='field.png')
+        self.canvas.add(self.background)
+        Clock.schedule_once(partial(self.take_two, self.width, self.height))
+        Clock.schedule_once(partial(self.aspect_ratio, self, 0))
+        self.ratio = 0.5
+
         self.head = None#Node(0.2, 0.5)
         self.tail = self.head
 
@@ -378,9 +384,19 @@ class MyScreen(FloatLayout):
         self.buttons = SideButtons()
         self.add_widget(self.buttons)
 
-        Window.bind(on_resize=self.take_two)
+        Window.bind(on_resize=self.aspect_ratio)
+
+
+    def aspect_ratio(self, _i, _j, _k):
+        if 2*self.parent.height < self.width:
+            self.size_hint = [self.height/self.width*2, 1]
+        else:
+            self.size_hint = [1,self.width/self.height*2]
+        self.take_two(0,0,0)
 
     def take_two(self, window, width, height):
+        self.background.pos = self.pos
+        self.background.size = self.size
         node = self.head
         if node is None:
             return
@@ -415,10 +431,16 @@ class MyScreen(FloatLayout):
             self.command_menu.store_list()
             self.command_menu = None
 
+class MiddleMan(FloatLayout):
+    def __init__(self):
+        FloatLayout.__init__(self)
+        self.screen = MyScreen()
+        self.add_widget(self.screen)
+
 class MyApp(App):
 
     def build(self):
-        return MyScreen()
+        return MiddleMan()
 
 if __name__ == '__main__':
     comm = open("commands.dat", "r")
