@@ -170,6 +170,7 @@ class SideButtons(DragBehavior, BoxLayout):
 
         self.switch = Button(text="Select");
         def switch_callback(instance):
+            self.parent.close_menu()
             self.parent.click_type = not self.parent.click_type
             self.switch.text = "Create" if self.parent.click_type else "Select"
             #self.parent.dont_check = True
@@ -178,6 +179,7 @@ class SideButtons(DragBehavior, BoxLayout):
 
         self.herod = Button(text="Clear");
         def clear_callback(instance):
+            self.parent.close_menu()
             #self.parent.dont_check = True
             while self.parent.head is not None:
                 self.parent.remove_widget(self.parent.head)
@@ -195,6 +197,7 @@ class SideButtons(DragBehavior, BoxLayout):
 
         self.encode = Button(text="Encode");
         def encode_callback(instance):
+            self.parent.close_menu()
             blah = Popup(title="Choose input file", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
             def choose(thing):
                 f = open("save/" + blah.content.text, 'w')
@@ -213,6 +216,7 @@ class SideButtons(DragBehavior, BoxLayout):
         self.importer = Button(text="Import");
         def importer_callback(instance):
             #self.parent.dont_check = True
+            self.parent.close_menu()
             blah = Popup(title="Choose input file", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
             def choose(thing):
                 clear_callback(None)
@@ -235,7 +239,7 @@ class SideButtons(DragBehavior, BoxLayout):
                         self.parent.tail.command_list.append(line[6:-1])
                     else:
                         print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
-                def godihatehowlimitedlambdaexpressionsare(_ugh): self.parent.take_two(Window, Window.width, Window.height); 
+                def godihatehowlimitedlambdaexpressionsare(_ugh): self.parent.take_two(Window, Window.width, Window.height);
                 Clock.schedule_once(godihatehowlimitedlambdaexpressionsare)
                 blah.dismiss()
             blah.content.bind(on_text_validate=choose)
@@ -295,6 +299,9 @@ class CommandMenu(BoxLayout):
 
 
 class SetCommandButton(GridLayout):
+
+    commandOptions = []
+
     def __init__(self, val = "(Set Command)"):
         GridLayout.__init__(self, cols=1, spacing=10, size_hint_y=None)
         self.bind(minimum_height=self.setter('height'))
@@ -337,7 +344,7 @@ class SetCommandButton(GridLayout):
             self.add_widget(self.add_up)
             self.add_widget(self.add_down)
     def edit_callback(self, instance):
-        blah = Popup(title="Choose Command", content=Spinner(text=self.edit.widget.text, values=('Turn On Camera', 'Turn Off Camera')), size_hint=(0.5,0.5))
+        blah = Popup(title="Choose Command", content=Spinner(text=self.edit.widget.text, values=self.commandOptions ), size_hint=(0.5,0.5))
         def choose(inst, value):
             self.main.text = self.command = blah.content.text
             blah.dismiss()
@@ -370,7 +377,7 @@ class MyScreen(FloatLayout):
 
         self.buttons = SideButtons()
         self.add_widget(self.buttons)
-        
+
         Window.bind(on_resize=self.take_two)
 
     def take_two(self, window, width, height):
@@ -399,11 +406,14 @@ class MyScreen(FloatLayout):
                     self.tail = self.tail.next_node
                 self.add_widget(self.tail)
             else:
-                if self.command_menu is not None:
-                    self.command_menu.node.select_sign.remove(self.command_menu.node.select_sign_i)
-                    self.remove_widget(self.command_menu)
-                    self.command_menu.store_list()
-                    self.command_menu = None
+                    self.close_menu()
+
+    def close_menu(self):
+        if self.command_menu is not None:
+            self.command_menu.node.select_sign.remove(self.command_menu.node.select_sign_i)
+            self.remove_widget(self.command_menu)
+            self.command_menu.store_list()
+            self.command_menu = None
 
 class MyApp(App):
 
@@ -411,4 +421,8 @@ class MyApp(App):
         return MyScreen()
 
 if __name__ == '__main__':
+    comm = open("commands.dat", "r")
+    for i in comm:
+        SetCommandButton.commandOptions.append(i.split(":")[0])
+
     MyApp().run()
