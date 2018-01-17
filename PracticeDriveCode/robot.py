@@ -24,6 +24,8 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousInit(self):
         self.auto_loop_counter = 0
+        gameData = DriverStation.getInstance().getGameSpecificMessage()
+        print (gameData)
 
     def autonomousPeriodic(self):
         if self.auto_loop_counter < 100:#~50 loops a second
