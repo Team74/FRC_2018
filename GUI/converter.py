@@ -26,13 +26,13 @@ for line in file:
 		x = line[6:-1].split(", ")
 		temp = [float(x[0].split(":")[1])*width, float(x[1].split(":")[1])*height]
 		new_angle = math.degrees(math.atan2(-(temp[0] - nodepos[0]), (temp[1] - nodepos[1])))
-		commandlist.append("[1," + str((angle - new_angle + 180) % 360 - 180) + "]") #assuming the robot points forward on the field, do -x, y for y,x to account for 90 degree rotation
+		commandlist.append("1," + str((angle - new_angle + 180) % 360 - 180)) #assuming the robot points forward on the field, do -x, y for y,x to account for 90 degree rotation
 		dist = math.sqrt((nodepos[0] - temp[0])**2 + (nodepos[1] - temp[1])**2)
-		commandlist.append("[0,1," + str(dist) + ",1," + str(dist) + "]")
+		commandlist.append("0,1," + str(dist) + ",1," + str(dist))
 		nodepos = temp
 		angle = new_angle
 	elif line[:6] == "Comm> ":
-		commandlist.append("[" + commandOptions[line[6:-1]] + "]")
+		commandlist.append(commandOptions[line[6:-1]])
 	else:
 		print("Type Not Found")
 
