@@ -1,6 +1,6 @@
-width = 100		#width in whatever units you want it to be
-height = 100		#height, same
-outputName = False	#if you want it stored in a file, put it here. leave it as None if you want it to print to console
+width = 16.46		#width in whatever units you want it to be
+height = 8.23		#height, same
+outputName = False	#Print to console or no
 
 
 #---------------------------------------------------------------------
