@@ -4,7 +4,7 @@ File Name: operator.py
 File Creation Date: 1/11/2018
 File Purpose: To create and run our operator functions
 """
-"""import wpilib
+import wpilib
 from wpilib import Encoder, RobotDrive
 
 class operatorControl():
@@ -69,11 +69,14 @@ class operatorControl():
         self.rightWinchMotorControlGroup.set(rightY)
 
     def manipulatorCubeRelease(self, whateverButtonThisEndsUpBeingInstanceOne):
+        pass
 
     def platformDeploy(self, whateverButtonThisEndsUpBeingInstanceTwo):
+        pass
 
     def manipulatorFold(self, whateverButtonThisEndsUpBeingInstanceThree):
-
+        pass
+        
     def manipulatorIntake(self, aButton):#operator can toggle the intake using A, the intake will run until it detects that it has a cube, or the operator can toggle if off using A
         self.cubeInManinpulator = self.doWeHaveACube.get()#Gets input from proximity sensor and setes it to self.cubeInManinpulator
         if self.aButton:#Runs when a is pressed
@@ -84,4 +87,3 @@ class operatorControl():
         if self.aToggle and not self.cubeInManinpulator:#If A has been toggled and we have no cube, it will intake cubes
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(-1)
-"""

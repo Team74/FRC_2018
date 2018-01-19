@@ -7,7 +7,9 @@ File Purpose: To create our drive functions
 import wpilib
 from xbox import XboxController
 from wpilib.drive import DifferentialDrive
+from wpilib import DriverStation
 from drive import driveTrain
+import ctre
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 
@@ -19,21 +21,79 @@ class MyRobot(wpilib.IterativeRobot):
         self.controllerTwo = XboxController(1)
         #self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
 
+        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(7)
+        self.lbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(6)
+        self.rfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
+        self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+
+        self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
+        self.lbMotor.configSelectedFeedbackSensor(0, 0, 0)
+        self.rfMotor.configSelectedFeedbackSensor(0, 0, 0)
+        self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
+
+        self.lfMotor.setSensorPhase(True)
+        self.lbMotor.setSensorPhase(True)
+        self.rfMotor.setSensorPhase(False)
+        self.rbMotor.setSensorPhase(False)
+
+        self.lfMotor.setSelectedSensorPosition(0, 0, 0)
+        self.lbMotor.setSelectedSensorPosition(0, 0, 0)
+        self.rfMotor.setSelectedSensorPosition(0, 0, 0)
+        self.rbMotor.setSelectedSensorPosition(0, 0, 0)
+
         self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
         self.dashTimer.start()
 
     def autonomousInit(self):
-        self.auto_loop_counter = 0
-        gameData = DriverStation.getInstance().getGameSpecificMessage()
-        print (gameData)
+        self.gameData=DriverStation.getInstance().getGameSpecificMessage()
+        print(self.gameData)
+        #print("autonInit")
+        self.drive.zeroGyro()
+
+        self.moveNumber = 1
+
 
     def autonomousPeriodic(self):
-        if self.auto_loop_counter < 100:#~50 loops a second
-            self.drive.autonDrive(.5, -.5) # Drive forwards at half speed
-            self.auto_loop_counter += 1
-        else:
-            self.robot_drive.drive(0, 0)
+        self.gameData=DriverStation.getInstance().getGameSpecificMessage()
+
+        self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
+        self.lbEncoderPosition = self.lbMotor.getSelectedSensorPosition(0)
+        self.rfEncoderPosition = self.rfMotor.getSelectedSensorPosition(0)
+        self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
+
+        #print(self.lfMotor.getSelectedSensorPosition(0))
+        #print(self.lbEncoderPosition[1])
+        #print(self.rfEncoderPosition[1])
+        #print(self.rbEncoderPosition[1])
+        #print(self.drive.getGyroAngle)
+        #print(self.gameData)
+        #print("InAutonPeriodic")
+        if self.moveNumber == 1:
+            if self.drive.autonDriveStraight(.3, 30):
+                pass
+            else:
+                print(self.lbEncoderPosition[1])
+                print('1st straight done')
+                self.moveNumber = 2
+
+        if self.moveNumber == 2:
+            if self.drive.autonPivot(90):
+                pass
+            else:
+                #print(self.drive.getGyroAngle)
+                print('1st Turn done')
+                self.moveNumber = 3
+
+        if self.moveNumber == 3:
+            if self.drive.autonDriveStraight(.6, 15):
+                pass
+            else:
+                print(self.lbEncoderPosition[1])
+                print('2nd straight done')
+                self.moveNumber = 4
+
     def teleopPeriodic(self):
+        print("Gyro Angle", self.drive.getGyroAngle())
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
 if __name__ == "__main__":
