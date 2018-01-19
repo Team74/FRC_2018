@@ -30,7 +30,7 @@ class Node(Widget):
         Widget.__init__(self)
         self.MIN_DRAG_VAL = (20)**2   #squared so I don't need to take a root later
         self.SIZE = 0.05
-        self.COLOR = Color(1,1,1)
+        self.COLOR = Color(0.6,0.9,0.6)
 
         self.prev_node = None;  #Linked List of nodes
         self.next_node = None;
@@ -367,10 +367,10 @@ class MyScreen(FloatLayout):
     def __init__(self):
         FloatLayout.__init__(self)
 
-        self.background = Rectangle(pos=self.pos, size=self.size, source='field.png')
+        self.background = Rectangle(pos=self.pos, size=self.size, source='field.jpg')
         self.canvas.add(self.background)
-        Clock.schedule_once(partial(self.take_two, self.width, self.height))
-        Clock.schedule_once(partial(self.aspect_ratio, self, 0))
+        #Clock.schedule_once(partial(self.take_two, self.width, self.height))
+        #Clock.schedule_once(partial(self.aspect_ratio, self, 0))
         self.ratio = 0.5
 
         self.head = None#Node(0.2, 0.5)
@@ -384,17 +384,20 @@ class MyScreen(FloatLayout):
         self.buttons = SideButtons()
         self.add_widget(self.buttons)
 
-        Window.bind(on_resize=self.aspect_ratio)
+        self.bind(size=self.take_two, pos=self.take_two)
+        def omg(_a=0,_b=0,_c=0,_d=0):
+            self.parent.bind(size=self.aspect_ratio)
+        self.bind(parent=omg)
 
 
-    def aspect_ratio(self, _i, _j, _k):
-        if 2*self.parent.height < self.width:
-            self.size_hint = [self.height/self.width*2, 1]
+
+    def aspect_ratio(self, _i=0, _j=0, _k=0):	#600*338
+        if 600*self.parent.height < 338*self.parent.width:	#width too big
+            self.size_hint = [(600/338)/(self.parent.width/self.parent.height), 1]
         else:
-            self.size_hint = [1,self.width/self.height*2]
-        self.take_two(0,0,0)
+            self.size_hint = [1,(338/600)/(self.parent.height/self.parent.width)]
 
-    def take_two(self, window, width, height):
+    def take_two(self, window=None, width=0, height=0):
         self.background.pos = self.pos
         self.background.size = self.size
         node = self.head
@@ -411,7 +414,7 @@ class MyScreen(FloatLayout):
         if not super(MyScreen, self).on_touch_up(touch):
             if self.dont_check: #Note: Draggable seems to make this less of an issue now
                 self.dont_check = False
-            elif self.click_type:
+            elif self.click_type and self.collide_point(*touch.pos):
                 if self.tail is None:
                     self.tail = Node(*touch.pos)
                     if self.head is None:
