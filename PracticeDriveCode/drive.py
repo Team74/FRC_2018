@@ -6,8 +6,9 @@ File Purpose: To create and run our drive functions
 """
 
 import wpilib
+import robotpy_ext
+from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from wpilib.drive import DifferentialDrive
-from wpilib import Encoder
 import ctre
 
 class driveTrain():
@@ -164,7 +165,9 @@ class driveTrain():
         self.gyro.reset()
 
     def autonPivot(self, turnAngle):
-        turnSpeed = .3
+        turnSpeed = .5
+        if self.firstTime:
+            self.zeroGyro()
         if turnAngle < 0:
             if self.getGyroAngle() > turnAngle:
                 self.lfMotor.set(turnSpeed * -1)
@@ -192,6 +195,7 @@ class driveTrain():
                 self.rfMotor.set(0)
                 self.rbMotor.set(0)
                 self.zeroGyro()
+                self.firstTime = True
                 return False
 
     def autonAngledTurn(self, turnAngle):#Angle is in degrees

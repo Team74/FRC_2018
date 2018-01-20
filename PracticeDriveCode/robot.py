@@ -9,7 +9,8 @@ from xbox import XboxController
 from wpilib.drive import DifferentialDrive
 from wpilib import DriverStation
 from drive import driveTrain
-from autonNearSwitch import autonNearSwitch
+from autonNearSwitch import *
+from autonCenterEitherSwitch import *
 import ctre
 import AutonHandling
 import AutonInterpreter
@@ -54,7 +55,8 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.zeroGyro()
 
         self.moveNumber = 1
-        self.auton = autonSideSwitch('left', 'left', self.drive)
+        #self.auton = autonNearSwitch('left', 'left', self.drive)
+        self.auton = autonCenterEitherSwitch('left', 'left', self.drive)
 
     def autonomousPeriodic(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
