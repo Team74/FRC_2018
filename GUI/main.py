@@ -29,14 +29,14 @@ class Node(Widget):
 #ALSO: Always follow a pattern of create -> adjust relevant prev_node/next_node and head/tail -> add_widget, which calls setup, which relies on these
 #And don't attach/remove/reattach to something. I haven't tried it but I bet things will break.
 
+    prev_node = ObjectProperty(None, allownone=True);  #Linked List of nodes
+    next_node = ObjectProperty(None, allownone=True);
+
     def __init__(self, x, y):   #Pass in x,y of center of node, not corner like usual
         Widget.__init__(self)
         self.MIN_DRAG_VAL = (20)**2   #squared so I don't need to take a root later
         self.SIZE = 0.05
         self.COLOR = Color(0.6,0.9,0.6)
-
-        self.prev_node = ObjectProperty(None);  #Linked List of nodes
-        self.next_node = None;
 
         self.being_dragged = False      # < Various variables for implementing the drag behavior
         self.clicked_on = False             #These are mostly self-explanatory, but 'drag_node' is the new node
@@ -71,14 +71,15 @@ class Node(Widget):
         self.head_sign.add(self.head_sign_rect)
         self.head_sign.add(self.COLOR)
 
-        '''self.prev_line = Line(width=1)
+        #'''self.prev_line = Line(width=1)
         if self.prev_node is None:
             self.canvas.add(self.head_sign)
-        else:
+        '''else:
             self.prev_line.points=[self.prev_node.pos[0]+self.prev_node.size[0]/2, self.prev_node.pos[1]+self.prev_node.size[1]/2, x, y]
             self.canvas.add(self.prev_line)
         '''
         self.prev_line = Connector(node=self)
+        self.parent.add_widget(self.prev_line)
         self.bind(pos=self.redraw, size=self.redraw)
 
     def conv_pos(self, pos):
@@ -167,34 +168,36 @@ class Connector(Widget):
     node = ObjectProperty(None)
 
     def __init__(self, **kwargs):
-        Widget.__init__(self)
+        super(Connector, self).__init__(**kwargs)
+        self.COLOR = Color(0.6,0.9,0.6)
         self.prev_line = Line(width=1)
-        self.check_set_points()
-        self.prev_change()
+        self.old_prev_node = None
 
+        self.prev_change()
         self.node.bind(parent=self.node_change, prev_node=self.prev_change, pos=self.check_set_points)
 
-    def set_points(self, _val):
-        self.prev_line.points=[self.node.prev_node.center_x, self.node.prev_node.center_y, self.node.center_x, self.center_y]
+    def set_points(self, _inst=0, _val=0):
+        self.prev_line.points=[self.node.prev_node.center_x, self.node.prev_node.center_y, self.node.center_x, self.node.center_y]
 
-    def check_set_points(self):
+    def check_set_points(self, _x=0, _y=0):
         self.canvas.clear()
         if self.node is not None and self.node.prev_node is not None:
+            self.canvas.add(self.COLOR)
             self.canvas.add(self.prev_line)
             self.set_points()
-
-    def node_change(self, val): #when the node is removed from the canvas
+    def node_change(self, inst, val): #when the node is removed from the canvas
         if val is None:
             self.canvas.clear() # that's all folks
         else:
             print("I said don't attach unattach and reattach nodes. At least I'm guessing that's what happened, otherwise I have no idea what's going on.")
 
-    def prev_change(self, _val=None): #when the previous node changes
+    def prev_change(self, _inst=None, _val=None): #when the previous node changes
         if self.old_prev_node is not None:
-            self.old_prev_node.unbind(self.set_points)
+            self.old_prev_node.unbind(pos=self.set_points)
         if self.node.prev_node is not None: #dangit why can't I do this with properties
             self.node.prev_node.bind(pos=self.set_points)
         self.old_prev_node = self.node.prev_node
+
         self.check_set_points()
 
 
@@ -236,7 +239,7 @@ class SideButtons(DragBehavior, BoxLayout):
         self.encode = Button(text="Encode");
         def encode_callback(instance):
             self.parent.close_menu()
-            blah = Popup(title="Choose input file", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
+            blah = Popup(title="Choose output file", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
             def choose(thing):
                 f = open("save/" + blah.content.text, 'w')
                 x = self.parent.head

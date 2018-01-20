@@ -1,5 +1,5 @@
-width = 16.46		#width in whatever units you want it to be
-height = 8.23		#height, same
+width = 27*12*2		#width in whatever units you want it to be
+height = 27*12		#height, same
 outputName = False	#Print to console or no
 
 
