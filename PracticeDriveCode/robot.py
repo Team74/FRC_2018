@@ -8,7 +8,7 @@ import wpilib
 from xbox import XboxController
 from wpilib.drive import DifferentialDrive
 from drive import driveTrain
-#from operatorFunctions import operatorControl
+from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 
 class MyRobot(wpilib.IterativeRobot):
@@ -23,14 +23,12 @@ class MyRobot(wpilib.IterativeRobot):
         self.dashTimer.start()
 
     def autonomousInit(self):
-        self.auto_loop_counter = 0
-        gameData = DriverStation.getInstance().getGameSpecificMessage()
-        print (gameData)
+        self.gameData = DriverStation.getInstance().getGameSpecificMessage()
+        print (self.gameData)
 
     def autonomousPeriodic(self):
-        if self.auto_loop_counter < 100:#~50 loops a second
-            self.drive.autonDrive(.5, -.5) # Drive forwards at half speed
-            self.auto_loop_counter += 1
+        if self.lfMotor.getSelectedSensorPosition(0) < 16000:
+            self.drive.autonDrive(1, 1)
         else:
             self.robot_drive.drive(0, 0)
     def teleopPeriodic(self):

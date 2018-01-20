@@ -59,6 +59,14 @@ class driveTrain():
         self.right.set(rightY)
         self.printEncoders()
 
+    def autonDrive(self, leftSpeed, rightSpeed, leftDistance, rightDistance):
+        if ((self.lfmotor.getSelectedSensorPosition(0)+self.lbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
+            self.lfmotor.set(leftSpeed)
+            self.lbmotor.set(leftSpeed)
+        if((self.rfMotor.getSelectedSensorPosition(0)+self.rbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
+            self.rfmotor.set(rightSpeed)
+            self.rbmotor.set(rightSpeed)
+
     def shift(self, leftBumper):
         self.shifterPosition = self.shifter.get()
         if leftBumper:#When left bumper is pressed we shift gears

@@ -4,8 +4,8 @@ File Name: operator.py
 File Creation Date: 1/11/2018
 File Purpose: To create and run our operator functions
 """
-"""import wpilib
-from wpilib import Encoder, RobotDrive
+import wpilib
+from wpilib import RobotDrive
 
 class operatorControl():
 
@@ -47,7 +47,7 @@ class operatorControl():
 
         self.rightWinchMotorControlGroup = wpilib.SpeedControllerGroup(self.rightWinchMotorOne, self.rightWinchMotorTwo)
 
-    def operate(aButton, bButton, xButton, yButton, leftY, leftX, rightY, rightX, rightTrigger, leftTrigger, rightBumper, leftBumper):
+    def operate(leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, leftY, leftX, rightY, rightX, rightTrigger, rightBumper, leftTrigger, leftBumper):
         self.raiseLowerLift(leftY)
         self.liftRotation(leftX)
         self.winchUp(rightY)
@@ -69,10 +69,13 @@ class operatorControl():
         self.rightWinchMotorControlGroup.set(rightY)
 
     def manipulatorCubeRelease(self, whateverButtonThisEndsUpBeingInstanceOne):
+        pass
 
     def platformDeploy(self, whateverButtonThisEndsUpBeingInstanceTwo):
+        pass
 
     def manipulatorFold(self, whateverButtonThisEndsUpBeingInstanceThree):
+        pass
 
     def manipulatorIntake(self, aButton):#operator can toggle the intake using A, the intake will run until it detects that it has a cube, or the operator can toggle if off using A
         self.cubeInManinpulator = self.doWeHaveACube.get()#Gets input from proximity sensor and setes it to self.cubeInManinpulator
@@ -84,4 +87,3 @@ class operatorControl():
         if self.aToggle and not self.cubeInManinpulator:#If A has been toggled and we have no cube, it will intake cubes
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(-1)
-"""
