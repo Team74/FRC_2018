@@ -35,7 +35,7 @@ class Node(Widget):
     def __init__(self, x, y):   #Pass in x,y of center of node, not corner like usual
         Widget.__init__(self)
         self.MIN_DRAG_VAL = (20)**2   #squared so I don't need to take a root later
-        self.SIZE = 0.05
+        self.SIZE = 0.025
         self.COLOR = Color(0.6,0.9,0.6)
 
         self.being_dragged = False      # < Various variables for implementing the drag behavior
@@ -229,10 +229,18 @@ class SideButtons(DragBehavior, BoxLayout):
         self.herod.bind(on_press=clear_callback)
         self.add_widget(self.herod)
 
-        self.sizer = Button(text="Settings");
+        self.sizer = Button(text="Rectify");
         def sizer_callback(instance):
-            #self.parent.dont_check = True
-            print("This should bring up a menu to set field boundaries")
+            x = self.parent.head
+            if x is None:
+                return
+            while x.next_node is not None:
+                if abs(x.next_node.pos_hint["x"] - x.pos_hint["x"]) < 0.01:
+                    x.next_node.pos_hint["x"] = x.pos_hint["x"]
+                if abs(x.next_node.pos_hint["y"] - x.pos_hint["y"]) < 0.01:
+                    x.next_node.pos_hint["y"] = x.pos_hint["y"]
+                x = x.next_node
+            self.parent.do_layout()
         self.sizer.bind(on_press=sizer_callback)
         self.add_widget(self.sizer)
 
