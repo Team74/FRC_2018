@@ -12,8 +12,8 @@ from drive import driveTrain
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
 import ctre
-import AutonHandling
-import AutonInterpreter
+from Auton_Data_Handling import AutonHandling
+from AutonInterpreter import AutonInterpreter
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 
@@ -29,6 +29,8 @@ class MyRobot(wpilib.IterativeRobot):
         self.lbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(6)
         self.rfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+
+        self.handler = AutonHandling()
 
         self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.lbMotor.configSelectedFeedbackSensor(0, 0, 0)
@@ -75,7 +77,7 @@ class MyRobot(wpilib.IterativeRobot):
         #print("InAutonPeriodic")
 
         #self.auton.run()
-        self.AutonHandling.readCommandList(None, "square")
+        self.handler.readCommandList("square", self.drive)
 
 
     def teleopPeriodic(self):
