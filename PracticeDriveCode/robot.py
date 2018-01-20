@@ -9,6 +9,7 @@ from xbox import XboxController
 from wpilib.drive import DifferentialDrive
 from wpilib import DriverStation
 from drive import driveTrain
+from autonNearSwitch import autonNearSwitch
 import ctre
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
@@ -51,7 +52,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.zeroGyro()
 
         self.moveNumber = 1
-
+        self.auton = autonSideSwitch('left', 'left', self.drive)
 
     def autonomousPeriodic(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
@@ -61,36 +62,15 @@ class MyRobot(wpilib.IterativeRobot):
         self.rfEncoderPosition = self.rfMotor.getSelectedSensorPosition(0)
         self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
 
-        #print(self.lfMotor.getSelectedSensorPosition(0))
+        print(self.lfEncoderPosition[1])
         #print(self.lbEncoderPosition[1])
         #print(self.rfEncoderPosition[1])
         #print(self.rbEncoderPosition[1])
-        #print(self.drive.getGyroAngle)
+        #print(self.drive.getGyroAngle())
         #print(self.gameData)
         #print("InAutonPeriodic")
-        if self.moveNumber == 1:
-            if self.drive.autonDriveStraight(.3, 30):
-                pass
-            else:
-                print(self.lbEncoderPosition[1])
-                print('1st straight done')
-                self.moveNumber = 2
 
-        if self.moveNumber == 2:
-            if self.drive.autonPivot(90):
-                pass
-            else:
-                #print(self.drive.getGyroAngle)
-                print('1st Turn done')
-                self.moveNumber = 3
-
-        if self.moveNumber == 3:
-            if self.drive.autonDriveStraight(.6, 15):
-                pass
-            else:
-                print(self.lbEncoderPosition[1])
-                print('2nd straight done')
-                self.moveNumber = 4
+        self.auton.run()
 
     def teleopPeriodic(self):
         print("Gyro Angle", self.drive.getGyroAngle())
