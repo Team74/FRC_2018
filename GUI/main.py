@@ -17,8 +17,11 @@ from kivy.uix.popup import Popup
 from kivy.uix.spinner import Spinner
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.properties import ObjectProperty
 
 from functools import partial
+
+#------------------------------------------------------------------------------------------
 
 class Node(Widget):
 
@@ -32,7 +35,7 @@ class Node(Widget):
         self.SIZE = 0.05
         self.COLOR = Color(0.6,0.9,0.6)
 
-        self.prev_node = None;  #Linked List of nodes
+        self.prev_node = ObjectProperty(None);  #Linked List of nodes
         self.next_node = None;
 
         self.being_dragged = False      # < Various variables for implementing the drag behavior
@@ -68,13 +71,14 @@ class Node(Widget):
         self.head_sign.add(self.head_sign_rect)
         self.head_sign.add(self.COLOR)
 
-        self.prev_line = Line(width=1)
+        '''self.prev_line = Line(width=1)
         if self.prev_node is None:
             self.canvas.add(self.head_sign)
         else:
             self.prev_line.points=[self.prev_node.pos[0]+self.prev_node.size[0]/2, self.prev_node.pos[1]+self.prev_node.size[1]/2, x, y]
             self.canvas.add(self.prev_line)
-
+        '''
+        self.prev_line = Connector(node=self)
         self.bind(pos=self.redraw, size=self.redraw)
 
     def conv_pos(self, pos):
@@ -108,17 +112,13 @@ class Node(Widget):
                     if self.prev_node is None:
                         self.parent.head = self.drag_node
                         self.canvas.remove(self.head_sign)  #drag_node will add in its own constructor
-                        self.canvas.add(self.prev_line)
+                        #self.canvas.add(self.prev_line)
                     else:
                         self.prev_node.next_node = self.drag_node
                     self.prev_node = self.drag_node
                     self.parent.add_widget(self.drag_node)
             if self.being_dragged and (not self.parent.click_type or self.last_pos[0] is None):
                     self.conv_pos(touch.pos)
-                    if self.prev_node is not None:
-                        self.prev_line.points=[self.prev_node.pos[0]+self.prev_node.size[0]/2, self.prev_node.pos[1]+self.prev_node.size[1]/2, self.pos[0]+self.size[0]/2, self.pos[1]+self.size[1]/2]
-                    if self.next_node is not None:
-                        self.next_node.prev_line.points=[self.pos[0]+self.size[0]/2, self.pos[1]+self.size[1]/2, self.next_node.pos[0]+self.next_node.size[0]/2, self.next_node.pos[1]+self.next_node.size[1]/2]
             return True
         return False
     def on_touch_up(self, touch):
@@ -138,10 +138,10 @@ class Node(Widget):
                     else:
                         self.next_node.prev_node = self.prev_node
                         if self.prev_node is None:
-                            self.next_node.canvas.remove(self.next_node.prev_line)
+                            #self.next_node.canvas.remove(self.next_node.prev_line)
                             self.next_node.canvas.add(self.next_node.head_sign)
-                        else:
-                            self.next_node.prev_line.points=[self.prev_node.pos[0]+self.prev_node.size[0]/2, self.prev_node.pos[1]+self.prev_node.size[1]/2, self.next_node.pos[0]+self.next_node.size[0]/2, self.next_node.pos[1]+self.next_node.size[1]/2]
+                        #else:
+                            #self.next_node.prev_line.points=[self.prev_node.pos[0]+self.prev_node.size[0]/2, self.prev_node.pos[1]+self.prev_node.size[1]/2, self.next_node.pos[0]+self.next_node.size[0]/2, self.next_node.pos[1]+self.next_node.size[1]/2]
                     self.parent.remove_widget(self)
                 else:
                     if self.parent.command_menu is not None:
@@ -161,6 +161,44 @@ class Node(Widget):
             return True
         return False
 
+#------------------------------------------------------------------------------------------
+
+class Connector(Widget):
+    node = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        Widget.__init__(self)
+        self.prev_line = Line(width=1)
+        self.check_set_points()
+        self.prev_change()
+
+        self.node.bind(parent=self.node_change, prev_node=self.prev_change, pos=self.check_set_points)
+
+    def set_points(self, _val):
+        self.prev_line.points=[self.node.prev_node.center_x, self.node.prev_node.center_y, self.node.center_x, self.center_y]
+
+    def check_set_points(self):
+        self.canvas.clear()
+        if self.node is not None and self.node.prev_node is not None:
+            self.canvas.add(self.prev_line)
+            self.set_points()
+
+    def node_change(self, val): #when the node is removed from the canvas
+        if val is None:
+            self.canvas.clear() # that's all folks
+        else:
+            print("I said don't attach unattach and reattach nodes. At least I'm guessing that's what happened, otherwise I have no idea what's going on.")
+
+    def prev_change(self, _val=None): #when the previous node changes
+        if self.old_prev_node is not None:
+            self.old_prev_node.unbind(self.set_points)
+        if self.node.prev_node is not None: #dangit why can't I do this with properties
+            self.node.prev_node.bind(pos=self.set_points)
+        self.old_prev_node = self.node.prev_node
+        self.check_set_points()
+
+
+#---------------------------------------------------------------------------------------------
 
 class SideButtons(DragBehavior, BoxLayout):
     def __init__(self):
@@ -251,6 +289,8 @@ class SideButtons(DragBehavior, BoxLayout):
     def drag_set(self, _1, _2):
         self.drag_rectangle = [self.x, self.y, self.width, self.height]
 
+#------------------------------------------------------------------------------------------
+
 class CommandMenu(BoxLayout):
     def __init__(self, node_):
         BoxLayout.__init__(self, orientation='vertical', size_hint=(0.25,1), pos_hint={'x': 0.75 if node_.pos_hint['x'] <= 0.5 else 0, 'y': 0})
@@ -297,6 +337,7 @@ class CommandMenu(BoxLayout):
             if i.command != "" and i.command != "(Set Command)":
                 self.node.command_list.append(i.command)
 
+#------------------------------------------------------------------------------------------
 
 class SetCommandButton(GridLayout):
 
@@ -362,6 +403,7 @@ class SetCommandButton(GridLayout):
         for i in self.children:
             i.height = 0.15*self.parent.parent.height
 
+#------------------------------------------------------------------------------------------
 
 class MyScreen(FloatLayout):
     def __init__(self):
