@@ -18,7 +18,7 @@ class AutonHandling():
             elif i[0] == "turnCommand":#Repeat above process, just checking for a different variable
                 drive.turnAngle(i[1], 1)#the second 1 indicates the speed of the turn, this can be tuned down
 
-AutonHandling.readCommandList(None, "haha")
+AutonHandling.readCommandList(None, "square")
 ''' # Used to work with runCommands, need to update in order to test out readCommandList
 commands = DriveCommand.DriveCommand("Fast","Forward","Test"), TurnCommand.TurnCommand("Slow","Left"), DriveCommand.DriveCommand("Slow", "Backwards", "Test")
 AutonHandling().runCommands(commands)

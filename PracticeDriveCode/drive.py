@@ -52,18 +52,18 @@ class driveTrain():
         self.printEncoders()
 
     def turnAngle(self, degrees, speed):
-		if(self.gyro.getAngle() > degrees+0.25):
-			self.autonTankDrive(-1*speed, speed)
-			print(self.gyro.getAngle())
-		elif(self.gyro.getAngle() < degrees-0.25):
-			self.autonTankDrive(speed, -1*speed)
-			print(self.gyro.getAngle())
-		elif(self.gyro.getAngle() <= degrees-0.25):
-			self.autonTankDrive(-1*speed, speed)
-			print(self.gyro.getAngle())
-		else:
-			return True
-		return False
+        if(self.gyro.getAngle() > degrees+0.25):
+            self.autonTankDrive(-1*speed, speed)
+            print(self.gyro.getAngle())
+        elif(self.gyro.getAngle() < degrees-0.25):
+            self.autonTankDrive(speed, -1*speed)
+            print(self.gyro.getAngle())
+        elif(self.gyro.getAngle() <= degrees-0.25):
+            self.autonTankDrive(-1*speed, speed)
+            print(self.gyro.getAngle())
+        else:
+            return True
+        return False
 
     def autonDrawDrive(self, leftSpeed, rightSpeed, leftDistance, rightDistance):
         if ((self.lfmotor.getSelectedSensorPosition(0)+self.lbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
@@ -197,9 +197,8 @@ class driveTrain():
     def autonAngledTurn(self, turnAngle):#Angle is in degrees
         ROBOT_WIDTH = 24.3
 
-        def getSpeeds(angle, radius, speed=1):
-	        return [speed, speed*(lambda x: x[1]/x[0])(getDistances(angle, radius))
+    def getSpeeds(self, angle, radius, speed=1):
+        return [speed, speed*(lambda x: x[1]/x[0])(getDistances(angle, radius))]
 
-        def getDistances(angle, radius):
-	        return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
-"""
+    def getDistances(self, angle, radius):
+	    return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]

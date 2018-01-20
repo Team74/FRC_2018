@@ -11,6 +11,8 @@ from wpilib import DriverStation
 from drive import driveTrain
 from autonNearSwitch import autonNearSwitch
 import ctre
+import AutonHandling
+import AutonInterpreter
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 
@@ -70,7 +72,9 @@ class MyRobot(wpilib.IterativeRobot):
         #print(self.gameData)
         #print("InAutonPeriodic")
 
-        self.auton.run()
+        #self.auton.run()
+        self.AutonHandling.readCommandList(None, "square")
+
 
     def teleopPeriodic(self):
         print("Gyro Angle", self.drive.getGyroAngle())
