@@ -41,6 +41,8 @@ class driveTrain():
 
         self.wheelCircumference = 12.5663706144#Circumference of our wheels in inches
 
+        self.moveNumber = 1
+
     def drivePass(self, leftY, rightY, leftX, leftBumper):
         self.drive(leftY, rightY)
         self.shift(leftBumper)
@@ -209,3 +211,22 @@ class driveTrain():
 
     def getDistances(self, angle, radius):
 	    return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
+
+    def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle):
+        if moveNumberPass == self.moveNumber:
+            if commandNumber == 0:
+                if self.drive.autonDriveStraight(speed, distance):
+                    pass
+                else:
+                    print('Move ' + moveNumberPass + ' Complete')
+                    self.moveNumber = moveNumberPass + 1
+            elif commandNumber == 1:
+                if self.drive.autonPivot(turnAngle):
+                    pass
+                else:
+                    print('Move ' + moveNumberPass + ' Complete')
+                    self.moveNumber = moveNumberPass + 1
+            elif commandNumber == 2:
+                pass
+            else:
+                pass
