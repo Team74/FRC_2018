@@ -22,6 +22,11 @@ class driveTrain():
         self.rfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
 
+        self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
+
         self.left = wpilib.SpeedControllerGroup(self.lfMotor, self.lbMotor)
         self.right = wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
 
@@ -30,17 +35,11 @@ class driveTrain():
         self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
         self.shifterPosition = self.shifter.get()
 
-        self.firstTime = True
-        self.resetFinish = False
-        self.counterTime = 0
+        self.firstTime = True#Check for autonDriveStraight
+        self.firstRun = True#Check for autonPivot
+        self.resetFinish = False#Check for encoder reset
 
-        self.wheelCircumference = 12.5663706144
-
-    def printEncoders(self):
-        print(self.lfMotor.getSelectedSensorPosition(0))
-        #print(self.lbMotor.getSelectedSensorPosition(0))
-        #print(self.rfMotor.getSelectedSensorPosition(0))
-        #print(self.rbMotor.getSelectedSensorPosition(0))
+        self.wheelCircumference = 12.5663706144#Circumference of our wheels in inches
 
     def drivePass(self, leftY, rightY, leftX, leftBumper):
         self.drive(leftY, rightY)
@@ -93,27 +92,29 @@ class driveTrain():
         #print(encoderDistance)
 
         if self.firstTime:
-                    print(self.lfMotor.setSelectedSensorPosition(1, 0, 10000))
-                    print(self.lbMotor.setSelectedSensorPosition(1, 0, 10000))
-                    print(self.rfMotor.setSelectedSensorPosition(1, 0, 10000))
-                    print(self.rbMotor.setSelectedSensorPosition(1, 0, 10000))
+                    self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
+                    self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
+                    self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
+                    self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
 
                     self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
 
                     print('Encoder Reset')
-                    print(self.lfEncoderPosition[1])
+                    #print(self.lfEncoderPosition)
                     self.firstTime = False
         self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
         self.lbEncoderPosition = self.lbMotor.getSelectedSensorPosition(0)
         self.rfEncoderPosition = self.rfMotor.getSelectedSensorPosition(0)
         self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
-        if self.lfEncoderPosition[1] > 100 and not self.resetFinish:
+        if self.lfEncoderPosition > 150 and not self.resetFinish:
+            #print(self.lfEncoderPosition)
             return True
         else:
+            #print('Encoder Reset Finished')
             self.resetFinish = True
 
-        if self.lfEncoderPosition[1] < encoderDistance:
-            if self.lbEncoderPosition[1] < self.rbEncoderPosition[1]:
+        if self.lfEncoderPosition < encoderDistance:
+            if self.lbEncoderPosition < self.rbEncoderPosition:
                 if ulbSpeed < 0:
                     ulbSpeed = ulbSpeed + .01
                 elif ulbSpeed > 0:
@@ -121,7 +122,7 @@ class driveTrain():
                 else:
                     pass
 
-            if self.rbEncoderPosition[1] < self.lbEncoderPosition[1]:
+            if self.rbEncoderPosition < self.lbEncoderPosition:
                 if urbSpeed < 0:
                     urbSpeed = urbSpeed + .01
                 elif urbSpeed > 0:
@@ -129,7 +130,7 @@ class driveTrain():
                 else:
                     pass
 
-            if self.lfEncoderPosition[1] < self.rfEncoderPosition[1]:
+            if self.lfEncoderPosition < self.rfEncoderPosition:
                 if ulfSpeed < 0:
                     ulfSpeed = ulfSpeed + .01
                 elif ulfSpeed > 0:
@@ -137,7 +138,7 @@ class driveTrain():
                 else:
                     pass
 
-            if self.rfEncoderPosition[1] < self.lfEncoderPosition[1]:
+            if self.rfEncoderPosition < self.lfEncoderPosition:
                 if urfSpeed < 0:
                     urfSpeed = urfSpeed + .01
                 elif urfSpeed > 0:
@@ -166,8 +167,9 @@ class driveTrain():
 
     def autonPivot(self, turnAngle):
         turnSpeed = .5
-        if self.firstTime:
+        if self.firstRun:
             self.zeroGyro()
+            self.firstRun = False
         if turnAngle < 0:
             if self.getGyroAngle() > turnAngle:
                 self.lfMotor.set(turnSpeed * -1)
@@ -180,6 +182,7 @@ class driveTrain():
                 self.lbMotor.set(0)
                 self.rfMotor.set(0)
                 self.rbMotor.set(0)
+                self.firstRun = True
                 self.zeroGyro()
                 return False
         elif turnAngle > 0:
@@ -195,7 +198,7 @@ class driveTrain():
                 self.rfMotor.set(0)
                 self.rbMotor.set(0)
                 self.zeroGyro()
-                self.firstTime = True
+                self.firstRun = True
                 return False
 
     def autonAngledTurn(self, turnAngle):#Angle is in degrees

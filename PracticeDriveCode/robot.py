@@ -14,8 +14,8 @@ from autonCenterEitherSwitch import *
 from wpilib.smartdashboard import SmartDashboard
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 import ctre
-import AutonHandling
-import AutonInterpreter
+from Auton_Data_Handling import AutonHandling
+from AutonInterpreter import AutonInterpreter
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 
@@ -33,6 +33,9 @@ class MyRobot(wpilib.IterativeRobot):
         self.lbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(6)
         self.rfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+
+        self.handler = AutonHandling()
+
         self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.lbMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.rfMotor.configSelectedFeedbackSensor(0, 0, 0)
@@ -60,19 +63,9 @@ class MyRobot(wpilib.IterativeRobot):
     def autonomousPeriodic(self):
         self.autonomous_modes.run()
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
-        self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
-        self.lbEncoderPosition = self.lbMotor.getSelectedSensorPosition(0)
-        self.rfEncoderPosition = self.rfMotor.getSelectedSensorPosition(0)
-        self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
-        print(self.lfEncoderPosition[1])
-        #print(self.lbEncoderPosition[1])
-        #print(self.rfEncoderPosition[1])
-        #print(self.rbEncoderPosition[1])
-        #print(self.drive.getGyroAngle())
-        #print(self.gameData)
-        #print("InAutonPeriodic")
-        #self.auton.run()
-        self.AutonHandling.readCommandList(None, "square")
+
+        self.auton.run()#Hardcodded autons
+        #self.handler.readCommandList("square", self.drive)#Drawn auton
 
 
     def teleopPeriodic(self):

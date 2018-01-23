@@ -1,12 +1,11 @@
 import wpilib
 #from PracticeDriveCode import drive, operatorFunctions, robot
-from GUI import convert
 
 class AutonInterpreter():
 
     def getList(self, name):
         masterList = []
-        with open("GUI/convert/" + name, "r") as f:
+        with open("/home/lvuser/py/convert/" + name, "r") as f:
             data = f.readlines()
             for line in data:
                 line = line[:-1]
@@ -23,6 +22,3 @@ class AutonInterpreter():
             elif i[0] == "2":
                 i[0] = "genericCommand"
         return(masterList)
-
-AutonInterpreter.getList(None, "output")
-pass
