@@ -63,21 +63,8 @@ class MyRobot(wpilib.IterativeRobot):
     def autonomousPeriodic(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
 
-        self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
-        self.lbEncoderPosition = self.lbMotor.getSelectedSensorPosition(0)
-        self.rfEncoderPosition = self.rfMotor.getSelectedSensorPosition(0)
-        self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
-
-        print(self.lfEncoderPosition[1])
-        #print(self.lbEncoderPosition[1])
-        #print(self.rfEncoderPosition[1])
-        #print(self.rbEncoderPosition[1])
-        #print(self.drive.getGyroAngle())
-        #print(self.gameData)
-        #print("InAutonPeriodic")
-
-        #self.auton.run()
-        self.handler.readCommandList("square", self.drive)
+        self.auton.run()#Hardcodded autons
+        #self.handler.readCommandList("square", self.drive)#Drawn auton
 
 
     def teleopPeriodic(self):
