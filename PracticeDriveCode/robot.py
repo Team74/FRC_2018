@@ -25,6 +25,10 @@ class MyRobot(wpilib.IterativeRobot):
         self.controllerOne = XboxController(0)
         self.controllerTwo = XboxController(1)
         #self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
+        self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
+        self.dashTimer.start()
+        self.dash = SmartDashboard()
+        #self.autonomous_modes = AutonomousModeSelector('autonomous', self.components)
 
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(7)
         self.lbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(6)
@@ -51,6 +55,33 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousInit(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
+        positionChooser = wpilib.SendableChooser()
+        positionChooser.addObject('Left', '1')
+        positionChooser.addObject('Right', '2')
+
+        switchLscaleL = wpilib.SendableChooser()
+        switchLscaleL.addObject('Scale', '1')
+        switchLscaleL.addObject('Switch', '2')
+        switchLscaleL.addObject('PrepScaleScore', '3')
+        switchLscaleL.addObject('Drive', '4')
+
+        switchRscaleR = wpilib.SendableChooser()
+        switchRscaleR.addObject('Scale', '1')
+        switchRscaleR.addObject('Switch', '2')
+        switchRscaleR.addObject('PrepScaleScore', '3')
+        switchRscaleR.addObject('Drive', '4')
+
+        switchRscaleL = wpilib.SendableChooser()
+        switchRscaleL.addObject('Scale', '1')
+        switchRscaleL.addObject('Switch', '2')
+        switchRscaleL.addObject('PrepScaleScore', '3')
+        switchRscaleL.addObject('Drive', '4')
+
+        switchLscaleR = wpilib.SendableChooser()
+        switchLscaleR.addObject('Scale', '1')
+        switchLscaleR.addObject('Switch', '2')
+        switchLscaleR.addObject('PrepScaleScore', '3')
+        switchLscaleR.addObject('Drive', '4')
         print(self.gameData)
         #print("autonInit")
         self.drive.zeroGyro()
@@ -72,6 +103,7 @@ class MyRobot(wpilib.IterativeRobot):
 
         #self.auton.run()
         #self.AutonHandling.readCommandList(None, "square")
+
 
 
     def teleopPeriodic(self):
