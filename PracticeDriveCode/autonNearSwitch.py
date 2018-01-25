@@ -5,46 +5,24 @@ from autonBaseInit import *
 class autonSideSwitch(autonBaseInit):
     def run(self):
         if self.side == 'left':
-            if self.moveNumber == 1:
-                if self.drive.autonDriveStraight(.6, 60):
-                    pass
-                else:
-                    print('1st straight done')
-                    self.moveNumber = 2
+            if self.drive.autonMove(1, 0, .5, 60, 0, 0):
+                pass
+            elif self.drive.autonMove(2, 1, 0, 0, 90, .5):
+                pass
+            elif self.drive.autonMove(3, 0, .5, 15, 0, 0):
+                pass
+            elif self.drive.autonMove(4, 2, 0, 0, 0, 0):
+                pass
 
-            if self.moveNumber == 2:
-                if self.drive.autonPivot(90):
-                    pass
-                else:
-                    print('1st Turn done')
-                    self.moveNumber = 3
-
-            if self.moveNumber == 3:
-                if self.drive.autonDriveStraight(.6, 15):
-                    pass
-                else:
-                    print('2nd straight done')
-                    self.moveNumber = 4
         elif self.side == 'right':
-            if self.moveNumber == 1:
-                if self.drive.autonDriveStraight(.6, 60):
+                if self.drive.autonMove(1, 0, .5, 60, 0, 0):
                     pass
-                else:
-                    print('1st straight done')
-                    self.moveNumber = 2
+                elif self.drive.autonMove(2, 1, 0, 0, -90, .5):
+                    pass
+                elif self.drive.autonMove(3, 0, .5, 15, 0, 0):
+                    pass
+                elif self.drive.autonMove(4, 2, 0, 0, 0, 0):
+                    pass
 
-            if self.moveNumber == 2:
-                if self.drive.autonPivot(-90):
-                    pass
-                else:
-                    print('1st Turn done')
-                    self.moveNumber = 3
-
-            if self.moveNumber == 3:
-                if self.drive.autonDriveStraight(.6, 15):
-                    pass
-                else:
-                    print('2nd straight done')
-                    self.moveNumber = 4
         else:
             pass
