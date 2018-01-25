@@ -102,7 +102,7 @@ class MyRobot(wpilib.IterativeRobot):
     def autonomousInit(self):
 
 
-        '''
+
         #self.dash.updateValues()
         #print('Dashboard putData Test')
 
@@ -113,7 +113,101 @@ class MyRobot(wpilib.IterativeRobot):
         print(self.gameData)
         #print("autonInit")
         self.drive.zeroGyro()
-        '''
+
+        self.switchPosition = blank
+        self.scalePosition = blank
+        self.robotPosition = blank
+        self.intendedDestination = blank
+
+        if self.robotPosition == 'left':
+            if self.switchPosition == 'right' and self.scalePosition == 'right':
+                if self.intendedDestination == 'switch':
+                    self.auton = autonFarSwitch('left', 'left', self.drive)
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'left' and self.scalePosition == 'right':
+                if self.intendedDestination == 'switch':
+                    self.auton = autonNearSwitch('left', 'left', self.drive)
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'right' and self.scalePosition == 'left':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'left' and self.scalePosition == 'left':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+
+        elif self.robotPosition == 'center':
+            if self.switchPosition == 'right' and self.scalePosition == 'right':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'left' and self.scalePosition == 'right':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'right' and self.scalePosition == 'left':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'left' and self.scalePosition == 'left':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+
+        elif self.robotPosition == 'rihgt':
+            if self.switchPosition == 'right' and self.scalePosition == 'right':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'left' and self.scalePosition == 'right':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'right' and self.scalePosition == 'left':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
+            elif self.switchPosition == 'left' and self.scalePosition == 'left':
+                if self.intendedDestination == 'switch':
+                    pass
+                elif self.intendedDestination == 'scale':
+                    pass
+                elif self.intendedDestination == 'drive':
+                    pass
 
         self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
         #self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
