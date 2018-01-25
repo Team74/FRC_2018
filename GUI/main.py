@@ -22,13 +22,16 @@ from kivy.uix.filechooser import FileChooserListView
 
 from functools import partial
 
+import paramiko
+
+
 #------------------------------------------------------------------------------------------
 
 class Node(Widget):
 
-#HEY NOTE: I'm sorry, but event bubbling's a pain, so just don't add children to this widget that need touch. It shouldn't have 'em anyways.
-#ALSO: Always follow a pattern of create -> adjust relevant prev_node/next_node and head/tail -> add_widget, which calls setup, which relies on these
-#And don't attach/remove/reattach to something. I haven't tried it but I bet things will break.
+    #HEY NOTE: I'm sorry, but event bubbling's a pain, so just don't add children to this widget that need touch. It shouldn't have 'em anyways.
+    #ALSO: Always follow a pattern of create -> adjust relevant prev_node/next_node and head/tail -> add_widget, which calls setup, which relies on these
+    #And don't attach/remove/reattach to something. I haven't tried it but I bet things will break.
 
     prev_node = ObjectProperty(None, allownone=True);  #Linked List of nodes
     next_node = ObjectProperty(None, allownone=True);
@@ -319,6 +322,16 @@ class SideButtons(DragBehavior, BoxLayout):
 
     def drag_set(self, _1, _2):
         self.drag_rectangle = [self.x, self.y, self.width, self.height]
+
+    def connect(self):
+        client = paramiko.SSHClient()
+        client.load_system_host_keys()
+        client.connect('10.111.49.27', username='svanderark', password='chaos')
+        stdin, stdout, stderr = client.exec_command('ls')
+        for line in stdout:
+          print('...' + line.strip('\n'))
+        client.close()
+
 
 #------------------------------------------------------------------------------------------
 
