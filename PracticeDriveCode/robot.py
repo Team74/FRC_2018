@@ -5,7 +5,7 @@ File Creation Date: 1/8/2018
 File Purpose: To create our drive functions
 """
 import wpilib
-#from xbox import XboxController
+from xbox import XboxController
 from wpilib.drive import DifferentialDrive
 from wpilib import DriverStation
 from drive import driveTrain
@@ -19,18 +19,15 @@ import AutonInterpreter
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 from wpilib.smartdashboard import SmartDashboard
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
 
 class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
         self.drive = driveTrain(self)
-        #self.controllerOne = XboxController(0)
-        #self.controllerTwo = XboxController(1)
-        #self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
+        self.controllerOne = XboxController(0)
+        self.controllerTwo = XboxController(1)
+        self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
         self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
         self.dashTimer.start()
         self.dash = SmartDashboard()
@@ -56,15 +53,11 @@ class MyRobot(wpilib.IterativeRobot):
         self.rfMotor.setSelectedSensorPosition(0, 0, 0)
         self.rbMotor.setSelectedSensorPosition(0, 0, 0)
 
-        self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
-        self.dashTimer.start()
-
-    def autonomousInit(self):
-        '''
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
         positionChooser = wpilib.SendableChooser()
-        positionChooser.addObject('Left', '1')
+        positionChooser.addDefault('Left', '1')
         positionChooser.addObject('Right', '2')
+        positionChooser.addObject('Center', '3')
 
         switchLscaleL = wpilib.SendableChooser()
         switchLscaleL.addObject('Scale', '1')
@@ -76,29 +69,36 @@ class MyRobot(wpilib.IterativeRobot):
         switchRscaleR.addObject('Scale', '1')
         switchRscaleR.addObject('Switch', '2')
         switchRscaleR.addObject('PrepScaleScore', '3')
-        switchRscaleR.addObject('Drive', '4')
+        switchRscaleR.addDefault('Drive', '4')
 
         switchRscaleL = wpilib.SendableChooser()
         switchRscaleL.addObject('Scale', '1')
         switchRscaleL.addObject('Switch', '2')
         switchRscaleL.addObject('PrepScaleScore', '3')
-        switchRscaleL.addObject('Drive', '4')
+        switchRscaleL.addDefault('Drive', '4')
 
         switchLscaleR = wpilib.SendableChooser()
         switchLscaleR.addObject('Scale', '1')
         switchLscaleR.addObject('Switch', '2')
         switchLscaleR.addObject('PrepScaleScore', '3')
-        switchLscaleR.addObject('Drive', '4')
+        switchLscaleR.addDefault('Drive', '4')
 
 
         self.dash.putString('KillMe', '2')
 
         #print('Dashboard Test')
         self.dash.putData('Switch and Scale Left', switchLscaleL)
-        '''
+        self.dash.putData('Switch Right, Scale Left', switchRscaleL)
         self.dash.putData('Switch and Scale Right', switchRscaleR)
-        wpilib.SmartDashboard.putData('Switch Right, Scale Left', switchLscaleR)
+        #wpilib.SmartDashboard.putData('Switch Right, Scale Left', switchRscaleL)
         self.dash.putData('Switch Left, Scale Right', switchLscaleR)
+
+        self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
+        self.dashTimer.start()
+
+    def autonomousInit(self):
+
+
         '''
         #self.dash.updateValues()
         #print('Dashboard putData Test')
