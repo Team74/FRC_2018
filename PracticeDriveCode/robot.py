@@ -12,12 +12,17 @@ from drive import driveTrain
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
 from autonTwoCubeScale import *
+from autonNearScale import *
 import ctre
 #import AutonHandling
 import AutonInterpreter
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 from wpilib.smartdashboard import SmartDashboard
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/master
 
 class MyRobot(wpilib.IterativeRobot):
 
@@ -54,6 +59,9 @@ class MyRobot(wpilib.IterativeRobot):
         self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
         self.dashTimer.start()
 
+    def autonomousInit(self):
+        '''
+        self.gameData=DriverStation.getInstance().getGameSpecificMessage()
         positionChooser = wpilib.SendableChooser()
         positionChooser.addObject('Left', '1')
         positionChooser.addObject('Right', '2')
@@ -102,26 +110,23 @@ class MyRobot(wpilib.IterativeRobot):
         print(self.gameData)
         #print("autonInit")
         self.drive.zeroGyro()
+        '''
 
-        self.moveNumber = 1
+        self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
+
         #self.auton = autonNearSwitch('left', 'left', self.drive)
-        #self.auton = autonCenterEitherSwitch('left', 'left', self.drive)
-        self.auton = autonTwoCubeScale('left', 'left', self.drive)
+        self.auton = autonCenterEitherSwitch('left', 'left', self.drive)
+        #self.auton = autonTwoCubeScale('left', 'left', self.drive)
+        #self.auton = autonNearScale('left', 'left', self.drive)
 
     def autonomousPeriodic(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
 
-        self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
-        self.lbEncoderPosition = self.lbMotor.getSelectedSensorPosition(0)
-        self.rfEncoderPosition = self.rfMotor.getSelectedSensorPosition(0)
-        self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
-
-
-
-        #self.auton.run()
+        self.auton.run()
         #self.AutonHandling.readCommandList(None, "square")
-
-
 
     def teleopPeriodic(self):
         print("Gyro Angle", self.drive.getGyroAngle())

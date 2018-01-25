@@ -52,28 +52,6 @@ class driveTrain():
         self.left.set(leftY)
         self.right.set(rightY)
 
-    def turnAngle(self, degrees, speed):
-        if(self.gyro.getAngle() > degrees+0.25):
-            self.autonTankDrive(-1*speed, speed)
-            print(self.gyro.getAngle())
-        elif(self.gyro.getAngle() < degrees-0.25):
-            self.autonTankDrive(speed, -1*speed)
-            print(self.gyro.getAngle())
-        elif(self.gyro.getAngle() <= degrees-0.25):
-            self.autonTankDrive(-1*speed, speed)
-            print(self.gyro.getAngle())
-        else:
-            return True
-        return False
-
-    def autonDrawDrive(self, leftSpeed, rightSpeed, leftDistance, rightDistance):
-        if ((self.lfmotor.getSelectedSensorPosition(0)+self.lbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
-            self.lfmotor.set(leftSpeed)
-            self.lbmotor.set(leftSpeed)
-        if((self.rfMotor.getSelectedSensorPosition(0)+self.rbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
-            self.rfmotor.set(rightSpeed)
-            self.rbmotor.set(rightSpeed)
-
     def shift(self, leftBumper):
         self.shifterPosition = self.shifter.get()
         if leftBumper:#When left bumper is pressed we shift gears
@@ -83,6 +61,14 @@ class driveTrain():
                 self.shifter.set(True)
             else:
                 pass
+
+    def autonDrawDrive(self, leftSpeed, rightSpeed, leftDistance, rightDistance):
+        if ((self.lfmotor.getSelectedSensorPosition(0)+self.lbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
+            self.lfmotor.set(leftSpeed)
+            self.lbmotor.set(leftSpeed)
+        if((self.rfMotor.getSelectedSensorPosition(0)+self.rbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
+            self.rfmotor.set(rightSpeed)
+            self.rbmotor.set(rightSpeed)
 
     def autonDriveStraight(self, speed, distance):
         ulfSpeed = speed
@@ -107,7 +93,7 @@ class driveTrain():
         self.lbEncoderPosition = self.lbMotor.getSelectedSensorPosition(0)
         self.rfEncoderPosition = self.rfMotor.getSelectedSensorPosition(0)
         self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
-        if self.lfEncoderPosition > 150 and not self.resetFinish:
+        if self.lfEncoderPosition > 250 and not self.resetFinish:
             #print(self.lfEncoderPosition)
             return True
         else:
@@ -166,8 +152,14 @@ class driveTrain():
     def zeroGyro(self):
         self.gyro.reset()
 
-    def autonPivot(self, turnAngle):
-        turnSpeed = .5
+    def encoderReset(self):
+        self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
+        self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
+        return False
+
+    def autonPivot(self, turnAngle, turnSpeed):
         if self.firstRun:
             self.zeroGyro()
             self.firstRun = False
@@ -205,27 +197,32 @@ class driveTrain():
     def autonAngledTurn(self, turnAngle):#Angle is in degrees
         ROBOT_WIDTH = 24.3
 
-    def getSpeeds(self, angle, radius, speed=1):
-        return [speed, speed*(lambda x: x[1]/x[0])(getDistances(angle, radius))]
+        def getSpeeds(self, angle, radius, speed=1):
+            return [speed, speed*(lambda x: x[1]/x[0])(getDistances(angle, radius))]
 
-    def getDistances(self, angle, radius):
-	    return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
+        def getDistances(self, angle, radius):
+	           return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
 
-    def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle):
+    def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed):
         if moveNumberPass == self.moveNumber:
             if commandNumber == 0:
-                if self.drive.autonDriveStraight(speed, distance):
+                if self.autonDriveStraight(speed, distance):
                     pass
                 else:
-                    print('Move ' + moveNumberPass + ' Complete')
+                    print(self.getGyroAngle())
+                    print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
             elif commandNumber == 1:
-                if self.drive.autonPivot(turnAngle):
-                    pass
+                if self.autonPivot(turnAngle, turnSpeed):
+                    print('In turn')
                 else:
-                    print('Move ' + moveNumberPass + ' Complete')
+                    print(self.getGyroAngle())
+                    print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
             elif commandNumber == 2:
-                pass
+                if self.encoderReset():
+                    pass
             else:
                 pass
+        else:
+            pass
