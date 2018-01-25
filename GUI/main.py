@@ -18,6 +18,7 @@ from kivy.uix.spinner import Spinner
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
+from kivy.uix.filechooser import FileChooserListView
 
 from functools import partial
 
@@ -247,17 +248,30 @@ class SideButtons(DragBehavior, BoxLayout):
         self.encode = Button(text="Encode");
         def encode_callback(instance):
             self.parent.close_menu()
-            blah = Popup(title="Choose output file", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
+            blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
+            filechooser = FileChooserListView(path="/home/", size_hint_y=0.8)
+            blah.content.add_widget(filechooser)
+            textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
+            blah.content.add_widget(textinput)
+            button = Button(text='Select', size_hint_y=0.1)
+            blah.content.add_widget(button)
             def choose(thing):
-                f = open("save/" + blah.content.text, 'w')
+                filename = ''
+                if textinput.text == "" and filechooser.selection == []:
+                    return #flash
+                if filechooser.selection == []:
+                    filename = filechooser.path + "/" + textinput.text
+                else:
+                    filename = filechooser.selection[0]
+                f = open(filename, 'w')
                 x = self.parent.head
                 while x is not None:
                     f.write("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
                     for i in x.command_list:
                        f.write("Comm> " + i + "\n")
                     x = x.next_node
-                    blah.dismiss()
-            blah.content.bind(on_text_validate=choose)
+                blah.dismiss()
+            button.bind(on_release=choose)
             blah.open()
         self.encode.bind(on_press=encode_callback)
         self.add_widget(self.encode)
@@ -266,10 +280,16 @@ class SideButtons(DragBehavior, BoxLayout):
         def importer_callback(instance):
             #self.parent.dont_check = True
             self.parent.close_menu()
-            blah = Popup(title="Choose input file", content=TextInput(text='', multiline=False), size_hint=(0.5,0.5))
+            blah = Popup(title="Choose input file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
+            filechooser = FileChooserListView(path="/home/", size_hint_y=0.8)
+            blah.content.add_widget(filechooser)
+            button = Button(text='Select', size_hint_y=0.1)
+            blah.content.add_widget(button)
             def choose(thing):
                 clear_callback(None)
-                f = open("save/" + blah.content.text, 'r')
+                if filechooser.selection == []:
+                    return
+                f = open(filechooser.selection[0], 'r')
                 node = None
                 for line in f:
                     if line[:6] == "Node> ":
@@ -291,7 +311,7 @@ class SideButtons(DragBehavior, BoxLayout):
                 def godihatehowlimitedlambdaexpressionsare(_ugh): self.parent.take_two(Window, Window.width, Window.height);
                 Clock.schedule_once(godihatehowlimitedlambdaexpressionsare)
                 blah.dismiss()
-            blah.content.bind(on_text_validate=choose)
+            button.bind(on_release=choose)
             blah.open()
         self.importer.bind(on_press=importer_callback)
         self.add_widget(self.importer)
