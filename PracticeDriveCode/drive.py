@@ -32,8 +32,8 @@ class driveTrain():
 
         self.robotDrive = DifferentialDrive(self.left, self.right)
 
-        self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
-        self.shifterPosition = self.shifter.get()
+        #self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
+        #self.shifterPosition = self.shifter.get()
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot

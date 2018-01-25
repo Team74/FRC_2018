@@ -5,7 +5,7 @@ File Creation Date: 1/8/2018
 File Purpose: To create our drive functions
 """
 import wpilib
-from xbox import XboxController
+#from xbox import XboxController
 from wpilib.drive import DifferentialDrive
 from wpilib import DriverStation
 from drive import driveTrain
@@ -19,14 +19,17 @@ import AutonInterpreter
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 from wpilib.smartdashboard import SmartDashboard
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 
 class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
         self.drive = driveTrain(self)
-        self.controllerOne = XboxController(0)
-        self.controllerTwo = XboxController(1)
+        #self.controllerOne = XboxController(0)
+        #self.controllerTwo = XboxController(1)
         #self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
         self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
         self.dashTimer.start()
@@ -67,7 +70,7 @@ class MyRobot(wpilib.IterativeRobot):
         switchLscaleL.addObject('Scale', '1')
         switchLscaleL.addObject('Switch', '2')
         switchLscaleL.addObject('PrepScaleScore', '3')
-        switchLscaleL.addObject('Drive', '4')
+        switchLscaleL.addDefault('Drive', '4')##Create Default for all sendable Choosers
 
         switchRscaleR = wpilib.SendableChooser()
         switchRscaleR.addObject('Scale', '1')
@@ -86,6 +89,24 @@ class MyRobot(wpilib.IterativeRobot):
         switchLscaleR.addObject('Switch', '2')
         switchLscaleR.addObject('PrepScaleScore', '3')
         switchLscaleR.addObject('Drive', '4')
+
+
+        self.dash.putString('KillMe', '2')
+
+        #print('Dashboard Test')
+        self.dash.putData('Switch and Scale Left', switchLscaleL)
+        '''
+        self.dash.putData('Switch and Scale Right', switchRscaleR)
+        wpilib.SmartDashboard.putData('Switch Right, Scale Left', switchLscaleR)
+        self.dash.putData('Switch Left, Scale Right', switchLscaleR)
+        '''
+        #self.dash.updateValues()
+        #print('Dashboard putData Test')
+
+
+    def autonomousInit(self):
+        self.gameData=DriverStation.getInstance().getGameSpecificMessage()
+
         print(self.gameData)
         #print("autonInit")
         self.drive.zeroGyro()
