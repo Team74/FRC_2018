@@ -24,7 +24,7 @@ class AutonHandling():
         if not incomplete:
             self.stageNumber +=1
 
-''' # Used to work with runCommands, need to update in order to test out readCommandList
+''' Used to work with runCommands, need to update in order to test out readCommandList
 commands = DriveCommand.DriveCommand("Fast","Forward","Test"), TurnCommand.TurnCommand("Slow","Left"), DriveCommand.DriveCommand("Slow", "Backwards", "Test")
 AutonHandling().runCommands(commands)
 '''

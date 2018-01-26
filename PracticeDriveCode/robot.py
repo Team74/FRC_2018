@@ -13,12 +13,14 @@ from autonNearSwitch import *
 from autonCenterEitherSwitch import *
 from autonTwoCubeScale import *
 from autonNearScale import *
+from autonDrive import *
 import ctre
 #import AutonHandling
 import AutonInterpreter
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 from wpilib.smartdashboard import SmartDashboard
+from drive_2017 import driveTrain2017
 
 
 class MyRobot(wpilib.IterativeRobot):
@@ -33,76 +35,52 @@ class MyRobot(wpilib.IterativeRobot):
         self.dash = SmartDashboard()
         #self.autonomous_modes = AutonomousModeSelector('autonomous', self.components)
 
-        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(7)
-        self.lbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(6)
-        self.rfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
-        self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
-
-        self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
-        self.lbMotor.configSelectedFeedbackSensor(0, 0, 0)
-        self.rfMotor.configSelectedFeedbackSensor(0, 0, 0)
-        self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
-
-        self.lfMotor.setSensorPhase(True)
-        self.lbMotor.setSensorPhase(True)
-        self.rfMotor.setSensorPhase(False)
-        self.rbMotor.setSensorPhase(False)
-
-        self.lfMotor.setSelectedSensorPosition(0, 0, 0)
-        self.lbMotor.setSelectedSensorPosition(0, 0, 0)
-        self.rfMotor.setSelectedSensorPosition(0, 0, 0)
-        self.rbMotor.setSelectedSensorPosition(0, 0, 0)
-
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
         positionChooser = wpilib.SendableChooser()
-        positionChooser.addDefault('Left', '1')
-        positionChooser.addObject('Right', '2')
-        positionChooser.addObject('Center', '3')
+        positionChooser.addDefault('Position Chooser', '1')
+        positionChooser.addObject('Left', '2')
+        positionChooser.addObject('Right', '3')
+        positionChooser.addObject('Center', '4')
 
         switchLscaleL = wpilib.SendableChooser()
-        switchLscaleL.addObject('Scale', '1')
-        switchLscaleL.addObject('Switch', '2')
-        switchLscaleL.addObject('PrepScaleScore', '3')
-        switchLscaleL.addDefault('Drive', '4')##Create Default for all sendable Choosers
+        switchLscaleL.addDefault('Switch and Scale LEFT', '1')
+        switchLscaleL.addObject('Scale', '2')
+        switchLscaleL.addObject('Switch', '3')
+        switchLscaleL.addObject('PrepScaleScore', '4')
+        switchLscaleL.addDefault('Drive', '5')##Create Default for all sendable Choosers
 
         switchRscaleR = wpilib.SendableChooser()
-        switchRscaleR.addObject('Scale', '1')
-        switchRscaleR.addObject('Switch', '2')
-        switchRscaleR.addObject('PrepScaleScore', '3')
-        switchRscaleR.addDefault('Drive', '4')
+        switchRscaleR.addDefault('Switch and Scale RIGHT', '1')
+        switchRscaleR.addObject('Scale', '2')
+        switchRscaleR.addObject('Switch', '3')
+        switchRscaleR.addObject('PrepScaleScore', '4')
+        switchRscaleR.addDefault('Drive', '5')
 
         switchRscaleL = wpilib.SendableChooser()
-        switchRscaleL.addObject('Scale', '1')
-        switchRscaleL.addObject('Switch', '2')
-        switchRscaleL.addObject('PrepScaleScore', '3')
-        switchRscaleL.addDefault('Drive', '4')
+        switchRscaleL.addDefault('Switch RIGHT, Scale LEFT', '1')
+        switchRscaleL.addObject('Scale', '2')
+        switchRscaleL.addObject('Switch', '3')
+        switchRscaleL.addObject('PrepScaleScore', '4')
+        switchRscaleL.addDefault('Drive', '5')
 
         switchLscaleR = wpilib.SendableChooser()
-        switchLscaleR.addObject('Scale', '1')
-        switchLscaleR.addObject('Switch', '2')
-        switchLscaleR.addObject('PrepScaleScore', '3')
-        switchLscaleR.addDefault('Drive', '4')
-
-
-        self.dash.putString('KillMe', '2')
+        switchLscaleR.addDefault('Switch LEFT, Scale RIGHT', '1')
+        switchLscaleR.addObject('Scale', '2')
+        switchLscaleR.addObject('Switch', '3')
+        switchLscaleR.addObject('PrepScaleScore', '4')
+        switchLscaleR.addDefault('Drive', '5')
 
         #print('Dashboard Test')
-        self.dash.putData('Switch and Scale Left', switchLscaleL)
-        self.dash.putData('Switch Right, Scale Left', switchRscaleL)
-        self.dash.putData('Switch and Scale Right', switchRscaleR)
-        #wpilib.SmartDashboard.putData('Switch Right, Scale Left', switchRscaleL)
-        self.dash.putData('Switch Left, Scale Right', switchLscaleR)
+        wpilib.SmartDashboard.putData('Starting Position', positionChooser)
+        wpilib.SmartDashboard.putData('Switch and Scale Left', switchLscaleL)
+        wpilib.SmartDashboard.putData('Switch Right, Scale Left', switchRscaleL)
+        wpilib.SmartDashboard.putData('Switch and Scale Right', switchRscaleR)
+        wpilib.SmartDashboard.putData('Switch Right, Scale Left', switchRscaleL)
+        #self.dash.putData('Switch Left, Scale Right', switchLscaleR)
+        self.dash.putString('SanityCheck', '1')
 
         self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
         self.dashTimer.start()
-
-    def autonomousInit(self):
-
-
-        '''
-        #self.dash.updateValues()
-        #print('Dashboard putData Test')
-
 
     def autonomousInit(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
@@ -110,17 +88,16 @@ class MyRobot(wpilib.IterativeRobot):
         print(self.gameData)
         #print("autonInit")
         self.drive.zeroGyro()
-        '''
 
         self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
+        #self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
+        #self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
         self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
 
-        #self.auton = autonNearSwitch('left', 'left', self.drive)
-        self.auton = autonCenterEitherSwitch('left', 'left', self.drive)
-        #self.auton = autonTwoCubeScale('left', 'left', self.drive)
-        #self.auton = autonNearScale('left', 'left', self.drive)
+        #self.auton = autonNearSwitch('left', 'left', 'left', self.drive)
+        self.auton = autonCenterEitherSwitch('left', 'left', 'left', self.drive)
+        #self.auton = autonTwoCubeScale('left', 'left', 'left', self.drive)
+        #self.auton = autonNearScale('left', 'left', 'left', self.drive)
 
     def autonomousPeriodic(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
