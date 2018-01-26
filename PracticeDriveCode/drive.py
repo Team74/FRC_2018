@@ -38,11 +38,11 @@ class driveTrain():
         #self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
         #self.shifterPosition = self.shifter.get()
 
+        self.wheelCircumference = 18.84954#Sets the circumfrence of our wheels
+
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
         self.resetFinish = False#Check for encoder reset
-
-        #Circumference of our wheels in inches
 
         self.moveNumber = 1
 
@@ -56,9 +56,6 @@ class driveTrain():
         self.lbMotor.setNeutralMode(2)
         self.rfMotor.setNeutralMode(2)
         self.rbMotor.setNeutralMode(2)
-
-    def setWheelCircumference(self):
-        self.wheelCircumference = 18.84954
 
     def drivePass(self, leftY, rightY, leftX, leftBumper):
         self.drive(leftY, rightY)
@@ -87,19 +84,18 @@ class driveTrain():
         ulbSpeed = speed
         urfSpeed = speed* -1
         urbSpeed = speed* -1
-        encoderDistance = (distance / self.wheelCircumference) * 4096
+        encoderDistance = (distance / self.wheelCircumference * 4096)
         #print(encoderDistance)
 
         if self.firstTime:
+            self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
+            self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
 
-                    self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-                    self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
+            self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
 
-                    self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
-
-                    print('Encoder Reset')
-                    #print(self.lfEncoderPosition)
-                    self.firstTime = False
+            print('Encoder Reset')
+            #print(self.lfEncoderPosition)
+            self.firstTime = False
         self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
         self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
         if self.lfEncoderPosition > 250 and not self.resetFinish:

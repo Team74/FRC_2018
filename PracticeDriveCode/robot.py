@@ -86,13 +86,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
 
         print(self.gameData)
-        #print("autonInit")
         self.drive.zeroGyro()
-
-        self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-        #self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
-        #self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
 
         #self.auton = autonNearSwitch('left', 'left', 'left', self.drive)
         self.auton = autonCenterEitherSwitch('left', 'left', 'left', self.drive)
@@ -106,7 +100,7 @@ class MyRobot(wpilib.IterativeRobot):
         #self.AutonHandling.readCommandList(None, "square")
 
     def teleopPeriodic(self):
-        print("Gyro Angle", self.drive.getGyroAngle())
+        #print("Gyro Angle", self.drive.getGyroAngle())
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
 if __name__ == "__main__":
