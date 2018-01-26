@@ -13,6 +13,7 @@ from autonNearSwitch import *
 from autonCenterEitherSwitch import *
 from autonTwoCubeScale import *
 from autonNearScale import *
+from autonDrive import *
 import ctre
 #import AutonHandling
 import AutonInterpreter
@@ -122,62 +123,86 @@ class MyRobot(wpilib.IterativeRobot):
         if self.robotPosition == 'left':
             if self.switchPosition == 'right' and self.scalePosition == 'right':
                 if self.intendedDestination == 'switch':
-                    self.auton = autonFarSwitch('left', 'left', self.drive)
+                    self.auton = autonFarSwitch('left', 'right', 'right', self.drive)
+
                 elif self.intendedDestination == 'scale':
-                    pass
+                    pass #FarScale
+
                 elif self.intendedDestination == 'drive':
-                    pass
+                    self.auton = autonDrive('left', 'right', 'right', self.drive)
+
             elif self.switchPosition == 'left' and self.scalePosition == 'right':
                 if self.intendedDestination == 'switch':
-                    self.auton = autonNearSwitch('left', 'left', self.drive)
+                    self.auton = autonNearSwitch('left', 'left', 'right', self.drive)
+
                 elif self.intendedDestination == 'scale':
-                    pass
+                    pass #FarScale
+
                 elif self.intendedDestination == 'drive':
-                    pass
+                    self.auton = autonDrive('left', 'left', 'right', self.drive)
+
             elif self.switchPosition == 'right' and self.scalePosition == 'left':
                 if self.intendedDestination == 'switch':
-                    pass
+                    self.auton = autonFarSwitch('left', 'right', 'left', self.drive)
+
                 elif self.intendedDestination == 'scale':
-                    pass
+                    self.auton = autonNearScale('left', 'right', 'left', self.drive)
+                    #self.auton = autonTwoCubeScale('left', 'right', 'left', self.drive)
+
                 elif self.intendedDestination == 'drive':
-                    pass
+                    self.auton = autonDrive('left', 'right', 'left', self.drive)
+
             elif self.switchPosition == 'left' and self.scalePosition == 'left':
                 if self.intendedDestination == 'switch':
-                    pass
+                    self.auton = autonNearSwitch('left', 'left', 'left', self.drive)
+
                 elif self.intendedDestination == 'scale':
-                    pass
+                    self.auton = autonNearScale('left', 'left', 'left', self.drive)
+                    #self.auton = autonTwoCubeScale('left', 'left', 'left', self.drive)
+
                 elif self.intendedDestination == 'drive':
-                    pass
+                    self.auton = autonDrive('left', 'left', 'left', self.drive)
 
         elif self.robotPosition == 'center':
             if self.switchPosition == 'right' and self.scalePosition == 'right':
                 if self.intendedDestination == 'switch':
-                    pass
+                    self.auton = autonCenterEitherSwitch('center', 'right', 'right', self.drive)
+
                 elif self.intendedDestination == 'scale':
                     pass
+
                 elif self.intendedDestination == 'drive':
-                    pass
+                    self.auton = autonDrive('center', 'right', 'right', self.drive)
+
             elif self.switchPosition == 'left' and self.scalePosition == 'right':
                 if self.intendedDestination == 'switch':
-                    pass
+                    self.auton = autonCenterEitherSwitch('center', 'left', 'right', self.drive)
+
                 elif self.intendedDestination == 'scale':
                     pass
+
                 elif self.intendedDestination == 'drive':
-                    pass
+                    self.auton = autonDrive('center', 'left', 'right', self.drive)
+
             elif self.switchPosition == 'right' and self.scalePosition == 'left':
                 if self.intendedDestination == 'switch':
-                    pass
+                    self.auton = autonCenterEitherSwitch('center', 'right', 'left', self.drive)
+
                 elif self.intendedDestination == 'scale':
                     pass
+
                 elif self.intendedDestination == 'drive':
-                    pass
+                    self.auton = autonDrive('center', 'right', 'left', self.drive)
+
             elif self.switchPosition == 'left' and self.scalePosition == 'left':
                 if self.intendedDestination == 'switch':
-                    pass
+                    self.auton = autonCenterEitherSwitch('center', 'left', 'left', self.drive)
+
                 elif self.intendedDestination == 'scale':
                     pass
+
                 elif self.intendedDestination == 'drive':
-                    pass
+                    self.auton = autonDrive('center', 'left', 'left', self.drive)
 
         elif self.robotPosition == 'rihgt':
             if self.switchPosition == 'right' and self.scalePosition == 'right':
@@ -190,22 +215,30 @@ class MyRobot(wpilib.IterativeRobot):
             elif self.switchPosition == 'left' and self.scalePosition == 'right':
                 if self.intendedDestination == 'switch':
                     pass
+
                 elif self.intendedDestination == 'scale':
                     pass
+
                 elif self.intendedDestination == 'drive':
                     pass
+
             elif self.switchPosition == 'right' and self.scalePosition == 'left':
                 if self.intendedDestination == 'switch':
                     pass
+
                 elif self.intendedDestination == 'scale':
                     pass
+
                 elif self.intendedDestination == 'drive':
                     pass
+
             elif self.switchPosition == 'left' and self.scalePosition == 'left':
                 if self.intendedDestination == 'switch':
                     pass
+
                 elif self.intendedDestination == 'scale':
                     pass
+
                 elif self.intendedDestination == 'drive':
                     pass
 
