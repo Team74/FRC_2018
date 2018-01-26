@@ -16,16 +16,19 @@ class driveTrain():
     def __init__(self, robot):
         self.gyro = AHRS.create_spi()
         #self.gyro = wpilib.interfaces.Gyro()
-        """Sets drive motors to a cantalon"""
-        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
-        self.lbMotor = ctre.victorspx.VictorSPX(11)
-        self.rfMotor = ctre.victorspx.VictorSPX(9)
-        self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
+        """Sets drive motors to a cantalon or victor"""
+        self.instantiateMotors()
+
 
         self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
         self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
+
+
+        self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
+        self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
+
+        self.lfMotor.setSensorPhase(True)
+        self.rbMotor.setSensorPhase(False)
 
         #self.left = wpilib.SpeedControllerGroup(self.lfMotor, self.lbMotor)
         #self.right = wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
@@ -39,9 +42,18 @@ class driveTrain():
         self.firstRun = True#Check for autonPivot
         self.resetFinish = False#Check for encoder reset
 
-        self.wheelCircumference = 12.5663706144#Circumference of our wheels in inches
+        #Circumference of our wheels in inches
 
         self.moveNumber = 1
+
+    def instantiateMotors(self):
+        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+        self.lbMotor = ctre.victorspx.VictorSPX(11)
+        self.rfMotor = ctre.victorspx.VictorSPX(9)
+        self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
+
+    def setWheelCircumference(self):
+        self.wheelCircumference = 18.84954
 
     def drivePass(self, leftY, rightY, leftX, leftBumper):
         self.drive(leftY, rightY)
@@ -65,14 +77,6 @@ class driveTrain():
             else:
                 pass
     '''
-    def autonDrawDrive(self, leftSpeed, rightSpeed, leftDistance, rightDistance):
-        if ((self.lfmotor.getSelectedSensorPosition(0)+self.lbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
-            self.lfmotor.set(leftSpeed)
-            self.lbmotor.set(leftSpeed)
-        if((self.rfMotor.getSelectedSensorPosition(0)+self.rbMotor.getSelectedSensorPosition(0))/2 != abs(leftDistance-1)):
-            self.rfmotor.set(rightSpeed)
-            self.rbmotor.set(rightSpeed)
-
     def autonDriveStraight(self, speed, distance):
         ulfSpeed = speed
         ulbSpeed = speed
@@ -84,8 +88,6 @@ class driveTrain():
         if self.firstTime:
             '''
                     self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-                    self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
-                    self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
                     self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
 
                     self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
@@ -94,8 +96,6 @@ class driveTrain():
                     #print(self.lfEncoderPosition)
                     self.firstTime = False
         self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
-        self.lbEncoderPosition = self.lbMotor.getSelectedSensorPosition(0)
-        self.rfEncoderPosition = self.rfMotor.getSelectedSensorPosition(0)
         self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
         if self.lfEncoderPosition > 250 and not self.resetFinish:
             #print(self.lfEncoderPosition)
@@ -138,8 +138,6 @@ class driveTrain():
                     pass
 
             self.lfMotor.set(ulfSpeed)
-            self.lbMotor.set(ulbSpeed)
-            self.rfMotor.set(urfSpeed)
             self.rbMotor.set(urbSpeed)
             return True
         else:
@@ -158,8 +156,6 @@ class driveTrain():
 
     def encoderReset(self):
         self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.lbMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.rfMotor.setSelectedSensorPosition(1, 0, 10000)
         self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
         return False
 
