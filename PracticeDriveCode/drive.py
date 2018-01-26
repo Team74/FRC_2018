@@ -52,6 +52,11 @@ class driveTrain():
         self.rfMotor = ctre.victorspx.VictorSPX(9)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
 
+        self.lfMotor.setNeutralMode(2)
+        self.lbMotor.setNeutralMode(2)
+        self.rfMotor.setNeutralMode(2)
+        self.rbMotor.setNeutralMode(2)
+
     def setWheelCircumference(self):
         self.wheelCircumference = 18.84954
 
@@ -86,7 +91,7 @@ class driveTrain():
         #print(encoderDistance)
 
         if self.firstTime:
-            '''
+
                     self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
                     self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
 
@@ -136,9 +141,7 @@ class driveTrain():
                     urfSpeed = urfSpeed - .01
                 else:
                     pass
-
-            self.lfMotor.set(ulfSpeed)
-            self.rbMotor.set(urbSpeed)
+            self.drive(ulfSpeed, urbSpeed)
             return True
         else:
             print('EndLoop')
@@ -165,25 +168,16 @@ class driveTrain():
             self.firstRun = False
         if turnAngle < 0:
             if self.getGyroAngle() > turnAngle:
-                self.lfMotor.set(turnSpeed * -1)
-                self.lbMotor.set(turnSpeed * -1)
-                self.rfMotor.set(turnSpeed * -1)
-                self.rfMotor.set(turnSpeed * -1)
+                self.drive(-turnSpeed, -turnSpeed)
                 return True
             else:
-                self.lfMotor.set(0)
-                self.lbMotor.set(0)
-                self.rfMotor.set(0)
-                self.rbMotor.set(0)
+                self.drive(0,0)
                 self.firstRun = True
                 self.zeroGyro()
                 return False
         elif turnAngle > 0:
             if self.getGyroAngle() < turnAngle:
-                self.lfMotor.set(turnSpeed)
-                self.lbMotor.set(turnSpeed)
-                self.rfMotor.set(turnSpeed)
-                self.rbMotor.set(turnSpeed)
+                self.drive(turnSpeed, turnSpeed)
                 return True
             else:
                 self.lfMotor.set(0)
@@ -226,5 +220,3 @@ class driveTrain():
                 pass
         else:
             pass
-
-        '''
