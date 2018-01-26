@@ -13,6 +13,7 @@ from autonNearSwitch import *
 from autonCenterEitherSwitch import *
 from autonTwoCubeScale import *
 from autonNearScale import *
+from autonDrive import *
 import ctre
 #import AutonHandling
 import AutonInterpreter
