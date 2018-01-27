@@ -29,7 +29,7 @@ class XboxController(object):
         :returns: -1 to 1
         :rtype: float
         """
-        return self.joy.getRawAxis(1)
+        return float(self.joy.getRawAxis(1))
 
     #getX = self.getLeftX()
     #getY = self.getLeftY()
@@ -56,7 +56,7 @@ class XboxController(object):
         :returns: -1 to 1
         :rtype: float
         """
-        return self.joy.getRawAxis(4)
+        return float(self.joy.getRawAxis(4))
 
     def getRightY(self):
         """Get the right stick Y axis

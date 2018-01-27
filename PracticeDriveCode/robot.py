@@ -23,11 +23,25 @@ from wpilib import RobotDrive
 from wpilib.smartdashboard import SmartDashboard
 
 
+
 class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
-        #self.drive = driveTrain
-        self.drive = driveTrain2017(self)
+        #self.drive = driveTrain(self)
+        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
+        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
+        self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
+        self.left=wpilib.SpeedControllerGroup(self.lfMotor, self.lbMotor)
+        self.right=wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
+        self.drive = DifferentialDrive(self.left, self.right)
+
+        self.lfMotor.setNeutralMode(2)
+        self.lbMotor.setNeutralMode(2)
+        self.rfMotor.setNeutralMode(2)
+        self.rbMotor.setNeutralMode(2)
+
+
         self.controllerOne = XboxController(0)
         self.controllerTwo = XboxController(1)
         self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
@@ -103,7 +117,8 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         self.drive.printEncoderPositition()
         #print("Gyro Angle", self.drive.getGyroAngle())
-        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper())
+        self.drive.arcadeDrive(self.controllerOne.getLeftY(), self.controllerOne.getRightX())
+        #self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightX(), self.controllerOne.getRightTrigger(), self.controllerOne.getLeftTrigger())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
 if __name__ == "__main__":
     wpilib.run(MyRobot)
