@@ -1,9 +1,7 @@
 import kivy
 
 from kivy.app import App
-
 from kivy.graphics import *
-
 from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
@@ -19,10 +17,16 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
 from kivy.uix.filechooser import FileChooserListView
+from kivy.uix.filechooser import FileSystemAbstract
+
 
 from functools import partial
 
 import paramiko
+import os
+from os import listdir
+from os.path import (basename, getsize, isdir)
+import stat
 
 
 #------------------------------------------------------------------------------------------
@@ -213,6 +217,8 @@ class SideButtons(DragBehavior, BoxLayout):
         BoxLayout.__init__(self, orientation='vertical', size_hint=(None, None), width=75)
         self.bind(pos=self.drag_set, size=self.drag_set)
 
+        self.local = False
+
         self.switch = Button(text="Select");
         def switch_callback(instance):
             self.parent.close_menu()
@@ -252,7 +258,10 @@ class SideButtons(DragBehavior, BoxLayout):
         def encode_callback(instance):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
-            filechooser = FileChooserListView(path="/home/", size_hint_y=0.8)
+            if self.local:
+                filechooser = FileChooserListView(path="/home/", size_hint_y=0.8)
+            else:
+                filechooser = FileChooserListView(file_system=FileSystemOverSSH('10.111.49.27', 'svanderark', 'chaos'), size_hint_y=0.8, path="/rhome/svanderark/")
             blah.content.add_widget(filechooser)
             textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
             blah.content.add_widget(textinput)
@@ -261,18 +270,21 @@ class SideButtons(DragBehavior, BoxLayout):
             def choose(thing):
                 filename = ''
                 if textinput.text == "" and filechooser.selection == []:
-                    return #flash
+                    return
                 if filechooser.selection == []:
                     filename = filechooser.path + "/" + textinput.text
                 else:
                     filename = filechooser.selection[0]
-                f = open(filename, 'w')
-                x = self.parent.head
-                while x is not None:
-                    f.write("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
-                    for i in x.command_list:
-                       f.write("Comm> " + i + "\n")
-                    x = x.next_node
+                with (open(filename, 'w') if self.local else filechooser.file_system.sftp.open(filename, 'w')) as f:
+                    x = self.parent.head
+                    while x is not None:
+                        text = str("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
+                        if not self.local:
+                            text = text.encode('utf-8')
+                        f.write(text)
+                        for i in x.command_list:
+                            f.write(str("Comm> " + i + "\n").encode('utf-8'))
+                        x = x.next_node
                 blah.dismiss()
             button.bind(on_release=choose)
             blah.open()
@@ -284,33 +296,36 @@ class SideButtons(DragBehavior, BoxLayout):
             #self.parent.dont_check = True
             self.parent.close_menu()
             blah = Popup(title="Choose input file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
-            filechooser = FileChooserListView(path="/home/", size_hint_y=0.8)
+            if self.local:
+                filechooser = FileChooserListView(path="/home/", size_hint_y=0.8)
+            else:
+                filechooser = FileChooserListView(file_system=FileSystemOverSSH('10.111.49.27', 'svanderark', 'chaos'), size_hint_y=0.8, path="/rhome/svanderark/")
             blah.content.add_widget(filechooser)
             button = Button(text='Select', size_hint_y=0.1)
             blah.content.add_widget(button)
             def choose(thing):
-                clear_callback(None)
                 if filechooser.selection == []:
                     return
-                f = open(filechooser.selection[0], 'r')
-                node = None
-                for line in f:
-                    if line[:6] == "Node> ":
-                        x = line[6:].split(", ")
-                        node = Node(float(x[0].split(":")[1])*self.parent.width, float(x[1].split(":")[1])*self.parent.height)
-                        if self.parent.tail is None:
-                            self.parent.tail = node
-                            if self.parent.head is None:
-                                self.parent.head = self.parent.tail
+                clear_callback(None)
+                with (open(filechooser.selection[0], 'r') if self.local else filechooser.file_system.sftp.open(filechooser.selection[0], 'r')) as f:
+                    node = None
+                    for line in f:
+                        if line[:6] == "Node> ":
+                            x = line[6:].split(", ")
+                            node = Node(float(x[0].split(":")[1])*self.parent.width, float(x[1].split(":")[1])*self.parent.height)
+                            if self.parent.tail is None:
+                                self.parent.tail = node
+                                if self.parent.head is None:
+                                    self.parent.head = self.parent.tail
+                            else:
+                                self.parent.tail.next_node = node
+                                self.parent.tail.next_node.prev_node = self.parent.tail
+                                self.parent.tail = self.parent.tail.next_node
+                            self.parent.add_widget(self.parent.tail)
+                        elif line[:6] == "Comm> ":
+                            self.parent.tail.command_list.append(line[6:-1])
                         else:
-                            self.parent.tail.next_node = node
-                            self.parent.tail.next_node.prev_node = self.parent.tail
-                            self.parent.tail = self.parent.tail.next_node
-                        self.parent.add_widget(self.parent.tail)
-                    elif line[:6] == "Comm> ":
-                        self.parent.tail.command_list.append(line[6:-1])
-                    else:
-                        print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
+                            print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
                 def godihatehowlimitedlambdaexpressionsare(_ugh): self.parent.take_two(Window, Window.width, Window.height);
                 Clock.schedule_once(godihatehowlimitedlambdaexpressionsare)
                 blah.dismiss()
@@ -319,19 +334,48 @@ class SideButtons(DragBehavior, BoxLayout):
         self.importer.bind(on_press=importer_callback)
         self.add_widget(self.importer)
 
+        self.saveloc = Button(text="Robot");
+        def location_callback(instance):
+            self.local = not self.local
+            self.saveloc.text = "Local" if self.local else "Robot"
+            #self.parent.dont_check = True
+        self.saveloc.bind(on_press=location_callback)
+        self.add_widget(self.saveloc)
+
 
     def drag_set(self, _1, _2):
         self.drag_rectangle = [self.x, self.y, self.width, self.height]
 
-    def connect(self):
-        client = paramiko.SSHClient()
-        client.load_system_host_keys()
-        client.connect('10.111.49.27', username='svanderark', password='chaos')
-        stdin, stdout, stderr = client.exec_command('ls')
-        for line in stdout:
-          print('...' + line.strip('\n'))
-        client.close()
 
+#------------------------------------------------------------------------------------------
+
+class FileSystemOverSSH(FileSystemAbstract):
+
+    def __init__(self, target, username, password):
+        super().__init__()
+
+        self.client = paramiko.SSHClient()
+        self.client.load_system_host_keys()
+        self.client.connect(target, username=username, password=password)
+        self.sftp = self.client.open_sftp()
+
+    def __del__(self):
+        self.sftp.close()
+        self.client.close()
+
+    def listdir(self, fn):
+        return self.sftp.listdir(fn)
+
+    def getsize(self, fn):
+        return self.sftp.stat(fn).st_size
+
+    def is_hidden(self, fn):
+        #return False
+        #assuming the robot runs linux not windows.
+        return basename(fn).startswith('.')
+
+    def is_dir(self, fn):
+        return stat.S_ISDIR(self.sftp.stat(fn).st_mode)
 
 #------------------------------------------------------------------------------------------
 

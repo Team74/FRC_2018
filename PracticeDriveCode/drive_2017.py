@@ -12,7 +12,6 @@ class driveTrain2017(driveTrain):
         self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
         self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
 
-
         self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
 
