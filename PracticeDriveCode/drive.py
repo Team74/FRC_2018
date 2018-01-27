@@ -18,33 +18,26 @@ class driveTrain():
         #self.gyro = wpilib.interfaces.Gyro()
         """Sets drive motors to a cantalon or victor"""
         self.instantiateMotors()
-
-
-        self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
-
-
-        self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
-        self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
-
-        self.lfMotor.setSensorPhase(True)
-        self.rbMotor.setSensorPhase(False)
-
-        #self.left = wpilib.SpeedControllerGroup(self.lfMotor, self.lbMotor)
-        #self.right = wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
-
-        #self.robotDrive = DifferentialDrive(self.left, self.right)
+        self.instantiateEncoders()
+        self.setDistancePerPulse()
 
         #self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
         #self.shifterPosition = self.shifter.get()
-
-        self.wheelCircumference = 18.84954#Sets the circumfrence of our wheels
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
         self.resetFinish = False#Check for encoder reset
 
+        self.setWheelCircumference()
+
         self.moveNumber = 1
+
+    def setWheelCircumference(self):
+        self.wheelCircumference = 18.84954
+
+    def instantiateEncoders(self):
+        self.lfMotor.wpilib.Encoder(0, 0, False)
+        self.rbMotor.wpilib.Encoder(0, 0, False)
 
     def instantiateMotors(self):
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
@@ -80,64 +73,33 @@ class driveTrain():
                 pass
     '''
     def autonDriveStraight(self, speed, distance):
-        ulfSpeed = speed
-        ulbSpeed = speed
-        urfSpeed = speed* -1
-        urbSpeed = speed* -1
+        #print('entered auton straight')
+        lfSpeed = speed
+        rbSpeed = speed
         encoderDistance = (distance / self.wheelCircumference * 4096)
         #print(encoderDistance)
 
         if self.firstTime:
-            self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-            self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
+            print('passed first check')
+            self.encoderReset()
 
             self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
 
             print('Encoder Reset')
-            #print(self.lfEncoderPosition)
             self.firstTime = False
+
         self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
         self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
+        print(self.lfEncoderPosition)
         if self.lfEncoderPosition > 250 and not self.resetFinish:
-            #print(self.lfEncoderPosition)
+            print(self.lfEncoderPosition)
             return True
         else:
             #print('Encoder Reset Finished')
             self.resetFinish = True
 
         if self.lfEncoderPosition < encoderDistance:
-            if self.lbEncoderPosition < self.rbEncoderPosition:
-                if ulbSpeed < 0:
-                    ulbSpeed = ulbSpeed + .01
-                elif ulbSpeed > 0:
-                    ulbSpeed = ulbSpeed - .01
-                else:
-                    pass
-
-            if self.rbEncoderPosition < self.lbEncoderPosition:
-                if urbSpeed < 0:
-                    urbSpeed = urbSpeed + .01
-                elif urbSpeed > 0:
-                    urbSpeed = urbSpeed - .01
-                else:
-                    pass
-
-            if self.lfEncoderPosition < self.rfEncoderPosition:
-                if ulfSpeed < 0:
-                    ulfSpeed = ulfSpeed + .01
-                elif ulfSpeed > 0:
-                    ulfSpeed = ulfSpeed - .01
-                else:
-                    pass
-
-            if self.rfEncoderPosition < self.lfEncoderPosition:
-                if urfSpeed < 0:
-                    urfSpeed = urfSpeed + .01
-                elif urfSpeed > 0:
-                    urfSpeed = urfSpeed - .01
-                else:
-                    pass
-            self.drive(ulfSpeed, urbSpeed)
+            self.drive(-lfSpeed, -rbSpeed)
             return True
         else:
             print('EndLoop')
@@ -146,17 +108,23 @@ class driveTrain():
             self.resetFinish = False
             self.firstTime = True
             return False
-    '''
+
     def getGyroAngle(self):
     	return self.gyro.getAngle()
-    '''
+
+    def setDistancePerPulse(self):
+        self.lfMotor.setDistancePerPulse(256)
+        self.rbMotor.setDistancePerPulse(256)
     def zeroGyro(self):
         self.gyro.reset()
 
     def encoderReset(self):
-        self.lfMotor.setSelectedSensorPosition(1, 0, 10000)
-        self.rbMotor.setSelectedSensorPosition(1, 0, 10000)
-        return False
+        self.lfMotor.reset()
+        self.rbMotor.reset()
+
+    def getEncoderPositition(self):
+        self.lfMotor.get()
+        self.rbMotor.get()
 
     def autonPivot(self, turnAngle, turnSpeed):
         if self.firstRun:
@@ -164,7 +132,7 @@ class driveTrain():
             self.firstRun = False
         if turnAngle < 0:
             if self.getGyroAngle() > turnAngle:
-                self.drive(-turnSpeed, -turnSpeed)
+                self.drive((turnSpeed), -(turnSpeed))
                 return True
             else:
                 self.drive(0,0)
@@ -173,13 +141,10 @@ class driveTrain():
                 return False
         elif turnAngle > 0:
             if self.getGyroAngle() < turnAngle:
-                self.drive(turnSpeed, turnSpeed)
+                self.drive(-(turnSpeed), (turnSpeed))
                 return True
             else:
-                self.lfMotor.set(0)
-                self.lbMotor.set(0)
-                self.rfMotor.set(0)
-                self.rbMotor.set(0)
+                self.drive(0, 0)
                 self.zeroGyro()
                 self.firstRun = True
                 return False
@@ -204,7 +169,7 @@ class driveTrain():
                     self.moveNumber = moveNumberPass + 1
             elif commandNumber == 1:
                 if self.autonPivot(turnAngle, turnSpeed):
-                    print('In turn')
+                    pass
                 else:
                     print(self.getGyroAngle())
                     print('Move ' + str(moveNumberPass) + ' Complete')

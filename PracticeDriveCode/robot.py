@@ -16,7 +16,7 @@ from autonNearScale import *
 from autonDrive import *
 import ctre
 #import AutonHandling
-import AutonInterpreter
+#import AutonInterpreter
 #from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 from wpilib.smartdashboard import SmartDashboard
@@ -26,7 +26,7 @@ from drive_2017 import driveTrain2017
 class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
-        self.drive = driveTrain(self)
+        self.drive = driveTrain2017(self)
         self.controllerOne = XboxController(0)
         self.controllerTwo = XboxController(1)
         self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
