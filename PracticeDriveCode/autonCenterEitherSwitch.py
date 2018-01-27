@@ -11,7 +11,7 @@ class autonCenterEitherSwitch(autonBaseInit):
                 pass
             elif self.drive.autonMove(3, 0, .5, 36, 0, 0):
                 pass
-            elif self.drive.autonMove(4, 1, 0, 0, 25, .5):
+            elif self.drive.autonMove(4, 1, 0, 0, 45, .5):
                 pass
             elif self.drive.autonMove(5, 0, .5, 5, 0, 0):
                 pass
