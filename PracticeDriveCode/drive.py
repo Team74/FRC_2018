@@ -37,7 +37,7 @@ class driveTrain():
 
     def instantiateEncoders(self):
         self.lfMotor.wpilib.Encoder(0, 0, False)
-        self.rbMotor.wpilib.Encoder(0, 0, False)
+        self.rbMotor.wpilib.Encoder(1, 1, False)
 
     def instantiateMotors(self):
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
@@ -148,7 +148,7 @@ class driveTrain():
                 self.zeroGyro()
                 self.firstRun = True
                 return False
-
+    '''
     def autonAngledTurn(self, turnAngle):#Angle is in degrees
         ROBOT_WIDTH = 24.3
 
@@ -157,7 +157,7 @@ class driveTrain():
 
     def getDistances(self, angle, radius):
            return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
-
+    '''
     def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed):
         if moveNumberPass == self.moveNumber:
             if commandNumber == 0:
