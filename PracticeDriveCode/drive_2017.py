@@ -1,6 +1,3 @@
-
-
-
 import wpilib
 import robotpy_ext
 from robotpy_ext.common_drivers.navx.ahrs import AHRS

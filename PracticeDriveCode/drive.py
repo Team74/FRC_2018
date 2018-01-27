@@ -19,7 +19,7 @@ class driveTrain():
         """Sets drive motors to a cantalon or victor"""
         self.instantiateMotors()
         self.instantiateEncoders()
-        self.setDistancePerPulse()
+        #self.setDistancePerPulse()
 
         self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
         self.shifterPosition = self.shifter.get()
@@ -36,8 +36,8 @@ class driveTrain():
         self.wheelCircumference = 18.84954
 
     def instantiateEncoders(self):
-        self.lfMotor.wpilib.Encoder(0, 0, False)
-        self.rbMotor.wpilib.Encoder(1, 1, False)
+        self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
+        self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
 
     def instantiateMotors(self):
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
@@ -115,6 +115,7 @@ class driveTrain():
     def setDistancePerPulse(self):
         self.lfMotor.setDistancePerPulse(256)
         self.rbMotor.setDistancePerPulse(256)
+
     def zeroGyro(self):
         self.gyro.reset()
 
@@ -122,9 +123,11 @@ class driveTrain():
         self.lfMotor.reset()
         self.rbMotor.reset()
 
-    def getEncoderPositition(self):
-        self.lfMotor.get()
-        self.rbMotor.get()
+    def printEncoderPositition(self):
+        lfEncoder = self.lfMotor.getQuadraturePosition()
+        rbEncoder = self.rbMotor.getQuadraturePosition()
+        print(lfEncoder)
+        print(rbEncoder)
 
     def autonPivot(self, turnAngle, turnSpeed):
         if self.firstRun:
