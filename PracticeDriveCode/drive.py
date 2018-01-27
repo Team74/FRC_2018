@@ -36,13 +36,14 @@ class driveTrain():
         self.wheelCircumference = 18.84954
 
     def instantiateEncoders(self):
-        self.lfMotor.wpilib.Encoder(0, 0, False)
-        self.rbMotor.wpilib.Encoder(0, 0, False)
+        #self.lfMotor.wpilib.Encoder(0, 0, False)
+        #self.rbMotor.wpilib.Encoder(0, 0, False)
+        pass
 
     def instantiateMotors(self):
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
-        self.lbMotor = ctre.victorspx.VictorSPX(11)
-        self.rfMotor = ctre.victorspx.VictorSPX(9)
+        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
+        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
 
         self.lfMotor.setNeutralMode(2)
@@ -50,17 +51,50 @@ class driveTrain():
         self.rfMotor.setNeutralMode(2)
         self.rbMotor.setNeutralMode(2)
 
-    def drivePass(self, leftY, rightY, leftX, leftBumper):
-        self.drive(leftY, rightY)
+    def drivePass(self, leftY, rightY, leftX, leftBumper, rightX, rightTrigger, leftTrigger):
+        #self.drive(leftY, rightY, rightTrigger, leftTrigger)
+        self.arcadeDrive(leftY, rightX)
         #self.shift(leftBumper)
 
-    def drive(self, leftY, rightY):
+    def drive(self, leftY, rightY, rightTrigger, leftTrigger):
         leftY = leftY*-1
-        self.lbMotor.set(0, leftY)
-        self.lfMotor.set(leftY)
-        self.rfMotor.set(0, rightY)
-        self.rbMotor.set(rightY)
+        if rightTrigger:#straight
+            self.lbMotor.set(leftY)
+            self.lfMotor.set(leftY)
+            self.rfMotor.set(leftY)
+            self.rbMotor.set(leftY)
+        elif leftTrigger:
+            self.lbMotor.set(leftY/2)
+            self.lfMotor.set(leftY/2)
+            self.rfMotor.set(rightY/2)
+            self.rbMotor.set(rightY/2)
+        else:
+            self.lbMotor.set(leftY)
+            self.lfMotor.set(leftY)
+            self.rfMotor.set(rightY)
+            self.rbMotor.set(rightY)
 
+    def arcadeDrive(self, leftY, rightX):
+        #leftY=leftY*-1
+
+        if rightX>0.3:
+            self.lbMotor.set(leftY*-rightX)
+            self.lfMotor.set(leftY*-rightX)
+            self.rfMotor.set(leftY*-rightX)
+            self.rbMotor.set(leftY*-rightX)
+        elif rightX<-0.3:
+            self.lbMotor.set(leftY*rightX)
+            self.lfMotor.set(leftY*rightX)
+            self.rfMotor.set(leftY*-rightX)
+            self.rbMotor.set(leftY*-rightX)
+        else:
+            self.lbMotor.set(leftY*-1)
+            self.lfMotor.set(leftY*-1)
+            self.rfMotor.set(leftY)
+            self.rbMotor.set(leftY)
+
+    def arcadeDrive2(self):
+        leftY=leftY*-1
 
     def shift(self, leftBumper):
         self.shifterPosition = self.shifter.get()
@@ -113,8 +147,9 @@ class driveTrain():
     	return self.gyro.getAngle()
 
     def setDistancePerPulse(self):
-        self.lfMotor.setDistancePerPulse(256)
-        self.rbMotor.setDistancePerPulse(256)
+        #self.lfMotor.setDistancePerPulse(256)
+        pass
+        #self.rbMotor.setDistancePerPulse(256)
     def zeroGyro(self):
         self.gyro.reset()
 
