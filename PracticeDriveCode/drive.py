@@ -9,6 +9,7 @@ import wpilib
 import robotpy_ext
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from wpilib.drive import DifferentialDrive
+from wpilib import RobotDrive
 import ctre
 
 class driveTrain():
@@ -20,6 +21,7 @@ class driveTrain():
         self.instantiateMotors()
         self.instantiateEncoders()
         self.setDistancePerPulse()
+        self.driveBase = arcadeDrive()
 
         self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
         self.shifterPosition = self.shifter.get()
@@ -75,23 +77,8 @@ class driveTrain():
             self.rbMotor.set(rightY)
 
     def arcadeDrive(self, leftY, rightX):
-        #leftY=leftY*-1
-
-        if rightX>0.3:
-            self.lbMotor.set(leftY*-rightX)
-            self.lfMotor.set(leftY*-rightX)
-            self.rfMotor.set(leftY*-rightX)
-            self.rbMotor.set(leftY*-rightX)
-        elif rightX<-0.3:
-            self.lbMotor.set(leftY*rightX)
-            self.lfMotor.set(leftY*rightX)
-            self.rfMotor.set(leftY*-rightX)
-            self.rbMotor.set(leftY*-rightX)
-        else:
-            self.lbMotor.set(leftY*-1)
-            self.lfMotor.set(leftY*-1)
-            self.rfMotor.set(leftY)
-            self.rbMotor.set(leftY)
+        self.driveBase.arcadeDrive(leftY, rightX)
+        self.driveBase.drive(leftY, rightY)
 
     def arcadeDrive2(self):
         leftY=leftY*-1
