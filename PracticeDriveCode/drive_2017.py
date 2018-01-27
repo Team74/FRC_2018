@@ -38,3 +38,29 @@ class driveTrain2017(driveTrain):
         self.lfMotor.set(leftY)
         self.rfMotor.set(rightY)
         self.rbMotor.set(rightY)
+
+        def autonPivot(self, turnAngle, turnSpeed):
+            if self.firstRun:
+                self.zeroGyro()
+                self.firstRun = False
+            if turnAngle < 0:
+                if self.getGyroAngle() > turnAngle:
+                    self.drive(-turnSpeed, -turnSpeed)
+                    return True
+                else:
+                    self.drive(0,0)
+                    self.firstRun = True
+                    self.zeroGyro()
+                    return False
+            elif turnAngle > 0:
+                if self.getGyroAngle() < turnAngle:
+                    self.drive(turnSpeed, turnSpeed)
+                    return True
+                else:
+                    self.lfMotor.set(0)
+                    self.lbMotor.set(0)
+                    self.rfMotor.set(0)
+                    self.rbMotor.set(0)
+                    self.zeroGyro()
+                    self.firstRun = True
+                    return False

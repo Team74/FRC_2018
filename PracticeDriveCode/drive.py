@@ -21,8 +21,8 @@ class driveTrain():
         self.instantiateEncoders()
         self.setDistancePerPulse()
 
-        #self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
-        #self.shifterPosition = self.shifter.get()
+        self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
+        self.shifterPosition = self.shifter.get()
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
@@ -60,7 +60,7 @@ class driveTrain():
         self.lfMotor.set(leftY)
         self.rfMotor.set(0, rightY)
         self.rbMotor.set(rightY)
-    '''
+
 
     def shift(self, leftBumper):
         self.shifterPosition = self.shifter.get()
@@ -71,7 +71,7 @@ class driveTrain():
                 self.shifter.set(True)
             else:
                 pass
-    '''
+
     def autonDriveStraight(self, speed, distance):
         #print('entered auton straight')
         lfSpeed = speed
@@ -152,11 +152,11 @@ class driveTrain():
     def autonAngledTurn(self, turnAngle):#Angle is in degrees
         ROBOT_WIDTH = 24.3
 
-        def getSpeeds(self, angle, radius, speed=1):
-            return [speed, speed*(lambda x: x[1]/x[0])(getDistances(angle, radius))]
+    def getSpeeds(self, angle, radius, speed=1):
+        return [speed, speed*(lambda x: x[1]/x[0])(getDistances(angle, radius))]
 
-        def getDistances(self, angle, radius):
-	           return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
+    def getDistances(self, angle, radius):
+           return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
 
     def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed):
         if moveNumberPass == self.moveNumber:
