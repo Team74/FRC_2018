@@ -42,7 +42,8 @@ class MyRobot(wpilib.IterativeRobot):
         self.rbMotor.setNeutralMode(2)
 
 
-
+        self.controllerOne = XboxController(0)
+        self.controllerTwo = XboxController(1)
         self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
         self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
         self.dashTimer.start()
@@ -115,7 +116,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def teleopPeriodic(self):
         #print("Gyro Angle", self.drive.getGyroAngle())
-        self.drive.arcadeDrive(controllerOne.getLeftY, controllerOne.getRightX())
+        self.drive.arcadeDrive(self.controllerOne.getLeftY(), self.controllerOne.getRightX())
         #self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightX(), self.controllerOne.getRightTrigger(), self.controllerOne.getLeftTrigger())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
 if __name__ == "__main__":
