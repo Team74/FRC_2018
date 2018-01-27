@@ -20,10 +20,25 @@ class driveTrain():
         """Sets drive motors to a cantalon or victor"""
         self.instantiateMotors()
         self.instantiateEncoders()
-        self.driveBase = arcadeDrive()
+        #self.driveBase = arcadeDrive()
 
         self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
         self.shifterPosition = self.shifter.get()
+
+        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
+        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
+        self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
+
+        self.left=wpilib.SpeedControllerGroup(self.lfMotor, self.lbMotor)
+        self.right=wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
+        self.drive = DifferentialDrive(self.left, self.right)
+
+        self.lfMotor.setNeutralMode(2)
+        self.lbMotor.setNeutralMode(2)
+        self.rfMotor.setNeutralMode(2)
+        self.rbMotor.setNeutralMode(2)
+
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
@@ -75,11 +90,7 @@ class driveTrain():
             self.rbMotor.set(rightY)
 
     def arcadeDrive(self, leftY, rightX):
-        self.driveBase.arcadeDrive(leftY, rightX)
-        self.driveBase.drive(leftY, rightY)
-
-    def arcadeDrive2(self):
-        leftY=leftY*-1
+        self.drive.arcadeDrive(leftY, rightX)
 
     def shift(self, leftBumper):
         self.shifterPosition = self.shifter.get()

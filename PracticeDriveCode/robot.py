@@ -27,19 +27,7 @@ from wpilib.smartdashboard import SmartDashboard
 class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
-        #self.drive = driveTrain(self)
-        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
-        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
-        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
-        self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
-        self.left=wpilib.SpeedControllerGroup(self.lfMotor, self.lbMotor)
-        self.right=wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
-        self.drive = DifferentialDrive(self.left, self.right)
-
-        self.lfMotor.setNeutralMode(2)
-        self.lbMotor.setNeutralMode(2)
-        self.rfMotor.setNeutralMode(2)
-        self.rbMotor.setNeutralMode(2)
+        self.drive = driveTrain(self)
 
 
         self.controllerOne = XboxController(0)
