@@ -20,6 +20,7 @@ class driveTrain():
         """Sets drive motors to a cantalon or victor"""
         self.instantiateMotors()
         self.instantiateEncoders()
+        self.encoderReset()
         #self.driveBase = arcadeDrive()
 
         self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
@@ -54,6 +55,8 @@ class driveTrain():
     def instantiateEncoders(self):
         self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
+
+        self.rbMotor.setSensorPhase(True)
 
     def instantiateMotors(self):
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
@@ -90,7 +93,7 @@ class driveTrain():
             self.rbMotor.set(rightY)
 
     def arcadeDrive(self, leftY, rightX):
-        self.drive.arcadeDrive(leftY, rightX)
+        self.drive.arcadeDrive(-leftY, rightX)
 
     def shift(self, leftBumper):
         self.shifterPosition = self.shifter.get()
@@ -106,20 +109,20 @@ class driveTrain():
         #print('entered auton straight')
         lfSpeed = speed
         rbSpeed = speed
-        encoderDistance = (distance / self.wheelCircumference * 4096)
+        encoderDistance = (distance / self.wheelCircumference * 256)
         #print(encoderDistance)
 
         if self.firstTime:
             print('passed first check')
             self.encoderReset()
 
-            self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
+            self.lfEncoderPosition = self.lfMotor.getQuadraturePosition()
 
             print('Encoder Reset')
             self.firstTime = False
 
-        self.lfEncoderPosition = self.lfMotor.getSelectedSensorPosition(0)
-        self.rbEncoderPosition = self.rbMotor.getSelectedSensorPosition(0)
+        self.lfEncoderPosition = self.lfMotor.getQuadraturePosition()
+        self.rbEncoderPosition = self.rbMotor.getQuadraturePosition()
         print(self.lfEncoderPosition)
         if self.lfEncoderPosition > 250 and not self.resetFinish:
             print(self.lfEncoderPosition)
@@ -150,8 +153,8 @@ class driveTrain():
         self.gyro.reset()
 
     def encoderReset(self):
-        self.lfMotor.reset()
-        self.rbMotor.reset()
+        self.lfMotor.setQuadraturePosition(0, 0)
+        self.rbMotor.setQuadraturePosition(0, 0)
 
     def printEncoderPositition(self):
         lfEncoder = self.lfMotor.getQuadraturePosition()
