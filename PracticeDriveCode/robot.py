@@ -103,7 +103,7 @@ class MyRobot(wpilib.IterativeRobot):
         #self.AutonHandling.readCommandList(None, "square")
 
     def teleopPeriodic(self):
-        self.drive.printEncoderPosition()
+        #self.drive.printEncoderPosition()
         #print("Gyro Angle", self.drive.getGyroAngle())
         self.drive.arcadeDrive(self.controllerOne.getLeftY(), self.controllerOne.getRightX())
         #self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightX(), self.controllerOne.getRightTrigger(), self.controllerOne.getLeftTrigger())
