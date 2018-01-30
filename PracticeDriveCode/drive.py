@@ -56,7 +56,7 @@ class driveTrain():
         self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
 
-        self.rbMotor.setSensorPhase(True)
+        self.lfMotor.setSensorPhase(True)
 
     def instantiateMotors(self):
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
@@ -74,23 +74,12 @@ class driveTrain():
         self.arcadeDrive(leftY, rightX)
         #self.shift(leftBumper)
 
-    def drive(self, leftY, rightY, rightTrigger, leftTrigger):
+    def tankDrive(self, leftY, rightY):
         leftY = leftY*-1
-        if rightTrigger:#straight
-            self.lbMotor.set(leftY)
-            self.lfMotor.set(leftY)
-            self.rfMotor.set(leftY)
-            self.rbMotor.set(leftY)
-        elif leftTrigger:
-            self.lbMotor.set(leftY/2)
-            self.lfMotor.set(leftY/2)
-            self.rfMotor.set(rightY/2)
-            self.rbMotor.set(rightY/2)
-        else:
-            self.lbMotor.set(leftY)
-            self.lfMotor.set(leftY)
-            self.rfMotor.set(rightY)
-            self.rbMotor.set(rightY)
+        self.lbMotor.set(leftY)
+        self.lfMotor.set(leftY)
+        self.rfMotor.set(rightY)
+        self.rbMotor.set(rightY)
 
     def arcadeDrive(self, leftY, rightX):
         self.drive.arcadeDrive(-leftY, rightX)
@@ -107,21 +96,19 @@ class driveTrain():
 
     def autonDriveStraight(self, speed, distance):
         #print('entered auton straight')
-        lfSpeed = speed
-        rbSpeed = speed
-        encoderDistance = (distance / self.wheelCircumference * 256)
+        lSpeed = speed
+        rSpeed = speed
+        encoderDistance = (distance / self.wheelCircumference * 256)#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
         #print(encoderDistance)
 
-        if self.firstTime:
-            print('passed first check')
-            self.encoderReset()
-
-            self.lfEncoderPosition = self.lfMotor.getQuadraturePosition()
-
-            print('Encoder Reset')
+        if self.firstTime:#Checks for first time through the function to only reset encoders on the first time
+            #print('passed first check')#Debugging
+            #print('Encoder Reset')#Debugging
+            self.encoderReset()#Resets encoders
+            #self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition())#Debugging
             self.firstTime = False
 
-        self.lfEncoderPosition = self.lfMotor.getQuadraturePosition()
+        self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition())
         self.rbEncoderPosition = self.rbMotor.getQuadraturePosition()
         print(self.lfEncoderPosition)
         if self.lfEncoderPosition > 250 and not self.resetFinish:
@@ -132,7 +119,7 @@ class driveTrain():
             self.resetFinish = True
 
         if self.lfEncoderPosition < encoderDistance:
-            self.drive(-lfSpeed, -rbSpeed)
+            self.tankDrive(-(lSpeed), -(rSpeed))
             return True
         else:
             print('EndLoop')
@@ -145,10 +132,6 @@ class driveTrain():
     def getGyroAngle(self):
     	return self.gyro.getAngle()
 
-    def setDistancePerPulse(self):
-        #self.lfMotor.setDistancePerPulse(256)
-        #self.rbMotor.setDistancePerPulse(256)
-        pass
     def zeroGyro(self):
         self.gyro.reset()
 
@@ -156,8 +139,8 @@ class driveTrain():
         self.lfMotor.setQuadraturePosition(0, 0)
         self.rbMotor.setQuadraturePosition(0, 0)
 
-    def printEncoderPositition(self):
-        lfEncoder = self.lfMotor.getQuadraturePosition()
+    def printEncoderPosition(self):
+        lfEncoder = -(self.lfMotor.getQuadraturePosition())
         rbEncoder = self.rbMotor.getQuadraturePosition()
         print(lfEncoder)
         print(rbEncoder)
@@ -168,7 +151,7 @@ class driveTrain():
             self.firstRun = False
         if turnAngle < 0:
             if self.getGyroAngle() > turnAngle:
-                self.drive((turnSpeed), -(turnSpeed))
+                self.tankDrive((turnSpeed), -(turnSpeed))
                 return True
             else:
                 self.drive(0,0)
@@ -177,7 +160,7 @@ class driveTrain():
                 return False
         elif turnAngle > 0:
             if self.getGyroAngle() < turnAngle:
-                self.drive(-(turnSpeed), (turnSpeed))
+                self.tankDrive(-(turnSpeed), (turnSpeed))
                 return True
             else:
                 self.drive(0, 0)
