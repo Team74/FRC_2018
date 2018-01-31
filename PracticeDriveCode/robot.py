@@ -16,6 +16,8 @@ from autonTwoCubeScale import *
 from autonNearScale import *
 from autonDrive import *
 import ctre
+from robotpy_ext.common_drivers.navx.ahrs import AHRS
+
 #import AutonHandling
 #import AutonInterpreter
 #from operatorFunctions import operatorControl
@@ -28,7 +30,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
         self.drive = driveTrain(self)
-
+        self.gyro = AHRS.create_spi()
 
         self.controllerOne = XboxController(0)
         self.controllerTwo = XboxController(1)
@@ -39,6 +41,8 @@ class MyRobot(wpilib.IterativeRobot):
         #self.autonomous_modes = AutonomousModeSelector('autonomous', self.components)
 
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
+
+
         positionChooser = wpilib.SendableChooser()
         positionChooser.addDefault('Position Chooser', '1')
         positionChooser.addObject('Left', '2')
@@ -50,7 +54,7 @@ class MyRobot(wpilib.IterativeRobot):
         switchLscaleL.addObject('Scale', '2')
         switchLscaleL.addObject('Switch', '3')
         switchLscaleL.addObject('PrepScaleScore', '4')
-        switchLscaleL.addDefault('Drive', '5')##Create Default for all sendable Choosers
+        switchLscaleL.addDefault('Drive', '5')##Default for all sendable Choosers
 
         switchRscaleR = wpilib.SendableChooser()
         switchRscaleR.addDefault('Switch and Scale RIGHT', '1')
@@ -105,6 +109,8 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         #self.drive.printEncoderPosition()
         #print("Gyro Angle", self.drive.getGyroAngle())
+        wpilib.SmartDashboard.putNumber('Gyro Angle', self.gyro.getAngle())
+
         self.drive.arcadeDrive(self.controllerOne.getLeftY(), self.controllerOne.getRightX())
         #self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightX(), self.controllerOne.getRightTrigger(), self.controllerOne.getLeftTrigger())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
