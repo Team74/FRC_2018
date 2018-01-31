@@ -24,8 +24,8 @@ class driveTrain():
         self.encoderReset()
         #self.driveBase = arcadeDrive()
 
-        self.shifter = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
-        self.shifterPosition = self.shifter.get()
+        self.shifterOne = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
+        self.shifterTwo = wpilib.Solenoid(1)#Initilizes the shifter's solenoid and sets it to read fron digital output 1
 
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
         self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
@@ -71,8 +71,8 @@ class driveTrain():
         self.rbMotor.setNeutralMode(2)
 
     def drivePass(self, leftY, rightY, leftX, leftBumper, rightX, rightTrigger, leftTrigger):
-        #self.drive(leftY, rightY, rightTrigger, leftTrigger)
-        #self.shift(leftBumper)
+        self.arcadeDrive(leftY, rightY)
+        self.shift(leftBumper)
         pass
 
     def scaleInputs(self, leftY, rightX):
@@ -101,12 +101,17 @@ class driveTrain():
         #self.drive.arcadeDrive(leftY, rightX)
 
     def shift(self, leftBumper):
-        self.shifterPosition = self.shifter.get()
         if leftBumper:#When left bumper is pressed we shift gears
-            if self.shifter.get():#Checks to see what gear we are in and shifts accordingly
-                self.shifter.set(False)
-            elif self.shifter.get() == False:
-                self.shifter.set(True)
+            if self.shifterOne.get():#Checks to see what gear we are in and shifts accordingly
+                self.shifterOne.set(False)
+            elif self.shifterOne.get() == False:
+                self.shifterOne.set(True)
+            else:
+                pass
+            if self.shifterTwo.get():#Checks to see what gear we are in and shifts accordingly
+                self.shifterTwo.set(False)
+            elif self.shifterTwo.get() == False:
+                self.shifterTwo.set(True)
             else:
                 pass
 

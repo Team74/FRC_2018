@@ -21,7 +21,7 @@ class interprater(self):
         elif autonCommandNumber == 4:
             self.auton = self.autonTwoCubeScale(side, switchPosition, scalePosition, drive)
         else:
-            self.auton = self.autonDrive(side, switchPosition, scalePosition, drive)er
+            self.auton = self.autonDrive(side, switchPosition, scalePosition, drive)
     def interprate(self):
         drive = self.driveTrain
         side = self.getData(positionChooser)

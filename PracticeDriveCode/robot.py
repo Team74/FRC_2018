@@ -94,6 +94,7 @@ class MyRobot(wpilib.IterativeRobot):
 
         print(self.gameData)
         self.drive.zeroGyro()
+        self.interprater.interprate(self)
 
         #self.auton = autonNearSwitch('left', 'left', 'left', self.drive)
         self.auton = autonCenterEitherSwitch('left', 'left', 'left', self.drive)
@@ -111,8 +112,7 @@ class MyRobot(wpilib.IterativeRobot):
         #print("Gyro Angle", self.drive.getGyroAngle())
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.gyro.getAngle())
 
-        self.drive.arcadeDrive(self.controllerOne.getLeftY(), self.controllerOne.getRightX())
-        #self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightX(), self.controllerOne.getRightTrigger(), self.controllerOne.getLeftTrigger())
+        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightX(), self.controllerOne.getRightTrigger(), self.controllerOne.getLeftTrigger())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
 if __name__ == "__main__":
     wpilib.run(MyRobot)
