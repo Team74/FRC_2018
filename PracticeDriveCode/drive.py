@@ -78,8 +78,8 @@ class driveTrain():
     def scaleInputs(self, leftY, rightX):
 
         if leftY < .05:
-            return .5 * rightX
-        rightX = (-(math.log10((5*(abs(leftY)))+1.5)-1)*rightX)
+            return .75 * rightX
+        rightX = (-(math.log10((2*(abs(leftY)))+1)-1)*rightX)
         return rightX
         '''
         if abs(rightX) < .05:
