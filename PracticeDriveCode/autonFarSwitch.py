@@ -4,7 +4,7 @@ from autonBaseInit import *
 
 class autonFarSwitch(autonBaseInit):
     def run(self):
-        if self.side == 'left' and self.position == 'right':
+        if self.side == 'L' and self.switchPosition == 'R':
             if self.drive.autonMove(1, 0, .5, 60, 0, 0):
                 pass
             elif self.drive.autonMove(2, 1, 0, 0, 90, .5):
@@ -19,7 +19,7 @@ class autonFarSwitch(autonBaseInit):
                 pass
             elif self.drive.autonMove(7, 2, 0, 0, 0, 0):
                 pass
-        elif self.side == 'right' and self.position == 'left':
+        elif self.side == 'R' and self.switchPosition == 'L':
             if self.drive.autonMove(1, 0, .5, 60, 0, 0):
                 pass
             elif self.drive.autonMove(2, 1, 0, 0, -90, .5):

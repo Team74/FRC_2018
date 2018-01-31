@@ -1,0 +1,9 @@
+left: 0 - 1
+turning: 20% at full forward
+turning: 50% turn at 50%
+right = 1
+
+1/5
+0.5/1
+
+turning speed = (right*5) / (left*5)

@@ -4,7 +4,7 @@ from autonBaseInit import *
 
 class autonNearScale(autonBaseInit):
     def run(self):
-        if self.position == 'left' and self.side == 'left':
+        if self.position == 'L' and self.side == 'L':
             if self.drive.autonMove(1, 0, .5, 180, 0, 0):
                 pass
             #elif self.drive.autonMove(2, 2, 0, 0, 0, 0):
@@ -15,7 +15,7 @@ class autonNearScale(autonBaseInit):
                 pass
             elif self.drive.autonMove(4, 2, 0, 0, 0, 0):
                 pass
-        elif self.position == 'right' and self.side == 'right':
+        elif self.position == 'R' and self.side == 'R':
             if self.drive.autonMove(1, 0, .5, 180, 0, 0):
                 pass
             #elif self.drive.autonMove(2, 2, 0, 0, 0, 0):

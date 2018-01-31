@@ -4,7 +4,7 @@ from autonBaseInit import *
 
 class autonSideSwitch(autonBaseInit):
     def run(self):
-        if self.side == 'left':
+        if self.side == 'L' and switchPosition == 'L':
             if self.drive.autonMove(1, 0, .5, 60, 0, 0):
                 pass
             elif self.drive.autonMove(2, 1, 0, 0, 90, .5):
@@ -14,7 +14,7 @@ class autonSideSwitch(autonBaseInit):
             elif self.drive.autonMove(4, 2, 0, 0, 0, 0):
                 pass
 
-        elif self.side == 'right':
+        elif self.side == 'R' and self.switchPosition == 'R':
                 if self.drive.autonMove(1, 0, .5, 60, 0, 0):
                     pass
                 elif self.drive.autonMove(2, 1, 0, 0, -90, .5):

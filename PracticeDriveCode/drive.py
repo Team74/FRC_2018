@@ -11,6 +11,7 @@ from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from wpilib.drive import DifferentialDrive
 from wpilib import RobotDrive
 import ctre
+import math
 
 class driveTrain():
 
@@ -71,9 +72,21 @@ class driveTrain():
 
     def drivePass(self, leftY, rightY, leftX, leftBumper, rightX, rightTrigger, leftTrigger):
         #self.drive(leftY, rightY, rightTrigger, leftTrigger)
-        self.arcadeDrive(leftY, rightX)
         #self.shift(leftBumper)
+        pass
 
+    def scaleInputs(self, leftY, rightX):
+
+        if leftY < .05:
+            return .5 * rightX
+        rightX = (-(math.log10((5*(abs(leftY)))+1.5)-1)*rightX)
+        return rightX
+        '''
+        if abs(rightX) < .05:
+            return leftY
+        leftY = (-(math.log10((3*(abs(rightX)))+1.5))*leftY)
+        return leftY
+        '''
     def tankDrive(self, leftY, rightY):
         leftY = leftY*-1
         self.lbMotor.set(leftY)
@@ -82,7 +95,10 @@ class driveTrain():
         self.rbMotor.set(rightY)
 
     def arcadeDrive(self, leftY, rightX):
-        self.drive.arcadeDrive(-leftY, rightX)
+        self.drive.arcadeDrive(-leftY, self.scaleInputs(leftY, rightX))
+        #print((-1 * self.scaleInputs(leftY, rightX)))
+        #self.drive.arcadeDrive((-1 * self.scaleInputs(leftY, rightX)), (rightX/2))
+        #self.drive.arcadeDrive(leftY, rightX)
 
     def shift(self, leftBumper):
         self.shifterPosition = self.shifter.get()
