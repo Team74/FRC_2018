@@ -88,6 +88,7 @@ class MyRobot(wpilib.IterativeRobot):
 
         self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
         self.dashTimer.start()
+        self.drive.encoderReset()
     def autonomousInit(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
 
