@@ -11,17 +11,17 @@ class interprater(self):
         #autonCommandNumber key, 0 = drive, 1 =  autonNearScale, 2 = autonNearSwitch, 3 = autonCenterEitherSwitch, 4 = autonTwoCubeScale
         drive = self.driveTrain
         if autonCommandNumber == 0:
-            self.auton = self.autonDrive(side, switchPosition, scalePosition, drive)
+            return self.autonDrive(side, switchPosition, scalePosition, drive)
         elif autonCommandNumber == 1:
-            self.auton = self.autonNearScale(side, switchPosition, scalePosition, drive)
+            return self.autonNearScale(side, switchPosition, scalePosition, drive)
         elif autonCommandNumber == 2:
-            self.auton = self.autonNearSwitch(side, switchPosition, scalePosition, drive)
+            return self.autonNearSwitch(side, switchPosition, scalePosition, drive)
         elif autonCommandNumber == 3:
-            self.auton = self.autonCenterEitherSwitch(side, switchPosition, scalePosition, drive)
+            return self.autonCenterEitherSwitch(side, switchPosition, scalePosition, drive)
         elif autonCommandNumber == 4:
-            self.auton = self.autonTwoCubeScale(side, switchPosition, scalePosition, drive)
+            return self.autonTwoCubeScale(side, switchPosition, scalePosition, drive)
         else:
-            self.auton = self.autonDrive(side, switchPosition, scalePosition, drive)
+            return self.autonDrive(side, switchPosition, scalePosition, drive)
     def interprate(self):
         drive = self.driveTrain
         side = self.getData(positionChooser)

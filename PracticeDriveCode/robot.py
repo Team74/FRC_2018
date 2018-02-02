@@ -12,6 +12,7 @@ from drive import driveTrain
 from drive_2017 import driveTrain2017
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
+from autonFarSwitch import *
 from autonTwoCubeScale import *
 from autonNearScale import *
 from autonDrive import *
@@ -30,7 +31,6 @@ class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
         self.drive = driveTrain(self)
-        self.gyro = AHRS.create_spi()
 
         self.controllerOne = XboxController(0)
         self.controllerTwo = XboxController(1)
@@ -88,31 +88,42 @@ class MyRobot(wpilib.IterativeRobot):
 
         self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
         self.dashTimer.start()
-
     def autonomousInit(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
 
         print(self.gameData)
+        self.autonCounter = 0
         self.drive.zeroGyro()
-        self.interprater.interprate(self)
+        self.drive.resetMoveNumber()
+        self.drive.autonShift('low')
+        print('reset moveNumber')
+        #self.interprater.interprate(self)
 
-        #self.auton = autonNearSwitch('left', 'left', 'left', self.drive)
-        self.auton = autonCenterEitherSwitch('left', 'left', 'left', self.drive)
-        #self.auton = autonTwoCubeScale('left', 'left', 'left', self.drive)
-        #self.auton = autonNearScale('left', 'left', 'left', self.drive)
-
+        #self.auton = autonNearSwitch('left', 'L', 'L', self.drive)
+        #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
+        #self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
+        #self.auton = autonCenterEitherSwitch('center', 'R', 'R', self.drive)
+        #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
+        #self.auton = autonNearScale('left', 'L', 'L', self.drive)
+        self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
-
-        self.auton.run()
+        #self.drive.printEncoderPosition()#Prints the position of the encoders
+        #print(self.drive.getGyroAngle())
+        if self.autonCounter >= 5:
+            self.auton.run()
+        else:
+            self.autonCounter = self.autonCounter + 1
         #self.AutonHandling.readCommandList(None, "square")
 
     def teleopPeriodic(self):
+        lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
+        rfEncoderPosition = self.drive.rbMotor.getQuadraturePosition()
         #self.drive.printEncoderPosition()
-        #print("Gyro Angle", self.drive.getGyroAngle())
-        wpilib.SmartDashboard.putNumber('Gyro Angle', self.gyro.getAngle())
-
-        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightX(), self.controllerOne.getRightTrigger(), self.controllerOne.getLeftTrigger())
+        #print(self.drive.getGyroAngle())
+        wpilib.SmartDashboard.putNumber('Left Encoder Position', lfEncoderPosition)
+        wpilib.SmartDashboard.putNumber('Right Encoder Position', rfEncoderPosition)
+        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
 if __name__ == "__main__":
     wpilib.run(MyRobot)

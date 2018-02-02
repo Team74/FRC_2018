@@ -24,8 +24,7 @@ class driveTrain():
         self.encoderReset()
         #self.driveBase = arcadeDrive()
 
-        self.shifterOne = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
-        self.shifterTwo = wpilib.Solenoid(1)#Initilizes the shifter's solenoid and sets it to read fron digital output 1
+        self.shifter = wpilib.DoubleSolenoid(51, 0, 1)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
 
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
         self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
@@ -70,9 +69,10 @@ class driveTrain():
         self.rfMotor.setNeutralMode(2)
         self.rbMotor.setNeutralMode(2)
 
-    def drivePass(self, leftY, rightY, leftX, leftBumper, rightX, rightTrigger, leftTrigger):
-        self.arcadeDrive(leftY, rightY)
-        self.shift(leftBumper)
+    def drivePass(self, leftY, rightX, leftBumper, rightBumper, aButton):
+        self.arcadeDrive(leftY, rightX)
+        self.shift(leftBumper, rightBumper)
+        self.manualEncoderReset(aButton)
         pass
 
     def scaleInputs(self, leftY, rightX):
@@ -89,66 +89,24 @@ class driveTrain():
         '''
     def tankDrive(self, leftY, rightY):
         leftY = leftY*-1
-        self.lbMotor.set(leftY)
-        self.lfMotor.set(leftY)
-        self.rfMotor.set(rightY)
-        self.rbMotor.set(rightY)
+        self.lbMotor.set(leftY * .82)
+        self.lfMotor.set(leftY * .82)
+        self.rfMotor.set(rightY * .82)
+        self.rbMotor.set(rightY * .82)
 
     def arcadeDrive(self, leftY, rightX):
-        self.drive.arcadeDrive(-leftY, self.scaleInputs(leftY, rightX))
+        self.drive.arcadeDrive(leftY * -.82, self.scaleInputs(leftY, rightX) * .82)
         #print((-1 * self.scaleInputs(leftY, rightX)))
         #self.drive.arcadeDrive((-1 * self.scaleInputs(leftY, rightX)), (rightX/2))
         #self.drive.arcadeDrive(leftY, rightX)
 
-    def shift(self, leftBumper):
+    def shift(self, leftBumper, rightBumper):
         if leftBumper:#When left bumper is pressed we shift gears
-            if self.shifterOne.get():#Checks to see what gear we are in and shifts accordingly
-                self.shifterOne.set(False)
-            elif self.shifterOne.get() == False:
-                self.shifterOne.set(True)
-            else:
-                pass
-            if self.shifterTwo.get():#Checks to see what gear we are in and shifts accordingly
-                self.shifterTwo.set(False)
-            elif self.shifterTwo.get() == False:
-                self.shifterTwo.set(True)
-            else:
-                pass
-
-    def autonDriveStraight(self, speed, distance):
-        #print('entered auton straight')
-        lSpeed = speed
-        rSpeed = speed
-        encoderDistance = (distance / self.wheelCircumference * 256)#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
-        #print(encoderDistance)
-
-        if self.firstTime:#Checks for first time through the function to only reset encoders on the first time
-            #print('passed first check')#Debugging
-            #print('Encoder Reset')#Debugging
-            self.encoderReset()#Resets encoders
-            #self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition())#Debugging
-            self.firstTime = False
-
-        self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition())
-        self.rbEncoderPosition = self.rbMotor.getQuadraturePosition()
-        print(self.lfEncoderPosition)
-        if self.lfEncoderPosition > 250 and not self.resetFinish:
-            print(self.lfEncoderPosition)
-            return True
-        else:
-            #print('Encoder Reset Finished')
-            self.resetFinish = True
-
-        if self.lfEncoderPosition < encoderDistance:
-            self.tankDrive(-(lSpeed), -(rSpeed))
-            return True
-        else:
-            print('EndLoop')
-            self.zeroGyro()
-            self.counterTime = 0
-            self.resetFinish = False
-            self.firstTime = True
-            return False
+            if self.shifter.get() == 1:#Checks to see what gear we are in and shifts accordingly
+                self.shifter.set(2)
+        if rightBumper:
+            if self.shifter.get() == 2 or self.shifter.get() == 0:
+                self.shifter.set(1)
 
     def getGyroAngle(self):
     	return self.gyro.getAngle()
@@ -163,19 +121,43 @@ class driveTrain():
     def printEncoderPosition(self):
         lfEncoder = -(self.lfMotor.getQuadraturePosition())
         rbEncoder = self.rbMotor.getQuadraturePosition()
-        print(lfEncoder)
-        print(rbEncoder)
+        averageEncoders = (lfEncoder + rbEncoder) / 2
+        print(averageEncoders)
+        #print(rbEncoder)
+
+    def manualEncoderReset(self, aButton):
+        if aButton:
+            self.lfMotor.setQuadraturePosition(0, 0)
+            self.rbMotor.setQuadraturePosition(0, 0)
+        else:
+            pass
+            
+    def autonShift(self, gear):
+        if gear == 'low':
+            if self.shifter.get() == 1 or self.shifter.get() == 0:
+                self.shifter.set(2)
+                print('Shift to low')
+                #return False
+        elif gear == 'high':
+            if self.shifter.get() == 2 or self.shifter.get() == 0:
+                self.shifter.set(1)
+                print('Shift to high')
+                #return False
+        else:
+            pass
 
     def autonPivot(self, turnAngle, turnSpeed):
         if self.firstRun:
             self.zeroGyro()
             self.firstRun = False
+        if abs(turnAngle) > abs(self.getGyroAngle()) - 5:
+            turnSpeed = slowDownSpeed
         if turnAngle < 0:
             if self.getGyroAngle() > turnAngle:
                 self.tankDrive((turnSpeed), -(turnSpeed))
                 return True
             else:
-                self.drive(0,0)
+                self.tankDrive(0,0)
                 self.firstRun = True
                 self.zeroGyro()
                 return False
@@ -184,10 +166,69 @@ class driveTrain():
                 self.tankDrive(-(turnSpeed), (turnSpeed))
                 return True
             else:
-                self.drive(0, 0)
+                self.tankDrive(0, 0)
                 self.zeroGyro()
                 self.firstRun = True
                 return False
+
+    def autonDriveStraight(self, speed, distance):
+        #print('entered auton straight')
+        lSpeed = speed
+        rSpeed = speed
+        encoderDistance = (distance / self.wheelCircumference * (5775))#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
+        #print(encoderDistance)
+
+        if self.firstTime:#Checks for first time through the function to only reset encoders on the first time
+            #print('passed first check')#Debugging
+            self.encoderReset()#Resets encoders
+            #print('Encoder Reset')#Debugging
+            #self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition())#Debugging
+            self.autonCounter = 0
+            self.firstTime = False
+
+        self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition())
+        self.rbEncoderPosition = self.rbMotor.getQuadraturePosition()
+        averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
+        #print(self.lfEncoderPosition)
+        if averageEncoders > 250 and not self.resetFinish:
+            self.encoderReset()
+            self.printEncoderPosition()
+            return True
+        else:
+            if not self.resetFinish:
+                print(self.lfEncoderPosition)
+                print(self.rbEncoderPosition)
+            #print('Encoder Reset Finished')
+            self.resetFinish = True
+
+        if averageEncoders < encoderDistance and self.autonCounter == 0:
+            speedAdjustment = .05
+            slowDownSpeed = .25
+            if self.getGyroAngle() < -1:
+                rSpeed = rSpeed - speedAdjustment
+            elif self.getGyroAngle() > 1:
+                lSpeed = lSpeed - speedAdjustment
+            if averageEncoders > encoderDistance - 500:
+                lSpeed = slowDownSpeed
+                rSpeed = slowDownSpeed
+            self.tankDrive(-(lSpeed), -(rSpeed))
+            return True
+        else:
+            if self.autonCounter < 1:
+                #print('Drift correction')
+                self.tankDrive(.15, .15)
+                self.autonCounter = self.autonCounter + 1
+                return True
+            else:
+                #print('EndLoop')
+                self.zeroGyro()
+                self.resetFinish = False
+                self.firstTime = True
+                self.tankDrive(0, 0)
+                print(self.lfEncoderPosition)
+                print(self.rbEncoderPosition)
+                return False
+
     '''
     def autonAngledTurn(self, turnAngle):#Angle is in degrees
         ROBOT_WIDTH = 24.3
@@ -200,24 +241,41 @@ class driveTrain():
     '''
     def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed):
         if moveNumberPass == self.moveNumber:
+            #print(self.moveNumber)
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):
                     pass
                 else:
-                    print(self.getGyroAngle())
+                    #print(self.getGyroAngle())
                     print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
             elif commandNumber == 1:
                 if self.autonPivot(turnAngle, turnSpeed):
                     pass
                 else:
-                    print(self.getGyroAngle())
+                    #print(self.getGyroAngle())
                     print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
             elif commandNumber == 2:
                 if self.encoderReset():
+                    #print(' 1st pass')
                     pass
-            else:
+                else:
+                    print('Move ' + str(moveNumberPass) + ' Complete')
+                    self.moveNumber = moveNumberPass + 1
+            '''
+            elif commandNumber == 3:
+                if self.autonShifter():
+                    pass
+                else:
+                    print('Move ' + str(moveNumberPass) + ' Complete')
+                    self.moveNumber = moveNumberPass + 1            else:
+                #print('2nd pass')
                 pass
+            '''
         else:
+            #print('3rd pass')
             pass
+
+    def resetMoveNumber(self):
+        self.moveNumber = 1
