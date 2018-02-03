@@ -177,11 +177,11 @@ class driveTrain():
         #print('entered auton straight')
         lSpeed = speed
         rSpeed = speed
-        encoderDistance = (distance / self.wheelCircumference * (5887))#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
-        #print(encoderDistance)
+        encoderDistance = (distance / self.wheelCircumference) * 5887#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
+        print('Encoder Distance' + str(encoderDistance))
 
         if self.firstTime:#Checks for first time through the function to only reset encoders on the first time
-            #print('passed first check')#Debugging
+            print('passed first check')#Debugging
             #self.encoderReset()#Resets encoders
             self.oldPositionLeft =  -(self.lfMotor.getQuadraturePosition())
             self.oldPositionRight =  self.rbMotor.getQuadraturePosition()
@@ -190,7 +190,10 @@ class driveTrain():
 
         self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition()) - self.oldPositionLeft
         self.rbEncoderPosition = self.rbMotor.getQuadraturePosition() - self.oldPositionRight
+        print(self.lfEncoderPosition)
+        print(self.rbEncoderPosition)
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
+        print('Average Encodes' + str(averageEncoders))
         '''
         if averageEncoders > 250 and not self.resetFinish:
             #self.encoderReset()
@@ -213,11 +216,12 @@ class driveTrain():
             if averageEncoders > encoderDistance - 500:
                 lSpeed = slowDownSpeed
                 rSpeed = slowDownSpeed
+                print('Slowing Down')
             self.tankDrive(-(lSpeed), -(rSpeed))
             return True
         else:
             if self.autonCounter < 4:
-                #print('Drift correction')
+                print('Active Breaking')
                 self.tankDrive(.15, .15)
                 self.autonCounter = self.autonCounter + 1
                 return True
