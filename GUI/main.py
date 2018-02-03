@@ -1,5 +1,4 @@
 import kivy
-
 from kivy.app import App
 from kivy.graphics import *
 from kivy.uix.widget import Widget
@@ -16,16 +15,16 @@ from kivy.uix.spinner import Spinner
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
-from kivy.uix.filechooser import FileChooserListView
-from kivy.uix.filechooser import FileSystemAbstract
-
+from kivy.uix.filechooser import (FileChooserListView, FileSystemAbstract)
 
 from functools import partial
 
 import paramiko
+
 import os
 from os import listdir
 from os.path import (basename, getsize, isdir)
+
 import stat
 
 
@@ -172,7 +171,7 @@ class Node(Widget):
 
 #------------------------------------------------------------------------------------------
 
-class Connector(Widget):
+class Connector(Widget):    #class to represent the lines between widgets
     node = ObjectProperty(None)
 
     def __init__(self, **kwargs):
@@ -259,7 +258,7 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = FileChooserListView(path="/home/", size_hint_y=0.8)
+                filechooser = FileChooserListView(path="/home/svanderark/FRC_2018/GUI", size_hint_y=0.8)
             else:
                 filechooser = FileChooserListView(file_system=FileSystemOverSSH('10.111.49.27', 'svanderark', 'chaos'), size_hint_y=0.8, path="/rhome/svanderark/")
             blah.content.add_widget(filechooser)
@@ -282,8 +281,12 @@ class SideButtons(DragBehavior, BoxLayout):
                         if not self.local:
                             text = text.encode('utf-8')
                         f.write(text)
-                        for i in x.command_list:
-                            f.write(str("Comm> " + i + "\n").encode('utf-8'))
+                        if self.local:
+                            for i in x.command_list:
+                                f.write(str("Comm> " + i + "\n"))
+                        else:
+                            for i in x.command_list:
+                                f.write(str("Comm> " + i + "\n").encode('utf-8'))
                         x = x.next_node
                 blah.dismiss()
             button.bind(on_release=choose)
@@ -297,7 +300,7 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose input file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = FileChooserListView(path="/home/", size_hint_y=0.8)
+                filechooser = FileChooserListView(path="/home/svanderark/FRC_2018/GUI", size_hint_y=0.8)
             else:
                 filechooser = FileChooserListView(file_system=FileSystemOverSSH('10.111.49.27', 'svanderark', 'chaos'), size_hint_y=0.8, path="/rhome/svanderark/")
             blah.content.add_widget(filechooser)
@@ -518,7 +521,6 @@ class MyScreen(FloatLayout):
         def omg(_a=0,_b=0,_c=0,_d=0):
             self.parent.bind(size=self.aspect_ratio)
         self.bind(parent=omg)
-
 
 
     def aspect_ratio(self, _i=0, _j=0, _k=0):	#600*338
