@@ -21,7 +21,7 @@ class driveTrain():
         """Sets drive motors to a cantalon or victor"""
         self.instantiateMotors()
         self.instantiateEncoders()
-        self.encoderReset()
+        #self.encoderReset()
         #self.driveBase = arcadeDrive()
 
         self.shifter = wpilib.DoubleSolenoid(51, 0, 1)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
@@ -117,6 +117,7 @@ class driveTrain():
     def encoderReset(self):
         self.lfMotor.setQuadraturePosition(0, 0)
         self.rbMotor.setQuadraturePosition(0, 0)
+        print("Encoders Reset")
 
     def printEncoderPosition(self):
         lfEncoder = -(self.lfMotor.getQuadraturePosition())
@@ -131,7 +132,7 @@ class driveTrain():
             self.rbMotor.setQuadraturePosition(0, 0)
         else:
             pass
-            
+
     def autonShift(self, gear):
         if gear == 'low':
             if self.shifter.get() == 1 or self.shifter.get() == 0:
@@ -147,10 +148,11 @@ class driveTrain():
             pass
 
     def autonPivot(self, turnAngle, turnSpeed):
+        slowDownSpeed = .08
         if self.firstRun:
             self.zeroGyro()
             self.firstRun = False
-        if abs(turnAngle) > abs(self.getGyroAngle()) - 5:
+        if abs(turnAngle - self.getGyroAngle()) < 20:
             turnSpeed = slowDownSpeed
         if turnAngle < 0:
             if self.getGyroAngle() > turnAngle:
@@ -175,23 +177,23 @@ class driveTrain():
         #print('entered auton straight')
         lSpeed = speed
         rSpeed = speed
-        encoderDistance = (distance / self.wheelCircumference * (5775))#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
+        encoderDistance = (distance / self.wheelCircumference * (5887))#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
         #print(encoderDistance)
 
         if self.firstTime:#Checks for first time through the function to only reset encoders on the first time
             #print('passed first check')#Debugging
-            self.encoderReset()#Resets encoders
-            #print('Encoder Reset')#Debugging
-            #self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition())#Debugging
+            #self.encoderReset()#Resets encoders
+            self.oldPositionLeft =  -(self.lfMotor.getQuadraturePosition())
+            self.oldPositionRight =  self.rbMotor.getQuadraturePosition()
             self.autonCounter = 0
             self.firstTime = False
 
-        self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition())
-        self.rbEncoderPosition = self.rbMotor.getQuadraturePosition()
+        self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition()) - self.oldPositionLeft
+        self.rbEncoderPosition = self.rbMotor.getQuadraturePosition() - self.oldPositionRight
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
-        #print(self.lfEncoderPosition)
+        '''
         if averageEncoders > 250 and not self.resetFinish:
-            self.encoderReset()
+            #self.encoderReset()
             self.printEncoderPosition()
             return True
         else:
@@ -200,7 +202,7 @@ class driveTrain():
                 print(self.rbEncoderPosition)
             #print('Encoder Reset Finished')
             self.resetFinish = True
-
+        '''
         if averageEncoders < encoderDistance and self.autonCounter == 0:
             speedAdjustment = .05
             slowDownSpeed = .25
@@ -214,7 +216,7 @@ class driveTrain():
             self.tankDrive(-(lSpeed), -(rSpeed))
             return True
         else:
-            if self.autonCounter < 1:
+            if self.autonCounter < 4:
                 #print('Drift correction')
                 self.tankDrive(.15, .15)
                 self.autonCounter = self.autonCounter + 1
@@ -257,12 +259,15 @@ class driveTrain():
                     print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
             elif commandNumber == 2:
+                pass
+                """
                 if self.encoderReset():
                     #print(' 1st pass')
                     pass
                 else:
                     print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
+                """
             '''
             elif commandNumber == 3:
                 if self.autonShifter():

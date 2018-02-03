@@ -6,7 +6,7 @@ from autonNearScale import *
 from autonNearSwitch import *
 from autonTwoCubeScale import *
 from autonDrive import *
-class interprater(self):
+class interpret():
     def autonPass(self,autonCommandNumber, side, switchPosition, scalePosition, driveTrain):
         #autonCommandNumber key, 0 = drive, 1 =  autonNearScale, 2 = autonNearSwitch, 3 = autonCenterEitherSwitch, 4 = autonTwoCubeScale
         drive = self.driveTrain
@@ -22,7 +22,7 @@ class interprater(self):
             return self.autonTwoCubeScale(side, switchPosition, scalePosition, drive)
         else:
             return self.autonDrive(side, switchPosition, scalePosition, drive)
-    def interprate(self):
+    def interpret(self):
         drive = self.driveTrain
         side = self.getData(positionChooser)
         fullField = DriveStation.getInstance().getGameSpecificMessage()
