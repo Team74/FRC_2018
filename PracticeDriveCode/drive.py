@@ -190,10 +190,10 @@ class driveTrain():
 
         self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition()) - self.oldPositionLeft
         self.rbEncoderPosition = self.rbMotor.getQuadraturePosition() - self.oldPositionRight
-        print(self.lfEncoderPosition)
-        print(self.rbEncoderPosition)
+        #print(self.lfEncoderPosition)
+        #print(self.rbEncoderPosition)
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
-        print('Average Encodes' + str(averageEncoders))
+        #print('Average Encodes' + str(averageEncoders))
         '''
         if averageEncoders > 250 and not self.resetFinish:
             #self.encoderReset()
@@ -216,12 +216,12 @@ class driveTrain():
             if averageEncoders > encoderDistance - 500:
                 lSpeed = slowDownSpeed
                 rSpeed = slowDownSpeed
-                print('Slowing Down')
+                #print('Slowing Down')
             self.tankDrive(-(lSpeed), -(rSpeed))
             return True
         else:
             if self.autonCounter < 4:
-                print('Active Breaking')
+                #print('Active Breaking')
                 self.tankDrive(.15, .15)
                 self.autonCounter = self.autonCounter + 1
                 return True
