@@ -26,21 +26,21 @@ class driveTrain():
 
         self.shifterOne = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
         self.shifterTwo = wpilib.Solenoid(1)#Initilizes the shifter's solenoid and sets it to read fron digital output 1
-
+        '''
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
         self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
         self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
-
+        '''
         self.left=wpilib.SpeedControllerGroup(self.lfMotor, self.lbMotor)
         self.right=wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
         self.drive = DifferentialDrive(self.left, self.right)
-
+        '''
         self.lfMotor.setNeutralMode(2)
         self.lbMotor.setNeutralMode(2)
         self.rfMotor.setNeutralMode(2)
         self.rbMotor.setNeutralMode(2)
-
+        '''
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
@@ -49,6 +49,7 @@ class driveTrain():
         self.setWheelCircumference()
 
         self.moveNumber = 1
+        self.shiftCounter = 0
 
     def setWheelCircumference(self):
         self.wheelCircumference = 18.84954
@@ -102,19 +103,31 @@ class driveTrain():
 
     def shift(self, leftBumper):
         if leftBumper:#When left bumper is pressed we shift gears
+            if self.shiftCounter <= 20:
+                pass
             if self.shifterOne.get():#Checks to see what gear we are in and shifts accordingly
                 self.shifterOne.set(False)
+                self.shiftCounter += 1
             elif self.shifterOne.get() == False:
                 self.shifterOne.set(True)
+                self.shiftCounter += 1
             else:
                 pass
             if self.shifterTwo.get():#Checks to see what gear we are in and shifts accordingly
                 self.shifterTwo.set(False)
+                self.shiftCounter += 1
             elif self.shifterTwo.get() == False:
                 self.shifterTwo.set(True)
+                self.shiftCounter += 1
+
             else:
                 pass
 
+    def shiftCounterReturn(self):
+        return self.shiftCounter
+
+        9im ,pol;
+pp
     def autonDriveStraight(self, speed, distance):
         #print('entered auton straight')
         lSpeed = speed
