@@ -9,7 +9,7 @@ class autonNearSwitch(autonBaseInit):
                 pass
             elif self.drive.autonMove(2, 1, 0, 0, 90, .5):
                 pass
-            elif self.drive.autonMove(3, 0, .5, 15, 0, 0):
+            elif self.drive.autonMove(3, 0, .5, 20, 0, 0):
                 pass
             elif self.drive.autonMove(4, 2, 0, 0, 0, 0):
                 pass
@@ -19,7 +19,7 @@ class autonNearSwitch(autonBaseInit):
                     pass
                 elif self.drive.autonMove(2, 1, 0, 0, -90, .5):
                     pass
-                elif self.drive.autonMove(3, 0, .5, 15, 0, 0):
+                elif self.drive.autonMove(3, 0, .5, 20, 0, 0):
                     pass
                 elif self.drive.autonMove(4, 2, 0, 0, 0, 0):
                     pass

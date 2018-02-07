@@ -24,14 +24,8 @@ class driveTrain():
         #self.encoderReset()
         #self.driveBase = arcadeDrive()
 
-<<<<<<< HEAD
-        self.shifterOne = wpilib.Solenoid(0)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
-        self.shifterTwo = wpilib.Solenoid(1)#Initilizes the shifter's solenoid and sets it to read fron digital output 1
-        '''
-=======
         self.shifter = wpilib.DoubleSolenoid(51, 0, 1)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
 
->>>>>>> cdee965bf8679cbb729fbd9be8e7e927132f0bec
         self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
         self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
         self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
@@ -41,11 +35,12 @@ class driveTrain():
         self.right=wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
         self.drive = DifferentialDrive(self.left, self.right)
         '''
+        self.drive = RobotDrive
+
         self.lfMotor.setNeutralMode(2)
         self.lbMotor.setNeutralMode(2)
         self.rfMotor.setNeutralMode(2)
         self.rbMotor.setNeutralMode(2)
-        '''
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
