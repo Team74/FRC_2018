@@ -30,12 +30,10 @@ class driveTrain():
         self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
         self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
-        '''
+
         self.left=wpilib.SpeedControllerGroup(self.lfMotor, self.lbMotor)
         self.right=wpilib.SpeedControllerGroup(self.rfMotor, self.rbMotor)
         self.drive = DifferentialDrive(self.left, self.right)
-        '''
-        self.drive = RobotDrive
 
         self.lfMotor.setNeutralMode(2)
         self.lbMotor.setNeutralMode(2)
@@ -78,17 +76,11 @@ class driveTrain():
         pass
 
     def scaleInputs(self, leftY, rightX):
-
-        if leftY < .05:
+        if abs(leftY) < .05:
             return .75 * rightX
         rightX = (-(math.log10((2*(abs(leftY)))+1)-1)*rightX)
         return rightX
-        '''
-        if abs(rightX) < .05:
-            return leftY
-        leftY = (-(math.log10((3*(abs(rightX)))+1.5))*leftY)
-        return leftY
-        '''
+
     def tankDrive(self, leftY, rightY):
         leftY = leftY*-1
         self.lbMotor.set(leftY * .82)
@@ -97,18 +89,21 @@ class driveTrain():
         self.rbMotor.set(rightY * .82)
 
     def arcadeDrive(self, leftY, rightX):
-        self.drive.arcadeDrive(leftY * -.82, self.scaleInputs(leftY, rightX) * .82)
+        #self.drive.arcadeDrive(leftY * -.82, self.scaleInputs(leftY, rightX) * .82)
         #print((-1 * self.scaleInputs(leftY, rightX)))
         #self.drive.arcadeDrive((-1 * self.scaleInputs(leftY, rightX)), (rightX/2))
-        #self.drive.arcadeDrive(leftY, rightX)
+        self.drive.arcadeDrive(leftY * -.82, rightX * .82)
 
     def shift(self, leftBumper, rightBumper):
+        #print(self.shifter.get())
         if leftBumper:#When left bumper is pressed we shift gears
             if self.shifter.get() == 1:#Checks to see what gear we are in and shifts accordingly
                 self.shifter.set(2)
+                #print("shifting left")
         if rightBumper:
             if self.shifter.get() == 2 or self.shifter.get() == 0:
                 self.shifter.set(1)
+                #print("shifting right")
 
     def getGyroAngle(self):
     	return self.gyro.getAngle()
