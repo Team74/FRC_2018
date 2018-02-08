@@ -20,6 +20,7 @@ file = open("save/" + filename, "r")
 nodepos = file.readline(); nodepos = nodepos[6:].split(", "); nodepos = [float(nodepos[0].split(":")[1])*width, float(nodepos[1].split(":")[1])*height]
 angle = 0
 commandlist = []
+commandlist.append(str(nodepos[0]) + "," + str(nodepos[1]))
 
 for line in file:
 	if line[:6] == "Node> ":
@@ -45,5 +46,3 @@ if outputName:
 else:
 	zing = open("convert/" + filename, "w" )
 	zing.write(outputstring)
-
-

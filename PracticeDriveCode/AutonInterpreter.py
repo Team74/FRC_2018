@@ -13,10 +13,11 @@ class AutonInterpreter(autonBaseInit):
     def __init__(self,side, switchPosition, scalePosition, driveTrain,   name):
         super().__init__(side, switchPosition, scalePosition, driveTrain)
         self.masterlist = []
-        self.default_loc = "/home/lvuser/py/convert/" #"/home/svanderark/FRC_2018/GUI/convert/"
+        self.default_loc = "/home/svanderark/FRC_2018/GUI/convert/" #"/home/lvuser/py/convert/" #
         with open(self.default_loc + name, "r") as f:
             data = f.readlines()
             i = 0
+            del data[0]
             for line in data:
                 i += 1
                 temp = line[:-1].split(",")
