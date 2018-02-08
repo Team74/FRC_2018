@@ -19,6 +19,7 @@ from autonDrive import *
 import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from autonSmartDashBoardInterpret import interpret
+from AutonInterpreter import *
 
 #import AutonHandling
 #import Autoninterpret
@@ -139,7 +140,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousInit(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
-
+        #self.interpretDash
         print(self.gameData)
         self.autonCounter = 0
         self.drive.zeroGyro()
@@ -147,6 +148,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.autonShift('low')#Forces into low gear at start of auton
         print('reset moveNumber')
         self.interperetDashboard()
+        #self.auton = AutonInterpreter(3,3,3,self.drive)
 
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
@@ -179,7 +181,7 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
-        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightX())
+        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
 if __name__ == "__main__":
     wpilib.run(MyRobot)
