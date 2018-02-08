@@ -20,7 +20,7 @@ class autonFarSwitch(autonBaseInit):
             elif self.drive.autonMove(7, 0, .5, 20, 0, 0):
                 pass
         elif self.side == 'right' and self.switchPosition == 'L':
-            if self.drive.autonMove(1, 0, 1, 230, 0, 0):
+            if self.drive.autonMove(1, 0, 1, 200, 0, 0):
                 pass
             elif self.drive.autonMove(2, 1, 0, 0, -90, .5):
                 pass

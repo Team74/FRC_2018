@@ -147,8 +147,8 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.resetMoveNumber()
         self.drive.autonShift('low')#Forces into low gear at start of auton
         print('reset moveNumber')
-        #self.interperetDashboard()
-        self.auton = AutonInterpreter(3,3,3,self.drive)
+        self.interperetDashboard()
+        #self.auton = AutonInterpreter(3,3,3,self.drive)
 
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
