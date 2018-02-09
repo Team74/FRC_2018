@@ -172,6 +172,7 @@ class MyRobot(wpilib.IterativeRobot):
         #wpilib.SmartDashboard.putNumber('Left Encoder Position', lfEncoderPosition)
         #wpilib.SmartDashboard.putNumber('Right Encoder Position', rbEncoderPosition)
         #wpilib.SmartDashboard.putNumber(' Average Encodes', averageEncoder)
+        wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #self.drive.printer()
     def teleopPeriodic(self):
         lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())

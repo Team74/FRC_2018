@@ -146,11 +146,15 @@ class driveTrain():
             self.zeroGyro()
             self.firstRun = False
 
-        if abs(turnAngle - self.getGyroAngle()) < 15:
+        turnSpeed -= (2*turnSpeed/(1+math.exp(0.075*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
+        turnSpeed = max(turnSpeed, slowDownSpeed)
+        #turnSpeed = 0.15
+        '''
+        if abs(turnAngle - self.getGyroAngle()) < 25:
             #print('Gyro Angle:'+str(self.getGyroAngle()))
             #print('Turn Speed:'+str(turnSpeed))
             turnSpeed = slowDownSpeed
-
+        '''
         if turnAngle < 0:
             if self.getGyroAngle() > turnAngle:
                 self.drive.tankDrive(-(turnSpeed) * .82, (turnSpeed) * .82,False)
