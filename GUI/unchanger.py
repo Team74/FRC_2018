@@ -8,6 +8,7 @@ comm = open("commands.dat", "r")
 for i in comm:
     x = i.split(":")
     commandOptions[x[1][0:-1]] = x[0]
+print(commandOptions)
 
 filename = input("Convert Name> ")
 file = open("convert/" + filename, "r")
@@ -22,14 +23,14 @@ def add_command(inp):
 
 exit = True
 for _line in file:
-    line = _line.strip('[]\n\t ').split(',')
+    full_line = _line.strip('[]\n\t ')
+    line = full_line.split(',')
     if exit:
         exit = False
         position = [float(line[0])/width,float(line[1])/height]
         add_node()
         continue
     if line[0] == "0":
-        print("move")
         #ldist = line[2]; rdist = line[4]; #For the moment, we are not using separate left and right distances.
         dist = float(line[2])
         y = dist/height*math.cos(math.radians(angle))
@@ -39,7 +40,7 @@ for _line in file:
     elif line[0] == "1":
         angle += float(line[1])
     else:
-        add_command(line[0])
+        add_command(full_line)
 
 for i in commandlist:
     print(i)

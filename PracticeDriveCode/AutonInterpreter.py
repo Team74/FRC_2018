@@ -1,8 +1,5 @@
 import wpilib
 
-#import drive#, operatorFunctions, robot
-
-#from drive import driveTrain
 from autonBaseInit import *
 
 from functools import partial
@@ -34,8 +31,5 @@ class AutonInterpreter(autonBaseInit):
             i()
 
     def bloob(self, a, b, c, d, e, f, g, _h=0, _i=0):
-        #print(self, a, b, c, d, e, f, g, _h)
         a.autonMove(b,c,d,e,f,g)
 
-
-#x = AutonInterpreter(0,0,0,0,"othersave")

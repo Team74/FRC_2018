@@ -18,15 +18,13 @@ from kivy.properties import ObjectProperty
 from kivy.uix.filechooser import (FileChooserListView, FileSystemAbstract)
 
 from functools import partial
+import math
 
 import paramiko
-
 import os
 from os import listdir
 from os.path import (basename, getsize, isdir)
-
 import stat
-
 
 #------------------------------------------------------------------------------------------
 
@@ -37,12 +35,13 @@ class Node(Widget):
     #And don't attach/remove/reattach to something. I haven't tried it but I bet things will break.
 
     prev_node = ObjectProperty(None, allownone=True);  #Linked List of nodes
-    next_node = ObjectProperty(None, allownone=True);
+    next_node = ObjectProperty(None, allownone=True)
+
+    SIZE = 0.025
 
     def __init__(self, x, y):   #Pass in x,y of center of node, not corner like usual
         Widget.__init__(self)
         self.MIN_DRAG_VAL = (20)**2   #squared so I don't need to take a root later
-        self.SIZE = 0.025
         self.COLOR = Color(0.6,0.9,0.6)
 
         self.being_dragged = False      # < Various variables for implementing the drag behavior
@@ -59,6 +58,7 @@ class Node(Widget):
         self.unbind(parent=self._setup)         #We don't want to call this on deleting it
         self.size_hint = (self.SIZE, self.SIZE)
         self.conv_pos((x,y))    #set pos_hint
+        #self.pos_hint()
 
         self.select_sign = InstructionGroup()
         self.canvas.add(self.select_sign)
@@ -90,7 +90,7 @@ class Node(Widget):
         self.bind(pos=self.redraw, size=self.redraw)
 
     def conv_pos(self, pos):
-        self.pos_hint = { "x" : pos[0] / self.parent.size[0] - self.SIZE/2, "y" : pos[1] / self.parent.size[1] - self.SIZE/2 }
+        self.pos_hint = { "x" : (pos[0] - self.SIZE/2*self.parent.size[0]) / self.parent.size[0], "y" : pos[1] / self.parent.size[1] - self.SIZE/2 }
 
     def redraw(self, pointless_variable_because_apparently_self_is_getting_passed_twice_for_some_reason, other_args_question_mark):
         self.bg_rect.pos = self.pos
@@ -211,12 +211,18 @@ class Connector(Widget):    #class to represent the lines between widgets
 #---------------------------------------------------------------------------------------------
 
 class SideButtons(DragBehavior, BoxLayout):
+
+    commandOptions = {}
+    rev_commandOptions = {}
+
     def __init__(self):
         DragBehavior.__init__(self)
         BoxLayout.__init__(self, orientation='vertical', size_hint=(None, None), width=75)
         self.bind(pos=self.drag_set, size=self.drag_set)
 
         self.local = False
+        self.WIDTH = 27*12*2
+        self.HEIGHT = 27*12
 
         self.switch = Button(text="Select");
         def switch_callback(instance):
@@ -274,20 +280,42 @@ class SideButtons(DragBehavior, BoxLayout):
                     filename = filechooser.path + "/" + textinput.text
                 else:
                     filename = filechooser.selection[0]
+
+                x = self.parent.head
+                commandList = []
+                while x is not None:
+                    text = str("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
+                    commandList.append(text)
+                    for i in x.command_list:
+                        commandList.append(str("Comm> " + i + "\n"))
+                    x = x.next_node
+
+                nodepos = commandList[0][6:].split(", ")
+                nodepos = [float(nodepos[0].split(":")[1])*self.WIDTH, float(nodepos[1].split(":")[1])*self.HEIGHT]
+                newlist = [str(nodepos[0]) + "," + str(nodepos[1])]
+                angle = 0
+                for line in commandList[1:]:
+                    if line[:6] == "Node> ":
+                        x = line[6:-1].split(", ")
+                        temp = [float(x[0].split(":")[1])*self.WIDTH, float(x[1].split(":")[1])*self.HEIGHT]
+                        new_angle = math.degrees(math.atan2(-(temp[0] - nodepos[0]), (temp[1] - nodepos[1])))
+                        newlist.append("1," + str((angle - new_angle + 180) % 360 - 180)) #assuming the robot points forward on the field, do -x, y for y,x to account for 90 degree rotation
+                        dist = math.sqrt((nodepos[0] - temp[0])**2 + (nodepos[1] - temp[1])**2)
+                        newlist.append("0,1," + str(dist) + ",1," + str(dist))
+                        nodepos = temp
+                        angle = new_angle
+                    elif line[:6] == "Comm> ":
+                        newlist.append(self.commandOptions[line[6:-1]])
+                    else:
+                        print("Type Not Found")
+                outputstring = ""
+                for i in newlist:
+                    outputstring += (i + "\n")
+
                 with (open(filename, 'w') if self.local else filechooser.file_system.sftp.open(filename, 'w')) as f:
-                    x = self.parent.head
-                    while x is not None:
-                        text = str("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
-                        if not self.local:
-                            text = text.encode('utf-8')
-                        f.write(text)
-                        if self.local:
-                            for i in x.command_list:
-                                f.write(str("Comm> " + i + "\n"))
-                        else:
-                            for i in x.command_list:
-                                f.write(str("Comm> " + i + "\n").encode('utf-8'))
-                        x = x.next_node
+                    if not self.local:
+                        outputstring = outputstring.encode('utf-8')
+                    f.write(outputstring)
                 blah.dismiss()
             button.bind(on_release=choose)
             blah.open()
@@ -310,25 +338,56 @@ class SideButtons(DragBehavior, BoxLayout):
                 if filechooser.selection == []:
                     return
                 clear_callback(None)
-                with (open(filechooser.selection[0], 'r') if self.local else filechooser.file_system.sftp.open(filechooser.selection[0], 'r')) as f:
-                    node = None
-                    for line in f:
-                        if line[:6] == "Node> ":
-                            x = line[6:].split(", ")
-                            node = Node(float(x[0].split(":")[1])*self.parent.width, float(x[1].split(":")[1])*self.parent.height)
-                            if self.parent.tail is None:
-                                self.parent.tail = node
-                                if self.parent.head is None:
-                                    self.parent.head = self.parent.tail
-                            else:
-                                self.parent.tail.next_node = node
-                                self.parent.tail.next_node.prev_node = self.parent.tail
-                                self.parent.tail = self.parent.tail.next_node
-                            self.parent.add_widget(self.parent.tail)
-                        elif line[:6] == "Comm> ":
-                            self.parent.tail.command_list.append(line[6:-1])
+
+                commandlist = []
+                with (open(filechooser.selection[0], 'r') if self.local else filechooser.file_system.sftp.open(filechooser.selection[0], 'r')) as file:
+                    angle = 0
+                    position = [None, None]
+
+                    def add_node():
+                        commandlist.append("Node> x:" + str(position[0]) + ", y:" + str(position[1]))
+                    def add_command(inp):
+                        commandlist.append("Comm> " + self.rev_commandOptions[inp])
+
+                    exit = True
+                    for _line in file:
+                        full_line = _line.strip('[]\n\t ')
+                        line = full_line.split(',')
+                        if exit:
+                            exit = False
+                            position = [float(line[0])/self.WIDTH,float(line[1])/self.HEIGHT]
+                            add_node()
+                            continue
+                        if line[0] == "0":
+                            #ldist = line[2]; rdist = line[4]; #For the moment, we are not using separate left and right distances.
+                            dist = float(line[2])
+                            y = dist/self.HEIGHT*math.cos(math.radians(angle))
+                            x = dist/self.WIDTH*math.sin(math.radians(angle))
+                            position[0] += x; position[1] += y
+                            add_node()
+                        elif line[0] == "1":
+                            angle += float(line[1])
                         else:
-                            print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
+                            add_command(full_line)
+
+                node = None
+                for line in commandlist:
+                    if line[:6] == "Node> ":
+                        x = line[6:].split(", ")
+                        node = Node((float(x[0].split(":")[1])+Node.SIZE/2)*self.parent.width, (float(x[1].split(":")[1])+Node.SIZE/2)*self.parent.height)
+                        if self.parent.tail is None:
+                            self.parent.tail = node
+                            if self.parent.head is None:
+                                self.parent.head = self.parent.tail
+                        else:
+                            self.parent.tail.next_node = node
+                            self.parent.tail.next_node.prev_node = self.parent.tail
+                            self.parent.tail = self.parent.tail.next_node
+                        self.parent.add_widget(self.parent.tail)
+                    elif line[:6] == "Comm> ":
+                        self.parent.tail.command_list.append(line[6:])
+                    else:
+                        print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
                 def godihatehowlimitedlambdaexpressionsare(_ugh): self.parent.take_two(Window, Window.width, Window.height);
                 Clock.schedule_once(godihatehowlimitedlambdaexpressionsare)
                 blah.dismiss()
@@ -523,8 +582,8 @@ class MyScreen(FloatLayout):
         self.bind(parent=omg)
 
 
-    def aspect_ratio(self, _i=0, _j=0, _k=0):	#600*338
-        if 600*self.parent.height < 338*self.parent.width:	#width too big
+    def aspect_ratio(self, _i=0, _j=0, _k=0):    #600*338
+        if 600*self.parent.height < 338*self.parent.width:    #width too big
             self.size_hint = [(600/338)/(self.parent.width/self.parent.height), 1]
         else:
             self.size_hint = [1,(338/600)/(self.parent.height/self.parent.width)]
@@ -580,6 +639,8 @@ class MyApp(App):
 if __name__ == '__main__':
     comm = open("commands.dat", "r")
     for i in comm:
-        SetCommandButton.commandOptions.append(i.split(":")[0])
-
+        x = i.split(":")
+        SideButtons.commandOptions[x[0]] = x[1][0:-1]
+        SideButtons.rev_commandOptions[x[1][0:-1]] = x[0]
+        SetCommandButton.commandOptions.append(x[0])
     MyApp().run()
