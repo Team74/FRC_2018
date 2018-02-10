@@ -46,6 +46,8 @@ class driveTrain():
 
         self.setWheelCircumference()
 
+        self.oldGyro = 0
+
         self.moveNumber = 1
         self.shiftCounter = 0
 
@@ -102,10 +104,12 @@ class driveTrain():
                 #print("shifting right")
 
     def getGyroAngle(self):
-    	return self.gyro.getAngle()
+    	return (self.gyro.getAngle()-self.oldGyro)
 
     def zeroGyro(self):
         self.gyro.reset()
+        while(abs(self.getGyroAngle()) > 340):
+            self.gyro.reset()
 
     def encoderReset(self):
         self.lfMotor.setQuadraturePosition(0, 0)
@@ -141,12 +145,13 @@ class driveTrain():
             pass
 
     def autonPivot(self, turnAngle, turnSpeed):
-        slowDownSpeed = .06
+        slowDownSpeed = .14
+        correctionDeadzone = .5
         if self.firstRun:
-            self.zeroGyro()
+            self.oldGyro = self.gyro.getAngle()
             self.firstRun = False
 
-        turnSpeed -= (2*turnSpeed/(1+math.exp(0.075*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
+        turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
         turnSpeed = max(turnSpeed, slowDownSpeed)
         #turnSpeed = 0.15
         '''
@@ -156,27 +161,37 @@ class driveTrain():
             turnSpeed = slowDownSpeed
         '''
         if turnAngle < 0:
-            if self.getGyroAngle() > turnAngle:
-                self.drive.tankDrive(-(turnSpeed) * .82, (turnSpeed) * .82,False)
-                #print('Turning Left')
-                return True
+            if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
+                if self.getGyroAngle() >= turnAngle:
+                    self.drive.tankDrive(-(turnSpeed) * .82, (turnSpeed) * .82,False)
+                    #print('Turning Left')
+                    return True
+                elif self.getGyroAngle() <= turnAngle:
+                    self.drive.tankDrive(.2, -.2)
+                    return True
+                else:
+                    pass
             else:
                 #print("Done Turning Left")
                 print(self.getGyroAngle())
                 self.drive.stopMotor()
                 self.firstRun = True
-                self.zeroGyro()
                 return False
         elif turnAngle > 0:
-            if self.getGyroAngle() < turnAngle:
-                #print('Turning Right')
-                self.drive.tankDrive((turnSpeed) * .82, -(turnSpeed) * .82,False)
-                return True
+            if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
+                if self.getGyroAngle() <= turnAngle:
+                    print('Turning Right')
+                    self.drive.tankDrive((turnSpeed) * .82, -(turnSpeed) * .82,False)
+                    return True
+                elif self.getGyroAngle() >= turnAngle:
+                    self.drive.tankDrive(-.2, .2)
+                    return True
+                else:
+                    pass
             else:
                 #print('Done Turning Right')
                 print(self.getGyroAngle())
                 self.drive.stopMotor()
-                self.zeroGyro()
                 self.firstRun = True
                 return False
 
@@ -190,6 +205,7 @@ class driveTrain():
         if self.firstTime:#Checks for first time through the function to only reset encoders on the first time
             #print('passed first check')#Debugging
             #self.encoderReset()#Resets encoders
+            self.oldGyro = self.gyro.getAngle()
             self.oldPositionLeft =  -(self.lfMotor.getQuadraturePosition())
             self.oldPositionRight =  self.rbMotor.getQuadraturePosition()
             self.autonCounter = 0
@@ -241,7 +257,6 @@ class driveTrain():
                 return True
             else:
                 #print('EndLoop')
-                self.zeroGyro()
                 self.resetFinish = False
                 self.firstTime = True
                 self.drive.stopMotor()

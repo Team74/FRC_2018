@@ -16,6 +16,7 @@ from autonFarSwitch import *
 from autonTwoCubeScale import *
 from autonNearScale import *
 from autonDrive import *
+from autonTurningTuning import *
 import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from autonSmartDashBoardInterpret import interpret
@@ -147,9 +148,10 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.resetMoveNumber()
         self.drive.autonShift('low')#Forces into low gear at start of auton
         #print('reset moveNumber')
-        self.interperetDashboard()
+        #self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
 
+        self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
