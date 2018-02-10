@@ -145,21 +145,37 @@ class driveTrain():
             pass
 
     def autonPivot(self, turnAngle, turnSpeed):
-        slowDownSpeed = .14
-        correctionDeadzone = .5
+        #slowDownSpeed = .14
+        #correctionDeadzone = .5
         if self.firstRun:
             self.oldGyro = self.gyro.getAngle()
             self.firstRun = False
-
-        turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
-        turnSpeed = max(turnSpeed, slowDownSpeed)
-        #turnSpeed = 0.15
+            self.pivotLoopSource = wpilib.interfaces.PIDSource()
+            def getFunction():
+                return self.getGyroAngle() - turnAngle
+            def sourceTypeFunction():
+                return 0
+            self.pivotLoopSource.pidGet = getFunction
+            self.pivotLoopSource.getSourceType = sourceTypeFunction
+            self.pivotLoopOut = wpilib.interfaces.PIDOutput()
+            def setFunction(output):
+                self.drive.tankDrive(-(output) * .82, (output) * .82,False)
+            self.pivotLoopSource.pidWrite = setFunction
+            self.pivotPID = wpilib.PIDController(Kp,Ki,Kd, self.pivotLoopSource, self.pivotLoopOut, 20)
+            wpilib.LiveWindow.addActuator("Pivot", "Pivot PID Controller", self.pivotPID)
+            self.pivotPID.enable()
+        if abs(self.pivotPID.get()) < 0.04:
+            return True
+        else:
+            return True
         '''
+        #turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
+        #turnSpeed = max(turnSpeed, slowDownSpeed)
+        #turnSpeed = 0.15
         if abs(turnAngle - self.getGyroAngle()) < 25:
             #print('Gyro Angle:'+str(self.getGyroAngle()))
             #print('Turn Speed:'+str(turnSpeed))
             turnSpeed = slowDownSpeed
-        '''
         if turnAngle < 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() >= turnAngle:
@@ -194,6 +210,7 @@ class driveTrain():
                 self.drive.stopMotor()
                 self.firstRun = True
                 return False
+            '''
 
     def autonDriveStraight(self, speed, distance):
         #print('entered auton straight')
