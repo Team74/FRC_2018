@@ -17,14 +17,16 @@ from kivy.core.window import Window
 from kivy.properties import ObjectProperty
 from kivy.uix.filechooser import (FileChooserListView, FileSystemAbstract)
 
-from functools import partial
-import math
-
 import paramiko
+
 import os
 from os import listdir
 from os.path import (basename, getsize, isdir)
 import stat
+
+from functools import partial
+import math
+
 
 #------------------------------------------------------------------------------------------
 
@@ -223,7 +225,8 @@ class SideButtons(DragBehavior, BoxLayout):
         self.local = False
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
-
+        self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
+        #self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/py/"
         self.switch = Button(text="Select");
         def switch_callback(instance):
             self.parent.close_menu()
@@ -266,7 +269,7 @@ class SideButtons(DragBehavior, BoxLayout):
             if self.local:
                 filechooser = FileChooserListView(path="/home/svanderark/FRC_2018/GUI", size_hint_y=0.8)
             else:
-                filechooser = FileChooserListView(file_system=FileSystemOverSSH('10.111.49.27', 'svanderark', 'chaos'), size_hint_y=0.8, path="/rhome/svanderark/")
+                filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
             blah.content.add_widget(filechooser)
             textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
             blah.content.add_widget(textinput)
