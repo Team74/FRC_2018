@@ -16,6 +16,7 @@ from autonFarSwitch import *
 from autonTwoCubeScale import *
 from autonNearScale import *
 from autonDrive import *
+from autonTurningTuning import *
 import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from autonSmartDashBoardInterpret import interpret
@@ -141,15 +142,16 @@ class MyRobot(wpilib.IterativeRobot):
     def autonomousInit(self):
         self.gameData=DriverStation.getInstance().getGameSpecificMessage()
         #self.interpretDash
-        print(self.gameData)
+        #print(self.gameData)
         self.autonCounter = 0
         self.drive.zeroGyro()
         self.drive.resetMoveNumber()
         self.drive.autonShift('low')#Forces into low gear at start of auton
-        print('reset moveNumber')
-        self.interperetDashboard()
+        #print('reset moveNumber')
+        #self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
 
+        self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
@@ -158,7 +160,7 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
-        self.gameData=DriverStation.getInstance().getGameSpecificMessage()
+        #self.gameData=DriverStation.getInstance().getGameSpecificMessage()
         #self.drive.printEncoderPosition()#Prints the position of the encoders
         #print(self.drive.getGyroAngle())
         if self.autonCounter >= 5:
@@ -166,13 +168,14 @@ class MyRobot(wpilib.IterativeRobot):
         else:
             self.autonCounter = self.autonCounter + 1
         #self.AutonHandling.readCommandList(None, "square")
-        lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
-        rbEncoderPosition = self.drive.rbMotor.getQuadraturePosition()
-        averageEncoder = (lfEncoderPosition + rbEncoderPosition) / 2
-        wpilib.SmartDashboard.putNumber('Left Encoder Position', lfEncoderPosition)
-        wpilib.SmartDashboard.putNumber('Right Encoder Position', rbEncoderPosition)
-        wpilib.SmartDashboard.putNumber(' Average Encodes', averageEncoder)
-
+        #lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
+        #rbEncoderPosition = self.drive.rbMotor.getQuadraturePosition()
+        #averageEncoder = (lfEncoderPosition + rbEncoderPosition) / 2
+        #wpilib.SmartDashboard.putNumber('Left Encoder Position', lfEncoderPosition)
+        #wpilib.SmartDashboard.putNumber('Right Encoder Position', rbEncoderPosition)
+        #wpilib.SmartDashboard.putNumber(' Average Encodes', averageEncoder)
+        wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
+        #self.drive.printer()
     def teleopPeriodic(self):
         lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
         rfEncoderPosition = self.drive.rbMotor.getQuadraturePosition()
@@ -181,6 +184,7 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
+        #self.drive.printer()
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
         #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
 if __name__ == "__main__":

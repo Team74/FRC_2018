@@ -6,4 +6,4 @@ class autonBaseInit():
         self.switchPosition = switchPosition
         self.scalePosition = scalePosition
         self.drive = driveTrain
-        self.moveNumber = 1
+        self.moveNumber = 0
