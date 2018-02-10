@@ -9,6 +9,7 @@ from xbox import XboxController
 from wpilib.drive import DifferentialDrive
 from wpilib import DriverStation
 from drive import driveTrain
+from operatorFunctions import operatorControl
 from drive_2017 import driveTrain2017
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
@@ -21,6 +22,7 @@ import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from autonSmartDashBoardInterpret import interpret
 from AutonInterpreter import *
+import timeOut
 
 #import AutonHandling
 #import Autoninterpret
@@ -42,10 +44,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
         self.dashTimer.start()
         self.dash = SmartDashboard()
-        #self.autonomous_modes = AutonomousModeSelector('autonomous', self.components)
-
-        self.gameData=DriverStation.getInstance().getGameSpecificMessage()
-
 
         self.positionChooser = wpilib.SendableChooser()
         self.positionChooser.addDefault('Position Chooser', '1')
@@ -100,25 +98,27 @@ class MyRobot(wpilib.IterativeRobot):
 
     def interperetDashboard(self):
         startingPosition = self.positionChooser.getSelected()
-        fieldLL = self.switchLscaleL.getSelected()
-        fieldRL = self.switchRscaleL.getSelected()
-        fieldRR = self.switchRscaleR.getSelected()
-        fieldLR = self.switchLscaleR.getSelected()
         gameData = DriverStation.getInstance().getGameSpecificMessage()
-        gameData = self.gameData[:-1]
-        switchPosition = self.gameData[0]
-        scalePosition = self.gameData[1]
+        gameData = gameData[:-1]
+        gameData = gameData.upper()
+        switchPosition = gameData[0]
+        scalePosition = gameData[1]
         objective = 'drive'
         if gameData == 'LL':
-            objective = fieldLL
+            objective = self.switchLscaleL.getSelected()
         elif gameData == 'LR':
-            objective = fieldLR
+            objective = self.switchLscaleR.getSelected()
         elif gameData == 'RL':
-            objective = fieldRL
+            objective = self.switchRscaleL.getSelected()
         elif gameData == 'RR':
-            objective = fieldRR
+            objective = self.switchRscaleR.getSelected()
         else:
             objective = 'drive'
+        print(gameData)
+        print(startingPosition)
+        print(switchPosition)
+        print(scalePosition)
+        print(objective)
         if objective == 'switch':
             if (startingPosition == 'left' and switchPosition == 'L') or (startingPosition == 'right' and switchPosition == 'R'):
                 self.auton = autonNearSwitch(startingPosition, switchPosition, scalePosition, self.drive)
@@ -138,20 +138,18 @@ class MyRobot(wpilib.IterativeRobot):
                 self.auton = autonFarScale(startingPosition, switchPosition, scalePosition, self.drive)
         elif objective == 'drive':
             self.auton = autonDrive(startingPosition, switchPosition, scalePosition, self.drive)
+        print(self.auton)
 
     def autonomousInit(self):
-        self.gameData=DriverStation.getInstance().getGameSpecificMessage()
-        #self.interpretDash
-        #print(self.gameData)
         self.autonCounter = 0
         self.drive.zeroGyro()
         self.drive.resetMoveNumber()
         self.drive.autonShift('low')#Forces into low gear at start of auton
         #print('reset moveNumber')
-        #self.interperetDashboard()
+        self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
 
-        self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
+        #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
@@ -160,7 +158,6 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
-        #self.gameData=DriverStation.getInstance().getGameSpecificMessage()
         #self.drive.printEncoderPosition()#Prints the position of the encoders
         #print(self.drive.getGyroAngle())
         if self.autonCounter >= 5:
@@ -186,6 +183,7 @@ class MyRobot(wpilib.IterativeRobot):
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
         #self.drive.printer()
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
-        #self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper())
+        self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(, self.controllerTwo.getStart(), self.controllerTwo.getBack()))
+        self.timeOut.time += 1
 if __name__ == "__main__":
     wpilib.run(MyRobot)

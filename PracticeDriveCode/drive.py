@@ -10,12 +10,14 @@ import robotpy_ext
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from wpilib.drive import DifferentialDrive
 from wpilib import RobotDrive
+from operatorFunctions import operatorControl
 import ctre
 import math
 
 class driveTrain():
 
     def __init__(self, robot):
+        self.operate = operatorControl(self)
         self.gyro = AHRS.create_spi()
         #self.gyro = wpilib.interfaces.Gyro()
         """Sets drive motors to a cantalon or victor"""
@@ -180,7 +182,7 @@ class driveTrain():
         elif turnAngle > 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() <= turnAngle:
-                    print('Turning Right')
+                    #print('Turning Right')
                     self.drive.tankDrive((turnSpeed) * .82, -(turnSpeed) * .82,False)
                     return True
                 elif self.getGyroAngle() >= turnAngle:
@@ -190,7 +192,7 @@ class driveTrain():
                     pass
             else:
                 #print('Done Turning Right')
-                print(self.getGyroAngle())
+                #print(self.getGyroAngle())
                 self.drive.stopMotor()
                 self.firstRun = True
                 return False
@@ -292,25 +294,7 @@ class driveTrain():
                     #print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
             elif commandNumber == 2:
-                pass
-                """
-                if self.encoderReset():
-                    #print(' 1st pass')
-                    pass
-                else:
-                    print('Move ' + str(moveNumberPass) + ' Complete')
-                    self.moveNumber = moveNumberPass + 1
-                """
-            '''
-            elif commandNumber == 3:
-                if self.autonShifter():
-                    pass
-                else:
-                    print('Move ' + str(moveNumberPass) + ' Complete')
-                    self.moveNumber = moveNumberPass + 1            else:
-                #print('2nd pass')
-                pass
-            '''
+                if self.
         else:
             #print('3rd pass')
             pass
