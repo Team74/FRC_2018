@@ -147,22 +147,30 @@ class driveTrain():
     def autonPivot(self, turnAngle, turnSpeed):
         #slowDownSpeed = .14
         #correctionDeadzone = .5
+        print('Loop')
         if self.firstRun:
+            print('First')
             self.oldGyro = self.gyro.getAngle()
             self.firstRun = False
             self.pivotLoopSource = wpilib.interfaces.PIDSource()
             def getFunction():
+                print('Gyro Queried')
                 return self.getGyroAngle() - turnAngle
+
             def sourceTypeFunction():
                 return 0
+
             self.pivotLoopSource.pidGet = getFunction
-            self.pivotLoopSource.getSourceType = sourceTypeFunction
+            self.pivotLoopSource.getPIDSourceType = sourceTypeFunction
             self.pivotLoopOut = wpilib.interfaces.PIDOutput()
             def setFunction(output):
-                self.drive.tankDrive(-(output) * .82, (output) * .82,False)
+                print('Output')
+                self.drive.tankDrive(-(output) * .82, (output) * .82, False)
+
             self.pivotLoopSource.pidWrite = setFunction
-            self.pivotPID = wpilib.PIDController(0,0,0, self.pivotLoopSource, self.pivotLoopOut, 20)
+            self.pivotPID = wpilib.PIDController(0.1,0,0, self.pivotLoopSource, self.pivotLoopOut, 0.02)
             wpilib.LiveWindow.addActuator("Pivot", "Pivot PID Controller", self.pivotPID)
+            print('Enabling')
             self.pivotPID.enable()
         if abs(self.pivotPID.get()) < 0.04:
             return True

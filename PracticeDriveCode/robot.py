@@ -17,6 +17,7 @@ from autonTwoCubeScale import *
 from autonNearScale import *
 from autonDrive import *
 from autonTurningTuning import *
+from autonPIDTesting import *
 import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from autonSmartDashBoardInterpret import interpret
@@ -151,7 +152,8 @@ class MyRobot(wpilib.IterativeRobot):
         #self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
 
-        self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
+        self.auton = autonPIDTesting('any', 'any', 'any', self.drive)
+        #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
