@@ -9,6 +9,9 @@ from wpilib import Encoder, RobotDrive
 import timeOut
 
 class operatorControl():
+    MIN_LIFT_HEIGHT = 'Some Value'#Value in encoder codes
+    MAX_LIFT_HEIGHT = 'Some value'#Value in encoder codes
+    TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
 
     def __init__(self, robot, drive):
 
@@ -38,25 +41,41 @@ class operatorControl():
     def operate(leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
         self.raiseLowerLift(leftY)
-        self.winchUp(rightY)
+        self.winchUpDown(rightY)
         self.manipulatorIntake(aButton)
         self.ejectCube(xButton)
         self.deployClimber(startButton, backButton)
 
     def raiseLowerLift(self, leftY):
-        self.liftMotor.set(leftY)
+        currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
+        if (currentEncoderPosition >= MIN_LIFT_HEIGHT) and (currentEncoderPosition <= MAX_LIFT_HEIGHT):
+            self.liftMotor.set(leftY)
+        else:
+            self.liftMotor.set(0)
 
-    def autonRaiseLowerLift(self, raiseHeight):#raiseHeight is in inches
-    finalEncoderPosition = (raiseHeight/wheelCircumfrence)  * amount of encoder codes per rotation of the shaft after reductions
-    math.sqrt(1-(currentEncoderPosition/finalEncoderPosition))
+    def autonRaiseLowerLift(self, setLiftPosition):#Note encoder values do not scale linearly with lift hieght
+        currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
+        #Defines three set lift positions
+        liftPositionOne = 0#Lift position when lift is all the way down in encoder values
+        liftPositionTwo = x#Lift position to place cubes on the switch in encoder values
+        liftPositionThree = y#Lift position to place cubes on the scale in encoder values
+        #Reads the desiried lift position and sets how high we need to lift the lift
+        if setLiftPosition == 1:
+            liftHeight = liftPositionOne
+        elif setLiftPosition == 2:
+            liftHeight = liftPositionTwo
+        elif setLiftPosition == 3:
+            liftHeight = liftPositionThree
+        self.liftMotor.set(math.sqrt(1-(currentEncoderPosition/liftHeight)))
+
     def deployClimber(self, startButton, backButton):
-            if (startButton or backButton) and (self.timeOut.time >= 5250):#If start button or back button is pressed and we are in endgame, the climber will deploy
+            if (startButton or backButton) and (self.timeOut.time >= TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
                 pass
             else:
                 pass
 
-    def winchUp(self, rightY):#Operator can use right stick to raise the winch for climbing
-        if self.timeOut.time >= 5250:#Prevents climber from being deployed until the endgame starts
+    def winchUpDown(self, rightY):#Operator can use right stick to raise the winch for climbing
+        if self.timeOut.time >= TIME_LEFT_UNTIL_ENDGAME:#Prevents climber from being deployed until the endgame starts
             self.winchMotorControlGroup.set(rightY)
         else:
             pass
@@ -79,5 +98,16 @@ class operatorControl():
             else:#If X has not been toggled, it toggles X
                 self.xToggle = True
         if self.xToggle:#If X has been toggled, it will eject cubes
+            self.leftManipulatorMotor.set(-1)
+            self.rightManipulatorMotor.set(1)
+
+    def autonIntakeControl(self, intakeMode):
+        if intakeMode == 1:#Neutral Mode
+            self.leftManipulatorMotor.set(-0)
+            self.rightManipulatorMotor.set(0)
+        elif intakeMode == 2:#Intake mode
+            self.leftManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(-1)
+        elif intakeMode == 3:#Eject Mode
             self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(1)
