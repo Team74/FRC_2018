@@ -222,11 +222,18 @@ class SideButtons(DragBehavior, BoxLayout):
         BoxLayout.__init__(self, orientation='vertical', size_hint=(None, None), width=75)
         self.bind(pos=self.drag_set, size=self.drag_set)
 
+        #spam -- search here for some variables
+
         self.local = False
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
         self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
         #self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/py/"
+        self.local_path = "/home/svanderark/FRC_2018/GUI"
+        #self.local_path = r"C:\Users\Will Hescott"
+
+
+
         self.switch = Button(text="Select");
         def switch_callback(instance):
             self.parent.close_menu()
@@ -267,7 +274,7 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = FileChooserListView(path="/home/svanderark/FRC_2018/GUI", size_hint_y=0.8)
+                filechooser = FileChooserListView(path=self.local_path, size_hint_y=0.8)
             else:
                 filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
             blah.content.add_widget(filechooser)
@@ -331,9 +338,9 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose input file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = FileChooserListView(path="/home/svanderark/FRC_2018/GUI", size_hint_y=0.8)
+                filechooser = FileChooserListView(path=self.local_path, size_hint_y=0.8)
             else:
-                filechooser = FileChooserListView(file_system=FileSystemOverSSH('10.111.49.27', 'svanderark', 'chaos'), size_hint_y=0.8, path="/rhome/svanderark/")
+                filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
             blah.content.add_widget(filechooser)
             button = Button(text='Select', size_hint_y=0.1)
             blah.content.add_widget(button)
@@ -390,7 +397,7 @@ class SideButtons(DragBehavior, BoxLayout):
                     elif line[:6] == "Comm> ":
                         self.parent.tail.command_list.append(line[6:])
                     else:
-                        print("ERRORERRORERROREROROROEEROROROEOOREOROOROOROOROROEOOROEEEROORRROROROOEOROROEOE")
+                        print("Literally how did you get this error, it shouldn't be possible anymore.")
                 def godihatehowlimitedlambdaexpressionsare(_ugh): self.parent.take_two(Window, Window.width, Window.height);
                 Clock.schedule_once(godihatehowlimitedlambdaexpressionsare)
                 blah.dismiss()

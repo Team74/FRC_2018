@@ -9,7 +9,12 @@ class AutonInterpreter(autonBaseInit):
 
     def __init__(self,side, switchPosition, scalePosition, driveTrain):#,   name):
         super().__init__(side, switchPosition, scalePosition, driveTrain)
-        name = "FARSWITCH"
+
+
+        name = "FARSWITCH" #    <-----
+
+
+
         self.masterlist = []
         self.default_loc = "/home/lvuser/py/" #"/home/svanderark/FRC_2018/GUI/convert/"
         with open(self.default_loc + name, "r") as f:
