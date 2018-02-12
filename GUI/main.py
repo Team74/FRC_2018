@@ -222,7 +222,7 @@ class SideButtons(DragBehavior, BoxLayout):
         BoxLayout.__init__(self, orientation='vertical', size_hint=(None, None), width=75)
         self.bind(pos=self.drag_set, size=self.drag_set)
 
-        self.local = False
+        self.local = True
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
         self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
@@ -269,7 +269,7 @@ class SideButtons(DragBehavior, BoxLayout):
             if self.local:
                 filechooser = FileChooserListView(path="/home/svanderark/FRC_2018/GUI", size_hint_y=0.8)
             else:
-                filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
+                pass#filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
             blah.content.add_widget(filechooser)
             textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
             blah.content.add_widget(textinput)
@@ -315,7 +315,7 @@ class SideButtons(DragBehavior, BoxLayout):
                 for i in newlist:
                     outputstring += (i + "\n")
 
-                with (open(filename, 'w') if self.local else filechooser.file_system.sftp.open(filename, 'w')) as f:
+                with (open(filename, 'w') ) as f:# if self.local else filechooser.file_system.sftp.open(filename, 'w')) as f:
                     if not self.local:
                         outputstring = outputstring.encode('utf-8')
                     f.write(outputstring)
@@ -333,7 +333,7 @@ class SideButtons(DragBehavior, BoxLayout):
             if self.local:
                 filechooser = FileChooserListView(path="/home/svanderark/FRC_2018/GUI", size_hint_y=0.8)
             else:
-                filechooser = FileChooserListView(file_system=FileSystemOverSSH('10.111.49.27', 'svanderark', 'chaos'), size_hint_y=0.8, path="/rhome/svanderark/")
+                pass#filechooser = FileChooserListView(file_system=FileSystemOverSSH('10.111.49.27', 'svanderark', 'chaos'), size_hint_y=0.8, path="/rhome/svanderark/")
             blah.content.add_widget(filechooser)
             button = Button(text='Select', size_hint_y=0.1)
             blah.content.add_widget(button)
@@ -343,7 +343,7 @@ class SideButtons(DragBehavior, BoxLayout):
                 clear_callback(None)
 
                 commandlist = []
-                with (open(filechooser.selection[0], 'r') if self.local else filechooser.file_system.sftp.open(filechooser.selection[0], 'r')) as file:
+                with (open(filechooser.selection[0], 'r') ) as file:#if self.local else filechooser.file_system.sftp.open(filechooser.selection[0], 'r')) as file:
                     angle = 0
                     position = [None, None]
 
