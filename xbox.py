@@ -1,11 +1,10 @@
+"""
+File Name: xbox.py
+File Purpose: Allows usage of an Xbox controller, with sensible names for xbox specific buttons and axes.
+"""
 from wpilib import Joystick, Timer
 
 class XboxController(object):
-    """
-        Allows usage of an Xbox controller, with sensible names for xbox
-        specific buttons and axes.
-
-    """
 
     def __init__(self, port):
         """
@@ -30,7 +29,7 @@ class XboxController(object):
         :returns: -1 to 1
         :rtype: float
         """
-        return self.joy.getRawAxis(1)
+        return float(self.joy.getRawAxis(1))
 
     #getX = self.getLeftX()
     #getY = self.getLeftY()
@@ -57,7 +56,7 @@ class XboxController(object):
         :returns: -1 to 1
         :rtype: float
         """
-        return self.joy.getRawAxis(4)
+        return float(self.joy.getRawAxis(4))
 
     def getRightY(self):
         """Get the right stick Y axis
