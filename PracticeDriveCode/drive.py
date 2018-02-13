@@ -168,12 +168,13 @@ class driveTrain():
                 self.drive.tankDrive((output) * .82, -(output) * .82, False)
 
             self.pivotLoopOut.pidWrite = setFunction
-            self.pivotPID = wpilib.PIDController(0.05,0,0, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02)
+            self.pivotPID = wpilib.PIDController(0.03, 0, 0.17, 0.1, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02)
             wpilib.LiveWindow.addActuator("Pivot", "Pivot PID Controller", self.pivotPID)
             print('Enabling')
             self.pivotPID.enable()
         if abs(self.pivotPID.get()) < 0.04:
-            return True
+            self.pivotPID.disable()
+            return False
         else:
             return True
         '''
