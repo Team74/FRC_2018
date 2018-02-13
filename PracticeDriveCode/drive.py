@@ -10,14 +10,14 @@ import robotpy_ext
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from wpilib.drive import DifferentialDrive
 from wpilib import RobotDrive
-from operatorFunctions import operatorControl
+from operatorFunctions import *
 import ctre
 import math
 
 class driveTrain():
 
     def __init__(self, robot):
-        self.operate = operatorControl(self)
+        self.operate = operatorFunctions(drive=self,robot=robot)
         self.gyro = AHRS.create_spi()
         #self.gyro = wpilib.interfaces.Gyro()
         """Sets drive motors to a cantalon or victor"""
@@ -294,7 +294,7 @@ class driveTrain():
                     #print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
             elif commandNumber == 2:
-                if self.
+                pass
         else:
             #print('3rd pass')
             pass

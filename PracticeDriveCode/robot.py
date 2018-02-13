@@ -9,7 +9,7 @@ from xbox import XboxController
 from wpilib.drive import DifferentialDrive
 from wpilib import DriverStation
 from drive import driveTrain
-from operatorFunctions import operatorControl
+from operatorFunctions import *
 from drive_2017 import driveTrain2017
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
@@ -23,10 +23,8 @@ from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from autonSmartDashBoardInterpret import interpret
 from AutonInterpreter import *
 import timeOut
-
 #import AutonHandling
 #import Autoninterpret
-#from operatorFunctions import operatorControl
 from wpilib import RobotDrive
 from wpilib.smartdashboard import SmartDashboard
 
@@ -183,7 +181,7 @@ class MyRobot(wpilib.IterativeRobot):
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
         #self.drive.printer()
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
-        self.operatorControl.operate(self.controllerTwo.getLeftY, self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(, self.controllerTwo.getStart(), self.controllerTwo.getBack()))
+        self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack())
         self.timeOut.time += 1
 if __name__ == "__main__":
     wpilib.run(MyRobot)

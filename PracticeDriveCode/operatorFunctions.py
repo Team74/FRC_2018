@@ -7,8 +7,9 @@ File Purpose: To create and run our operator functions
 import wpilib
 from wpilib import Encoder, RobotDrive
 import timeOut
+import ctre
 
-class operatorControl():
+class operatorFunctions():
     MIN_LIFT_HEIGHT = 'Some Value'#Value in encoder codes
     MAX_LIFT_HEIGHT = 'Some value'#Value in encoder codes
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
@@ -38,7 +39,7 @@ class operatorControl():
 
         self.winchMotorControlGroup = wpilib.SpeedControllerGroup(self.winchMotorOne, self.winchMotorTwo, self.winchMotorThree)
 
-    def operate(leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
+    def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
         self.raiseLowerLift(leftY)
         self.winchUpDown(rightY)
@@ -48,7 +49,7 @@ class operatorControl():
 
     def raiseLowerLift(self, leftY):
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
-        if (currentEncoderPosition >= MIN_LIFT_HEIGHT) and (currentEncoderPosition <= MAX_LIFT_HEIGHT):
+            if (currentEncoderPosition >= self.MIN_LIFT_HEIGHT) and (currentEncoderPosition <= self.MAX_LIFT_HEIGHT):
             self.liftMotor.set(leftY)
         else:
             self.liftMotor.set(0)
@@ -69,13 +70,13 @@ class operatorControl():
         self.liftMotor.set(math.sqrt(1-(currentEncoderPosition/liftHeight)))
 
     def deployClimber(self, startButton, backButton):
-            if (startButton or backButton) and (self.timeOut.time >= TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
+            if (startButton or backButton) and (self.timeOut.time >= self.TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
                 pass
             else:
                 pass
 
     def winchUpDown(self, rightY):#Operator can use right stick to raise the winch for climbing
-        if self.timeOut.time >= TIME_LEFT_UNTIL_ENDGAME:#Prevents climber from being deployed until the endgame starts
+        if self.timeOut.time >= self.TIME_LEFT_UNTIL_ENDGAME:#Prevents climber from being deployed until the endgame starts
             self.winchMotorControlGroup.set(rightY)
         else:
             pass
