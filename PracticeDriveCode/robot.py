@@ -86,11 +86,11 @@ class MyRobot(wpilib.IterativeRobot):
         self.switchLscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
 
         #print('Dashboard Test')
-        wpilib.SmartDashboard.putData('Starting Position', self.positionChooser)
-        wpilib.SmartDashboard.putData('Switch and Scale Left', self.switchLscaleL)
-        wpilib.SmartDashboard.putData('Switch Right, Scale Left', self.switchRscaleL)
-        wpilib.SmartDashboard.putData('Switch and Scale Right', self.switchRscaleR)
-        wpilib.SmartDashboard.putData('Switch Left, Scale Right', self.switchLscaleR)
+        self.dash.putData('Starting Position', self.positionChooser)
+        self.dash.putData('Switch and Scale Left', self.switchLscaleL)
+        self.dash.putData('Switch Right, Scale Left', self.switchRscaleL)
+        self.dash.putData('Switch and Scale Right', self.switchRscaleR)
+        self.dash.putData('Switch Left, Scale Right', self.switchLscaleR)
         #self.dash.putData('Switch Left, Scale Right', switchLscaleR)
         self.dash.putString('SanityCheck', '1')
 

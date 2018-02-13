@@ -165,10 +165,10 @@ class driveTrain():
             self.pivotLoopOut = wpilib.interfaces.PIDOutput()
             def setFunction(output):
                 print('Output')
-                self.drive.tankDrive(-(output) * .82, (output) * .82, False)
+                self.drive.tankDrive((output) * .82, -(output) * .82, False)
 
-            self.pivotLoopSource.pidWrite = setFunction
-            self.pivotPID = wpilib.PIDController(0.1,0,0, self.pivotLoopSource, self.pivotLoopOut, 0.02)
+            self.pivotLoopOut.pidWrite = setFunction
+            self.pivotPID = wpilib.PIDController(0.05,0,0, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02)
             wpilib.LiveWindow.addActuator("Pivot", "Pivot PID Controller", self.pivotPID)
             print('Enabling')
             self.pivotPID.enable()
