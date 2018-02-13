@@ -228,7 +228,7 @@ class SideButtons(DragBehavior, BoxLayout):
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
         #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/"
+        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', ""
         #self.local_path = "/home/svanderark/FRC_2018/GUI"
         self.local_path = r"C:\Users\Will Hescott"
 
@@ -340,7 +340,7 @@ class SideButtons(DragBehavior, BoxLayout):
             if self.local:
                 filechooser = FileChooserListView(path=self.local_path, size_hint_y=0.8)
             else:
-                filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
+                filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, rootpath=self.path)
 
             blah.content.add_widget(filechooser)
             button = Button(text='Select', size_hint_y=0.1)
@@ -437,14 +437,14 @@ class FileSystemOverSSH(FileSystemAbstract):
         self.client.close()
 
     def listdir(self, fn):
+        print(fn, "\tlistdir")
         # assume robot is on linux
         fn = fn.replace("C:\\",'').replace('\\', '/')
-        print(fn, "\tlistdir")
         return self.sftp.listdir(fn)
 
     def getsize(self, fn):
-        fn = fn.replace("C:\\",'').replace('\\', '/')
         print(fn, "\tgetsize")
+        fn = fn.replace("C:\\",'').replace('\\', '/')
         return self.sftp.stat(fn).st_size
 
     def is_hidden(self, fn):
@@ -453,8 +453,8 @@ class FileSystemOverSSH(FileSystemAbstract):
         #return basename(fn).startswith('.')
 
     def is_dir(self, fn):
-        fn = fn.replace("C:\\",'').replace('\\', '/')
         print(fn, "\tis_dir")
+        fn = fn.replace("C:\\",'').replace('\\', '/')
         return stat.S_ISDIR(self.sftp.stat(fn).st_mode)
 
 #------------------------------------------------------------------------------------------
