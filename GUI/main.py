@@ -227,10 +227,10 @@ class SideButtons(DragBehavior, BoxLayout):
         self.local = True
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
-        #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/"
-        #self.local_path = "/home/svanderark/FRC_2018/GUI"
-        self.local_path = r"C:\Users\Will Hescott"
+        self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
+        #self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/py/"
+        self.local_path = "/home/svanderark/FRC_2018/GUI"
+        #self.local_path = r"C:\Users\Will Hescott"
 
 
 
@@ -276,7 +276,7 @@ class SideButtons(DragBehavior, BoxLayout):
             if self.local:
                 filechooser = FileChooserListView(path=self.local_path, size_hint_y=0.8)
             else:
-                filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
+                pass#filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
             blah.content.add_widget(filechooser)
             textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
             blah.content.add_widget(textinput)
@@ -407,7 +407,7 @@ class SideButtons(DragBehavior, BoxLayout):
         self.importer.bind(on_press=importer_callback)
         self.add_widget(self.importer)
 
-        self.saveloc = Button(text="Local" if self.local else "Robot");
+        self.saveloc = Button(text="Robot");
         def location_callback(instance):
             self.local = not self.local
             self.saveloc.text = "Local" if self.local else "Robot"
@@ -428,7 +428,7 @@ class FileSystemOverSSH(FileSystemAbstract):
         super().__init__()
 
         self.client = paramiko.SSHClient()
-        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.client.load_system_host_keys()
         self.client.connect(target, username=username, password=password)
         self.sftp = self.client.open_sftp()
 
@@ -437,24 +437,17 @@ class FileSystemOverSSH(FileSystemAbstract):
         self.client.close()
 
     def listdir(self, fn):
-        # assume robot is on linux
-        fn = fn.replace("C:\\",'').replace('\\', '/')
-        print(fn, "\tlistdir")
         return self.sftp.listdir(fn)
 
     def getsize(self, fn):
-        fn = fn.replace("C:\\",'').replace('\\', '/')
-        print(fn, "\tgetsize")
         return self.sftp.stat(fn).st_size
 
     def is_hidden(self, fn):
-        return False
-        #again, assuming the robot runs linux not windows.
-        #return basename(fn).startswith('.')
+        #return False
+        #assuming the robot runs linux not windows.
+        return basename(fn).startswith('.')
 
     def is_dir(self, fn):
-        fn = fn.replace("C:\\",'').replace('\\', '/')
-        print(fn, "\tis_dir")
         return stat.S_ISDIR(self.sftp.stat(fn).st_mode)
 
 #------------------------------------------------------------------------------------------
