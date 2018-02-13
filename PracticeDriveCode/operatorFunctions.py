@@ -68,7 +68,7 @@ class operatorControl():
         elif setLiftPosition == 3:
             liftHeight = liftPositionThree
         self.liftMotor.set(math.sqrt(1-(currentEncoderPosition/liftHeight)))
-
+        return True
     def deployClimber(self, startButton, backButton):
             if (startButton or backButton) and (self.timeOut.time >= self.TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
                 pass
@@ -106,9 +106,12 @@ class operatorControl():
         if intakeMode == 1:#Neutral Mode
             self.leftManipulatorMotor.set(-0)
             self.rightManipulatorMotor.set(0)
+            return True
         elif intakeMode == 2:#Intake mode
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(-1)
+            return True
         elif intakeMode == 3:#Eject Mode
             self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(1)
+            return True

@@ -266,7 +266,9 @@ class driveTrain():
                     #print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
         elif moveNumberPass == self.moveNumber:
-            self.operate.autonRaiseLowerLift(setLiftPosition)
+            if self.operate.autonRaiseLowerLift(setLiftPosition):
+                pass
+            if self.operate.autonIntakeControl(intakeMode):
         else:
             pass
 
