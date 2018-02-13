@@ -1,3 +1,7 @@
+# Ignore all differences in line endings
+*        -crlf
+
+
 # Auto detect text files and perform LF normalization
 * text=auto
 
