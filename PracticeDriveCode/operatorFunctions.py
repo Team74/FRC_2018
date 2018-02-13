@@ -9,7 +9,7 @@ from wpilib import Encoder, RobotDrive
 import timeOut
 import ctre
 
-class operatorFunctions():
+class operatorControl():
     MIN_LIFT_HEIGHT = 'Some Value'#Value in encoder codes
     MAX_LIFT_HEIGHT = 'Some value'#Value in encoder codes
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
@@ -49,7 +49,7 @@ class operatorFunctions():
 
     def raiseLowerLift(self, leftY):
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
-            if (currentEncoderPosition >= self.MIN_LIFT_HEIGHT) and (currentEncoderPosition <= self.MAX_LIFT_HEIGHT):
+        if (currentEncoderPosition >= self.MIN_LIFT_HEIGHT) and (currentEncoderPosition <= self.MAX_LIFT_HEIGHT):
             self.liftMotor.set(leftY)
         else:
             self.liftMotor.set(0)

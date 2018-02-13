@@ -15,9 +15,10 @@ import ctre
 import math
 
 class driveTrain():
+    MOTOR_SPEED_CONTROL = 0.82
 
     def __init__(self, robot):
-        self.operate = operatorFunctions(drive=self,robot=robot)
+        self.operate = operatorFunctions(drive = self, robot = robot)
         self.gyro = AHRS.create_spi()
         #self.gyro = wpilib.interfaces.Gyro()
         """Sets drive motors to a cantalon or victor"""
@@ -27,10 +28,10 @@ class driveTrain():
         #self.driveBase = arcadeDrive()
 
         self.shifter = wpilib.DoubleSolenoid(51, 0, 1)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
-
-        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
-        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
-        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
+        #Motor Ids for comp. base lf = 4, lb = 2, rf = 5, rb = 2
+        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(4)
+        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(2)
+        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(5)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
 
         self.lfMotor.setNeutralMode(2)
@@ -44,7 +45,6 @@ class driveTrain():
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
-        self.resetFinish = False#Check for encoder reset
 
         self.setWheelCircumference()
 
@@ -54,6 +54,7 @@ class driveTrain():
         self.shiftCounter = 0
 
     def setWheelCircumference(self):
+        #$ inch wheels circ = 12.5663706144, 6 inch wheels circ = 18.849
         self.wheelCircumference = 18.84954
 
     def instantiateEncoders(self):
@@ -89,10 +90,10 @@ class driveTrain():
         print('Why does Hescott look so much like shrek?')
 
     def arcadeDrive(self, leftY, rightX):
-        #self.drive.arcadeDrive(leftY * -.82, self.scaleInputs(leftY, rightX) * .82)
+        #self.drive.arcadeDrive(leftY * -self.MOTOR_SPEED_CONTROL, self.scaleInputs(leftY, rightX) * self.MOTOR_SPEED_CONTROL)
         #print((-1 * self.scaleInputs(leftY, rightX)))
         #self.drive.arcadeDrive((-1 * self.scaleInputs(leftY, rightX)), (rightX/2))
-        self.drive.arcadeDrive(leftY * -.82, rightX * .82)
+        self.drive.arcadeDrive(leftY * -self.MOTOR_SPEED_CONTROL, rightX * self.MOTOR_SPEED_CONTROL)
 
     def shift(self, leftBumper, rightBumper):
         #print(self.shifter.get())
@@ -165,7 +166,7 @@ class driveTrain():
         if turnAngle < 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() >= turnAngle:
-                    self.drive.tankDrive(-(turnSpeed) * .82, (turnSpeed) * .82,False)
+                    self.drive.tankDrive(-(turnSpeed) * self.MOTOR_SPEED_CONTROL, (turnSpeed) * self.MOTOR_SPEED_CONTROL,False)
                     #print('Turning Left')
                     return True
                 elif self.getGyroAngle() <= turnAngle:
@@ -183,7 +184,7 @@ class driveTrain():
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() <= turnAngle:
                     #print('Turning Right')
-                    self.drive.tankDrive((turnSpeed) * .82, -(turnSpeed) * .82,False)
+                    self.drive.tankDrive((turnSpeed) * self.MOTOR_SPEED_CONTROL, -(turnSpeed) * self.MOTOR_SPEED_CONTROL,False)
                     return True
                 elif self.getGyroAngle() >= turnAngle:
                     self.drive.tankDrive(-.2, .2)
@@ -219,18 +220,6 @@ class driveTrain():
         #print(self.rbEncoderPosition)
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
         #print('Average Encodes' + str(averageEncoders))
-        '''
-        if averageEncoders > 250 and not self.resetFinish:
-            #self.encoderReset()
-            self.printEncoderPosition()
-            return True
-        else:
-            if not self.resetFinish:
-                print(self.lfEncoderPosition)
-                print(self.rbEncoderPosition)
-            #print('Encoder Reset Finished')
-            self.resetFinish = True
-        '''
         if averageEncoders < encoderDistance and self.autonCounter == 0:
             speedAdjustment = .05
             slowDownSpeed = .25
@@ -239,44 +228,27 @@ class driveTrain():
             speedAdjustment -= 0.025
             rSpeed += speedAdjustment
             lSpeed -= speedAdjustment
-            '''
-            if self.getGyroAngle() < -1:
-                rSpeed = rSpeed - speedAdjustment
-            elif self.getGyroAngle() > 1:
-                lSpeed = lSpeed - speedAdjustment
-            '''
             if averageEncoders > encoderDistance - 500:
                 lSpeed = slowDownSpeed
                 rSpeed = slowDownSpeed
                 #print('Slowing Down')
-            self.drive.tankDrive(lSpeed * .82, rSpeed * .82,False)
+            self.drive.tankDrive(lSpeed * self.MOTOR_SPEED_CONTROL, rSpeed * self.MOTOR_SPEED_CONTROL,False)
             return True
         else:
             if self.autonCounter < 4:
                 #print('Active Breaking')
-                self.drive.tankDrive(-.15 * .82, -.15 * .82,False)
+                self.drive.tankDrive(-.15 * self.MOTOR_SPEED_CONTROL, -.15 * self.MOTOR_SPEED_CONTROL,False)
                 self.autonCounter = self.autonCounter + 1
-                return True
+                return TrueMove
             else:
                 #print('EndLoop')
-                self.resetFinish = False
                 self.firstTime = True
                 self.drive.stopMotor()
                 #print(self.lfEncoderPosition)
                 print(self.rbEncoderPosition)
                 return False
 
-    '''
-    def autonAngledTurn(self, turnAngle):#Angle is in degrees
-        ROBOT_WIDTH = 24.3
-
-    def getSpeeds(self, angle, radius, speed=1):
-        return [speed, speed*(lambda x: x[1]/x[0])(getDistances(angle, radius))]
-
-    def getDistances(self, angle, radius):
-           return [(radius + ROBOT_WIDTH/2)*math.radians(angle), (radius - ROBOT_WIDTH/2)*math.radians(angle) ]
-    '''
-    def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed):
+    def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed, setLiftPosition, intakeMode):
         if moveNumberPass == self.moveNumber:
             #print(self.moveNumber)
             if commandNumber == 0:
@@ -293,10 +265,9 @@ class driveTrain():
                     #print(self.getGyroAngle())
                     #print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber = moveNumberPass + 1
-            elif commandNumber == 2:
-                pass
+        elif moveNumberPass == self.moveNumber:
+            self.operate.autonRaiseLowerLift(setLiftPosition)
         else:
-            #print('3rd pass')
             pass
 
     def resetMoveNumber(self):
