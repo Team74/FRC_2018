@@ -9,7 +9,7 @@ from xbox import XboxController
 from wpilib.drive import DifferentialDrive
 from wpilib import DriverStation
 from drive import driveTrain
-from operatorFunctions import *
+#from operatorFunctions import *
 from drive_2017 import driveTrain2017
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
@@ -34,6 +34,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
         self.drive = driveTrain(self)
+        #self.time = timeOut(self)
         self.interpret = interpret()
 
         self.controllerOne = XboxController(0)
@@ -181,7 +182,7 @@ class MyRobot(wpilib.IterativeRobot):
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
         #self.drive.printer()
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
-        self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack())
-        self.timeOut.time += 1
+        #self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack())
+        #self.time.time += 1
 if __name__ == "__main__":
     wpilib.run(MyRobot)

@@ -10,7 +10,7 @@ import robotpy_ext
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from wpilib.drive import DifferentialDrive
 from wpilib import RobotDrive
-from operatorFunctions import *
+#from operatorFunctions import *
 import ctre
 import math
 
@@ -18,7 +18,7 @@ class driveTrain():
     MOTOR_SPEED_CONTROL = 1
 
     def __init__(self, robot):
-        self.operate = operatorFunctions(drive = self, robot = robot)
+        #self.operate = operatorFunctions(drive = self, robot = robot)
         self.gyro = AHRS.create_spi()
         #self.gyro = wpilib.interfaces.Gyro()
         """Sets drive motors to a cantalon or victor"""
@@ -27,10 +27,10 @@ class driveTrain():
         #self.encoderReset()
         #self.driveBase = arcadeDrive()
 
-        self.shifter = wpilib.DoubleSolenoid(51, 0, 1)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
+        self.shifter = wpilib.DoubleSolenoid(20, 0, 1)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
         #Motor Ids for comp. base lf = 4, lb = 2, rf = 5, rb = 2
-        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(4)
-        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(2)
+        self.lbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+        self.lfMotor = ctre.wpi_victorspx.WPI_VictorSPX(4)
         self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(5)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
 
@@ -120,7 +120,7 @@ class driveTrain():
         #print("Encoders Reset")
 
     def printEncoderPosition(self):
-        lfEncoder = -(self.lfMotor.getQuadraturePosition())
+        lfEncoder = -(self.lbMotor.getQuadraturePosition())
         rbEncoder = self.rbMotor.getQuadraturePosition()
         averageEncoders = (lfEncoder + rbEncoder) / 2
         #print(averageEncoders)
@@ -156,13 +156,6 @@ class driveTrain():
 
         turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
         turnSpeed = max(turnSpeed, slowDownSpeed)
-        #turnSpeed = 0.15
-        '''
-        if abs(turnAngle - self.getGyroAngle()) < 25:
-            #print('Gyro Angle:'+str(self.getGyroAngle()))
-            #print('Turn Speed:'+str(turnSpeed))
-            turnSpeed = slowDownSpeed
-        '''
         if turnAngle < 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() >= turnAngle:
@@ -183,7 +176,6 @@ class driveTrain():
         elif turnAngle > 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() <= turnAngle:
-                    #print('Turning Right')
                     self.drive.tankDrive((turnSpeed) * self.MOTOR_SPEED_CONTROL, -(turnSpeed) * self.MOTOR_SPEED_CONTROL,False)
                     return True
                 elif self.getGyroAngle() >= turnAngle:
@@ -192,8 +184,6 @@ class driveTrain():
                 else:
                     pass
             else:
-                #print('Done Turning Right')
-                #print(self.getGyroAngle())
                 self.drive.stopMotor()
                 self.firstRun = True
                 return False
@@ -209,12 +199,12 @@ class driveTrain():
             #print('passed first check')#Debugging
             #self.encoderReset()#Resets encoders
             self.oldGyro = self.gyro.getAngle()
-            self.oldPositionLeft =  -(self.lfMotor.getQuadraturePosition())
+            self.oldPositionLeft =  -(self.lbMotor.getQuadraturePosition())
             self.oldPositionRight =  self.rbMotor.getQuadraturePosition()
             self.autonCounter = 0
             self.firstTime = False
 
-        self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition()) - self.oldPositionLeft
+        self.lfEncoderPosition = -(self.lbMotor.getQuadraturePosition()) - self.oldPositionLeft
         self.rbEncoderPosition = self.rbMotor.getQuadraturePosition() - self.oldPositionRight
         #print(self.lfEncoderPosition)
         #print(self.rbEncoderPosition)
@@ -247,7 +237,7 @@ class driveTrain():
                 #print(self.lfEncoderPosition)
                 print(self.rbEncoderPosition)
                 return False
-
+    '''
     def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed, setLiftPosition, intakeMode):
         if moveNumberPass == self.moveNumber:
             #print(self.moveNumber)
@@ -269,8 +259,9 @@ class driveTrain():
             if self.operate.autonRaiseLowerLift(setLiftPosition):
                 pass
             if self.operate.autonIntakeControl(intakeMode):
+                pass
         else:
             pass
-
+    '''
     def resetMoveNumber(self):
         self.moveNumber = 1

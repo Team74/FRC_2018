@@ -9,9 +9,9 @@ from wpilib import Encoder, RobotDrive
 import timeOut
 import ctre
 
-class operatorControl():
-    MIN_LIFT_HEIGHT = 'Some Value'#Value in encoder codes
-    MAX_LIFT_HEIGHT = 'Some value'#Value in encoder codes
+class operatorFunctions():
+    MIN_LIFT_HEIGHT = 1#Value in encoder codes
+    MAX_LIFT_HEIGHT = 1#Value in encoder codes
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
 
     def __init__(self, robot, drive):
