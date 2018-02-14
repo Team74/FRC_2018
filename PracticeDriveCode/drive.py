@@ -168,16 +168,25 @@ class driveTrain():
                 self.drive.tankDrive((output) * .82, -(output) * .82, False)
 
             self.pivotLoopOut.pidWrite = setFunction
-            self.pivotPID = wpilib.PIDController(0.03, 0, 0.17, 0.1, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02)
-            wpilib.LiveWindow.addActuator("Pivot", "Pivot PID Controller", self.pivotPID)
+            self.pivotPID = wpilib.PIDController(0.033, 0.00, 0.2, 0.1, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02)
             print('Enabling')
+            print('PID Initial OUT:' + str(self.pivotPID.get()))
             self.pivotPID.enable()
-        if abs(self.pivotPID.get()) < 0.04:
-            self.pivotPID.disable()
-            self.pivotPID.free()
-            return False
-        else:
+            self.buffCount = 0
             return True
+        print('PID OUT:' + str(self.pivotPID.get()))
+        if abs(self.pivotPID.get())<0.08 and abs(self.pivotLoopSource.pidGet())<2:
+            self.buffCount += 1
+        else:
+            self.buffCount = 0
+        if self.buffCount < 5:
+            return True
+        print('pivot ended with error' + str(self.pivotLoopSource.pidGet())+ 'degrees')
+        self.pivotPID.disable()
+        self.pivotPID.free()
+        self.drive.stopMotor()
+        self.firstRun = True
+        return False
         '''
         #turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
         #turnSpeed = max(turnSpeed, slowDownSpeed)

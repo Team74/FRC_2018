@@ -151,8 +151,8 @@ class MyRobot(wpilib.IterativeRobot):
         #self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
 
-        #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
-        self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
+        self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
+        #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
