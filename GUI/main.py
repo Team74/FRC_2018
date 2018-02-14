@@ -1,4 +1,9 @@
 import kivy
+
+kivy.utils.platform = "linux"	#get off my lawn
+import os
+os.path.sep = '/'   #kids
+
 from kivy.app import App
 from kivy.graphics import *
 from kivy.uix.widget import Widget
@@ -15,14 +20,11 @@ from kivy.uix.spinner import Spinner
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
-kivy.utils.platform = "linux"	#get off my lawn
-import os
-os.path.sep = '/'   #kids
 from kivy.uix.filechooser import (FileChooserListView, FileSystemAbstract)
 
 import paramiko
 
-import os
+#import os
 from os import listdir
 from os.path import (basename, getsize, isdir)
 import stat
@@ -223,6 +225,7 @@ class SideButtons(DragBehavior, BoxLayout):
     def __init__(self):
         DragBehavior.__init__(self)
         BoxLayout.__init__(self, orientation='vertical', size_hint=(None, None), width=75)
+
         self.bind(pos=self.drag_set, size=self.drag_set)
 
         #spam -- search here for some variables
@@ -231,7 +234,7 @@ class SideButtons(DragBehavior, BoxLayout):
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
         #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', ""
+        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/lvuser/"
         #self.local_path = "/home/svanderark/FRC_2018/GUI"
         self.local_path = r"C:\Users\Will Hescott"
 
@@ -277,7 +280,7 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8)
+                filechooser = FileChooserListView(path=self.local_path, size_hint_y=0.8)
             else:
                 filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
             blah.content.add_widget(filechooser)
@@ -464,13 +467,17 @@ class FileSystemOverSSH(FileSystemAbstract):
 class SSHFileChooserVC(FileChooserListView):
     def __init__(self, *args, **kwargs):
         print(args, kwargs)
+        print("OOOOGLLY BOOOOGLY")
         kwargs["rootpath"] = kwargs["path"]
         super().__init__(*args, **kwargs)
+        print(self.path)
 
     def _generate_file_entries(self, *args, **kwargs):		#dooo
         # Generator that will create all the files entries.
         # the generator is used via _update_files() and _create_files_entries()
         # don't use it directly.
+        sep = "/"
+
         is_root = False
         path = kwargs.get('path', self.path)
         have_parent = kwargs.get('parent', None) is not None
@@ -485,13 +492,14 @@ class SSHFileChooserVC(FileChooserListView):
             elif path == rootpath:
                 is_root = True
         else:
-            if platform == 'win':   #platform
-                is_root = splitdrive(path)[1] in (sep, altsep)
-            elif platform in ('macosx', 'linux', 'android', 'ios'):
-                is_root = normpath(expanduser(path)) == sep
-            else:
+            #if platform == 'win':   #platform
+            #    is_root = splitdrive(path)[1] in (sep, altsep)
+            #elif platform in ('macosx', 'linux', 'android', 'ios'):
+            #    is_root = normpath(expanduser(path)) == sep
+            is_root = normpath(expanduser(path)) == "/"
+            #else:
                 # Unknown fs, just always add the .. entry but also log
-                Logger.warning('Filechooser: Unsupported OS: %r' % platform)
+            #    Logger.warning('Filechooser: Unsupported OS: %r' % platform)
         # generate an entries to go back to previous
         if not is_root and not have_parent:             #DINGDINGDING
             back = '..' + sep
