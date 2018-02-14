@@ -174,6 +174,7 @@ class driveTrain():
             self.pivotPID.enable()
         if abs(self.pivotPID.get()) < 0.04:
             self.pivotPID.disable()
+            self.pivotPID.free()
             return False
         else:
             return True
