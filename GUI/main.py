@@ -15,6 +15,9 @@ from kivy.uix.spinner import Spinner
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
+kivy.utils.platform = "linux"	#get off my lawn
+import os
+os.path.sep = '/'   #kids
 from kivy.uix.filechooser import (FileChooserListView, FileSystemAbstract)
 
 import paramiko
@@ -274,7 +277,7 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = FileChooserListView(path=self.local_path, size_hint_y=0.8)
+                filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8)
             else:
                 filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
             blah.content.add_widget(filechooser)
@@ -437,14 +440,14 @@ class FileSystemOverSSH(FileSystemAbstract):
         self.client.close()
 
     def listdir(self, fn):
-        print(fn, "\tlistdir")
+        #print(fn, "\tlistdir")
         # assume robot is on linux
-        fn = fn.replace("C:\\",'').replace('\\', '/')
+        #fn = fn.replace("C:\\",'').replace('\\', '/')
         return self.sftp.listdir(fn)
 
     def getsize(self, fn):
-        print(fn, "\tgetsize")
-        fn = fn.replace("C:\\",'').replace('\\', '/')
+        #print(fn, "\tgetsize")
+        #fn = fn.replace("C:\\",'').replace('\\', '/')
         return self.sftp.stat(fn).st_size
 
     def is_hidden(self, fn):
@@ -453,9 +456,58 @@ class FileSystemOverSSH(FileSystemAbstract):
         #return basename(fn).startswith('.')
 
     def is_dir(self, fn):
-        print(fn, "\tis_dir")
-        fn = fn.replace("C:\\",'').replace('\\', '/')
+        #print(fn, "\tis_dir")
+        #fn = fn.replace("C:\\",'').replace('\\', '/')
         return stat.S_ISDIR(self.sftp.stat(fn).st_mode)
+
+
+class SSHFileChooserVC(FileChooserListView):
+    def __init__(self, *args, **kwargs):
+        print(args, kwargs)
+        kwargs["rootpath"] = kwargs["path"]
+        super().__init__(*args, **kwargs)
+
+    def _generate_file_entries(self, *args, **kwargs):		#dooo
+        # Generator that will create all the files entries.
+        # the generator is used via _update_files() and _create_files_entries()
+        # don't use it directly.
+        is_root = False
+        path = kwargs.get('path', self.path)
+        have_parent = kwargs.get('parent', None) is not None
+
+        # Add the components that are always needed
+        if self.rootpath:
+            rootpath = realpath(self.rootpath)
+            path = realpath(path)
+            if not path.startswith(rootpath):
+                self.path = rootpath
+                return
+            elif path == rootpath:
+                is_root = True
+        else:
+            if platform == 'win':   #platform
+                is_root = splitdrive(path)[1] in (sep, altsep)
+            elif platform in ('macosx', 'linux', 'android', 'ios'):
+                is_root = normpath(expanduser(path)) == sep
+            else:
+                # Unknown fs, just always add the .. entry but also log
+                Logger.warning('Filechooser: Unsupported OS: %r' % platform)
+        # generate an entries to go back to previous
+        if not is_root and not have_parent:             #DINGDINGDING
+            back = '..' + sep
+            pardir = self._create_entry_widget(dict(
+                name=back, size='', path=back, controller=ref(self),
+                isdir=True, parent=None, sep=sep, get_nice_size=lambda: ''))
+            yield 0, 1, pardir
+
+        # generate all the entries for files
+        try:
+            for index, total, item in self._add_files(path):
+                yield index, total, item
+        except OSError:
+            Logger.exception('Unable to open directory <%s>' % self.path)
+            self.files[:] = []
+
 
 #------------------------------------------------------------------------------------------
 
