@@ -165,21 +165,34 @@ class driveTrain():
             self.pivotLoopOut = wpilib.interfaces.PIDOutput()
             def setFunction(output):
                 print('Output')
+                output = math.copysign(abs(output)+0.0,output)
                 self.drive.tankDrive((output) * .82, -(output) * .82, False)
 
             self.pivotLoopOut.pidWrite = setFunction
-            self.pivotPID = wpilib.PIDController(0.033, 0.00, 0.2, 0.1, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02)
+            self.pivotPID = wpilib.PIDController(0.03, 0.00, 0.17, 0.1, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02)
             print('Enabling')
             print('PID Initial OUT:' + str(self.pivotPID.get()))
             self.pivotPID.enable()
             self.buffCount = 0
             return True
         print('PID OUT:' + str(self.pivotPID.get()))
-        if abs(self.pivotPID.get())<0.08 and abs(self.pivotLoopSource.pidGet())<2:
+        if abs(self.pivotPID.get())<0.1 and abs(self.pivotLoopSource.pidGet())<10:
+            if self.pivotPID.get() * self.pivotPID.totalError < 0:
+                self.pivotPID.totalError = 0
+            if self.pivotPID.getI() == 0:
+                self.pivotPID.totalError = 0
+                self.pivotPID.setD(0.2)
+                self.pivotPID.setI(0.01)
+                self.pivotPID.setP(0.03)
+        else:
+            self.pivotPID.setI(0)
+            self.pivotPID.setP(0.025)
+            self.pivotPID.setD(0.17)
+        if abs(self.pivotLoopSource.pidGet())<0.2:
             self.buffCount += 1
         else:
             self.buffCount = 0
-        if self.buffCount < 5:
+        if self.buffCount < 10:
             return True
         print('pivot ended with error' + str(self.pivotLoopSource.pidGet())+ 'degrees')
         self.pivotPID.disable()
