@@ -1,3 +1,3 @@
 class timeOut():
-    def __inti__(self):
+    def __init__(self):
         self.time = 1

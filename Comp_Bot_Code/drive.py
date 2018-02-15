@@ -10,7 +10,7 @@ import robotpy_ext
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from wpilib.drive import DifferentialDrive
 from wpilib import RobotDrive
-#from operatorFunctions import *
+from operatorFunctions import *
 import ctre
 import math
 
@@ -18,12 +18,11 @@ class driveTrain():
     MOTOR_SPEED_CONTROL = 1
 
     def __init__(self, robot):
-        #self.operate = operatorFunctions(drive = self, robot = robot)
+        self.operate = operatorFunctions(drive = self, robot = robot)
         self.gyro = AHRS.create_spi()
         #self.gyro = wpilib.interfaces.Gyro()
         """Sets drive motors to a cantalon or victor"""
-        self.instantiateMotors()
-        self.instantiateEncoders()
+        #self.instantiateMotors()
         #self.encoderReset()
         #self.driveBase = arcadeDrive()
 
@@ -52,27 +51,17 @@ class driveTrain():
 
         self.moveNumber = 1
         self.shiftCounter = 0
+        self.instantiateEncoders()
 
     def setWheelCircumference(self):
         #$ inch wheels circ = 12.5663706144, 6 inch wheels circ = 18.849
         self.wheelCircumference = 18.84954
 
     def instantiateEncoders(self):
-        self.lfMotor.configSelectedFeedbackSensor(0, 0, 0)
+        self.lbMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.rbMotor.configSelectedFeedbackSensor(0, 0, 0)
 
-        self.lfMotor.setSensorPhase(True)
-
-    def instantiateMotors(self):
-        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
-        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
-        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
-        self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
-
-        self.lfMotor.setNeutralMode(2)
-        self.lbMotor.setNeutralMode(2)
-        self.rfMotor.setNeutralMode(2)
-        self.rbMotor.setNeutralMode(2)
+        self.lbMotor.setSensorPhase(True)
 
     def drivePass(self, leftY, rightX, leftBumper, rightBumper, aButton):
         self.arcadeDrive(leftY, rightX)
@@ -115,12 +104,12 @@ class driveTrain():
             self.gyro.reset()
 
     def encoderReset(self):
-        self.lfMotor.setQuadraturePosition(0, 0)
+        self.lbMotor.setQuadraturePosition(0, 0)
         self.rbMotor.setQuadraturePosition(0, 0)
         #print("Encoders Reset")
 
     def printEncoderPosition(self):
-        lfEncoder = -(self.lbMotor.getQuadraturePosition())
+        lbEncoder = -(self.lbMotor.getQuadraturePosition())
         rbEncoder = self.rbMotor.getQuadraturePosition()
         averageEncoders = (lfEncoder + rbEncoder) / 2
         #print(averageEncoders)
@@ -128,7 +117,7 @@ class driveTrain():
 
     def manualEncoderReset(self, aButton):
         if aButton:
-            self.lfMotor.setQuadraturePosition(0, 0)
+            self.lbMotor.setQuadraturePosition(0, 0)
             self.rbMotor.setQuadraturePosition(0, 0)
         else:
             pass
@@ -237,31 +226,44 @@ class driveTrain():
                 #print(self.lfEncoderPosition)
                 print(self.rbEncoderPosition)
                 return False
-    '''
+
     def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed, setLiftPosition, intakeMode):
         if moveNumberPass == self.moveNumber:
             #print(self.moveNumber)
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):
-                    pass
+                    if self.operate.autonRaiseLowerLift(setLiftPosition):
+                        pass
+                    if self.operate.autonIntakeControl(intakeMode):
+                        pass
                 else:
                     #print(self.getGyroAngle())
                     #print('Move ' + str(moveNumberPass) + ' Complete')
-                    self.moveNumber = moveNumberPass + 1
+                    self.moveNumber += 1
             elif commandNumber == 1:
                 if self.autonPivot(turnAngle, turnSpeed):
-                    pass
+                    if self.operate.autonRaiseLowerLift(setLiftPosition):
+                        pass
+                    if self.operate.autonIntakeControl(intakeMode):
+                        pass
                 else:
                     #print(self.getGyroAngle())
                     #print('Move ' + str(moveNumberPass) + ' Complete')
-                    self.moveNumber = moveNumberPass + 1
-        elif moveNumberPass == self.moveNumber:
-            if self.operate.autonRaiseLowerLift(setLiftPosition):
-                pass
-            if self.operate.autonIntakeControl(intakeMode):
+                    self.moveNumber += 1
+            elif commandNumber == 2:
+                if self.operate.standaloneAutonRaiseLowerLift(setLiftPosition):
+                    pass
+                else:
+                    self.moveNumber += 1
+            elif commandNumber == 3:
+                if self.operate.standaloneAutonIntakeControl(intakeMode):
+                    pass
+                else:
+                    self.moveNumber += 1
+            else:
                 pass
         else:
             pass
-    '''
+
     def resetMoveNumber(self):
         self.moveNumber = 1
