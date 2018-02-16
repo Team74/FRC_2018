@@ -70,6 +70,5 @@ class autonTurningTuning(autonBaseInit):
         elif self.drive.autonMove(8 + self.moveNumber, 1, 0, 0, 90, .5):
             pass
         '''
-        if self.drive.autonMove(1, 1, 0, 0, -180, .5):
+        if self.drive.autonMove(1, 1, 0, 0, -90, .5):
             pass
-        

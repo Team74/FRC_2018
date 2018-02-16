@@ -26,9 +26,9 @@ class driveTrain():
 
         self.shifter = wpilib.DoubleSolenoid(51, 0, 1)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
 
-        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
-        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
-        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
+        self.lbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+        self.lfMotor = ctre.wpi_victorspx.WPI_VictorSPX(4)
+        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(5)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
 
         self.lfMotor.setNeutralMode(2)
@@ -166,29 +166,43 @@ class driveTrain():
             def setFunction(output):
                 print('Output')
                 output = math.copysign(abs(output)+0.0,output)
-                self.drive.tankDrive((output) * .82, -(output) * .82, False)
+                self.drive.tankDrive((output) , -(output) , False)
 
             self.pivotLoopOut.pidWrite = setFunction
-            self.pivotPID = wpilib.PIDController(0.03, 0.00, 0.17, 0.1, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02)
+            self.pivotPID = wpilib.PIDController(0.03, 0.00, 0.19, 0.1, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02) #parameters:0.03,0,0.19,0.1
             print('Enabling')
             print('PID Initial OUT:' + str(self.pivotPID.get()))
+            self.pivotPID.maximumOutput = 1
+            self.pivotPID.minimumOutput = 1
             self.pivotPID.enable()
             self.buffCount = 0
             return True
         print('PID OUT:' + str(self.pivotPID.get()))
-        if abs(self.pivotPID.get())<0.1 and abs(self.pivotLoopSource.pidGet())<10:
-            if self.pivotPID.get() * self.pivotPID.totalError < 0:
+        print('GYRO:' + str(self.pivotLoopSource.pidGet()))
+        if abs(self.pivotPID.get())<0.1 and abs(self.pivotLoopSource.pidGet())<0:
+            self.pivotPID.disable()
+            if self.pivotLoopSource.pidGet() > 0.2:
+                self.pivotLoopOut.pidWrite(-0.023)
+            elif self.pivotLoopSource.pidGet() < 0.2:
+                self.pivotLoopOut.pidWrite(0.023)
+            '''
+            if self.pivotLoopSource.pidGet() * self.pivotPID.totalError < 0:
                 self.pivotPID.totalError = 0
             if self.pivotPID.getI() == 0:
                 self.pivotPID.totalError = 0
-                self.pivotPID.setD(0.2)
-                self.pivotPID.setI(0.01)
-                self.pivotPID.setP(0.03)
+                self.pivotPID.setD(0.25)
+                self.pivotPID.setI(0.02)
+                self.pivotPID.setP(0.035)
+                '''
+
         else:
+            self.pivotPID.enable()
+            '''
             self.pivotPID.setI(0)
             self.pivotPID.setP(0.025)
             self.pivotPID.setD(0.17)
-        if abs(self.pivotLoopSource.pidGet())<0.2:
+            '''
+        if abs(self.pivotLoopSource.pidGet())<1:
             self.buffCount += 1
         else:
             self.buffCount = 0
