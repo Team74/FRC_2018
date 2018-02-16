@@ -28,7 +28,7 @@ class operatorFunctions():
         self.winchMotorOne = ctre.wpi_victorspx.WPI_VictorSPX(6)
         self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
         self.winchMotorThree = ctre.wpi_victorspx.WPI_VictorSPX(8)
-
+S
         self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
         self.rightManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(10)
 
@@ -48,6 +48,9 @@ class operatorFunctions():
         self.manipulatorIntake(aButton)
         self.ejectCube(xButton)
         self.deployClimber(startButton, backButton)
+
+    def liftTest(self):
+        print(self.liftMotor.getSelectedSensorPosition(0))
 
     def raiseLowerLift(self, leftY):
         currentEncoderPosition = 1
