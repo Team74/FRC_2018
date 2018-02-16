@@ -1,9 +1,5 @@
 import kivy
 
-kivy.utils.platform = "linux"	#get off my lawn
-import os
-os.path.sep = '/'   #kids
-
 from kivy.app import App
 from kivy.graphics import *
 from kivy.uix.widget import Widget
@@ -235,8 +231,8 @@ class SideButtons(DragBehavior, BoxLayout):
         self.HEIGHT = 27*12
         #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
         self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/lvuser/"
-        #self.local_path = "/home/svanderark/FRC_2018/GUI"
-        self.local_path = r"C:\Users\Will Hescott"
+        self.local_path = "/home/svanderark/FRC_2018/GUI"
+        #self.local_path = r"C:\Users\Will Hescott"
 
 
 
@@ -280,7 +276,7 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = FileChooserListView(path=self.local_path, size_hint_y=0.8)
+                filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8)
             else:
                 filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
             blah.content.add_widget(filechooser)
@@ -473,7 +469,11 @@ class SSHFileChooserVC(FileChooserListView):
         print(self.path)
 
     def _generate_file_entries(self, *args, **kwargs):		#dooo
-        # Generator that will create all the files entries.
+        print(args, "\t", kwargs)
+        x = super(SSHFileChooserVC, self)._generate_file_entries(*args, **kwargs)
+        print([i for i in x])
+        return x
+        '''# Generator that will create all the files entries.
         # the generator is used via _update_files() and _create_files_entries()
         # don't use it directly.
         sep = "/"
@@ -514,7 +514,7 @@ class SSHFileChooserVC(FileChooserListView):
                 yield index, total, item
         except OSError:
             Logger.exception('Unable to open directory <%s>' % self.path)
-            self.files[:] = []
+            self.files[:] = []'''
 
 
 #------------------------------------------------------------------------------------------
