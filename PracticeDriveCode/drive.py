@@ -26,9 +26,9 @@ class driveTrain():
 
         self.shifter = wpilib.DoubleSolenoid(51, 0, 1)#Initilizes the shifter's solenoid and sets it to read fron digital output 0
 
-        self.lbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
-        self.lfMotor = ctre.wpi_victorspx.WPI_VictorSPX(4)
-        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(5)
+        self.lfMotor = ctre.wpi_talonsrx.WPI_TalonSRX(2)
+        self.lbMotor = ctre.wpi_victorspx.WPI_VictorSPX(11)
+        self.rfMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
         self.rbMotor = ctre.wpi_talonsrx.WPI_TalonSRX(1)
 
         self.lfMotor.setNeutralMode(2)
