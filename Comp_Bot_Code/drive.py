@@ -16,6 +16,7 @@ import math
 
 class driveTrain():
     MOTOR_SPEED_CONTROL = 1
+    ENCODER_CODES_PER_REV = 5000
 
     def __init__(self, robot):
         self.operate = operatorFunctions(drive = self, robot = robot)
@@ -55,7 +56,7 @@ class driveTrain():
 
     def setWheelCircumference(self):
         #$ inch wheels circ = 12.5663706144, 6 inch wheels circ = 18.849
-        self.wheelCircumference = 18.84954
+        self.wheelCircumference = 12.5663706144
 
     def instantiateEncoders(self):
         self.lbMotor.configSelectedFeedbackSensor(0, 0, 0)
@@ -111,9 +112,13 @@ class driveTrain():
     def printEncoderPosition(self):
         lbEncoder = -(self.lbMotor.getQuadraturePosition())
         rbEncoder = self.rbMotor.getQuadraturePosition()
-        averageEncoders = (lfEncoder + rbEncoder) / 2
+        distanceDrivenInches = (lbEncoder / self.ENCODER_CODES_PER_REV) * self.wheelCircumference
+        #averageEncoders = (lbEncoder + rbEncoder) / 2
         #print(averageEncoders)
         #print(rbEncoder)
+        #print(lbEncoder)
+        #print(distanceDrivenInches)
+        #print(self.getGyroAngle())
 
     def manualEncoderReset(self, aButton):
         if aButton:
@@ -181,7 +186,7 @@ class driveTrain():
         #print('entered auton straight')
         lSpeed = speed
         rSpeed = speed
-        encoderDistance = (distance / self.wheelCircumference) * 5887#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
+        encoderDistance = (distance / self.wheelCircumference) * self.ENCODER_CODES_PER_REV#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
         #print('Encoder Distance' + str(encoderDistance))
 
         if self.firstTime:#Checks for first time through the function to only reset encoders on the first time
@@ -200,11 +205,12 @@ class driveTrain():
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
         #print('Average Encodes' + str(averageEncoders))
         if averageEncoders < encoderDistance and self.autonCounter == 0:
-            speedAdjustment = .05
+            speedAdjustment = .1
             slowDownSpeed = .25
-            gyroAngle = self.getGyroAngle();
+            gyroAngle = self.getGyroAngle()
             speedAdjustment /= 1+math.exp(-gyroAngle)
-            speedAdjustment -= 0.025
+            speedAdjustment -= 0.05
+            print(speedAdjustment)
             rSpeed += speedAdjustment
             lSpeed -= speedAdjustment
             if averageEncoders > encoderDistance - 500:
@@ -218,7 +224,7 @@ class driveTrain():
                 #print('Active Breaking')
                 self.drive.tankDrive(-.15 * self.MOTOR_SPEED_CONTROL, -.15 * self.MOTOR_SPEED_CONTROL,False)
                 self.autonCounter = self.autonCounter + 1
-                return TrueMove
+                return True
             else:
                 #print('EndLoop')
                 self.firstTime = True

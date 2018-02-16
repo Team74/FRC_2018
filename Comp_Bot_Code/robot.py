@@ -151,13 +151,13 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
-        self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
+        #self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
         #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
-        #self.auton = autonDrive('any', 'any', 'any', self.drive)
+        self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
-        #self.drive.printEncoderPosition()#Prints the position of the encoders
+        self.drive.printEncoderPosition()#Prints the position of the encoders
         #print(self.drive.getGyroAngle())
         if self.autonCounter >= 5:
             self.auton.run()
@@ -173,10 +173,8 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #self.drive.printer()
     def teleopPeriodic(self):
-        lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
-        rfEncoderPosition = self.drive.rbMotor.getQuadraturePosition()
-        #self.drive.printEncoderPosition()
-        #print("Gyro Angle", self.drive.getGyroAngle())
+        self.drive.printEncoderPosition()
+        print("Gyro Angle  ", self.drive.getGyroAngle())
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
