@@ -229,11 +229,11 @@ class SideButtons(DragBehavior, BoxLayout):
         self.local = True
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
-        #self.local_path = r"C:\Users\Will Hescott"
-        self.local_path = "/home/svanderark/FRC_2018/GUI"
+        self.local_path = r"C:\Users\Will Hescott"
+        #self.local_path = "/home/svanderark/FRC_2018/GUI"
 
-        self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        #self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/"
+        #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
+        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/"
 
 
 
