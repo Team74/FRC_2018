@@ -11,12 +11,13 @@ class AutonInterpreter(autonBaseInit):
         super().__init__(side, switchPosition, scalePosition, driveTrain)
 
 
-        name = "FARSWITCH" #    <-----
+        #name = "FARSWITCH" #    <-----
 
-
+        with open("prog_auton.txt") as f:
+            name = f.readline().strip()
 
         self.masterlist = []
-        self.default_loc = "/home/lvuser/py/" #"/home/svanderark/FRC_2018/GUI/convert/"
+        self.default_loc = "/home/lvuser/" #"/home/svanderark/FRC_2018/GUI/convert/"
         with open(self.default_loc + name, "r") as f:
             data = f.readlines()
             i = 0
@@ -37,4 +38,3 @@ class AutonInterpreter(autonBaseInit):
 
     def bloob(self, a, b, c, d, e, f, g, _h=0, _i=0):
         a.autonMove(b,c,d,e,f,g)
-

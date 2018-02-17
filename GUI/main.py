@@ -229,11 +229,11 @@ class SideButtons(DragBehavior, BoxLayout):
         self.local = True
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
-        self.local_path = r"C:\Users\Will Hescott"
+        #self.local_path = r"C:\Users\Will Hescott"
+        self.local_path = "/home/svanderark/FRC_2018/GUI"
 
-        #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/"
-        #self.local_path = "/home/svanderark/FRC_2018/GUI"
+        self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
+        #self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/"
 
 
 
@@ -304,8 +304,8 @@ class SideButtons(DragBehavior, BoxLayout):
                     x = x.next_node
 
                 if len(commandList) == 0:
-                    #return
-                    self.asdfghjklkjhgfdfg()[5:-1].exec()
+                    return
+                    self.asdfghjklkjhgfdfg()[5:-1].exec()   #deliberately crash it
 
                 nodepos = commandList[0][6:].split(", ")
                 nodepos = [float(nodepos[0].split(":")[1])*self.WIDTH, float(nodepos[1].split(":")[1])*self.HEIGHT]
@@ -477,7 +477,6 @@ class SSHFileChooserVC(FileChooserListView):
         #print(self.path)
 
     def _generate_file_entries(self, *args, **kwargs):		#dooo
-        print(args, "\t", kwargs)
         kwargs["path"] = kwargs["path"].replace("C:\\",'/').replace('\\', '/')
         x = super(SSHFileChooserVC, self)._generate_file_entries(*args, **kwargs)
         temp = [i for i in x]
