@@ -15,8 +15,8 @@ import ctre
 import math
 
 class driveTrain():
-    MOTOR_SPEED_CONTROL = 1
-    ENCODER_CODES_PER_REV = 5000
+    MOTOR_SPEED_CONTROL = .82
+    ENCODER_CODES_PER_REV = 5887
 
     def __init__(self, robot):
         self.operate = operatorFunctions(drive = self, robot = robot)
@@ -56,7 +56,7 @@ class driveTrain():
 
     def setWheelCircumference(self):
         #$ inch wheels circ = 12.5663706144, 6 inch wheels circ = 18.849
-        self.wheelCircumference = 12.5663706144
+        self.wheelCircumference = 18.849
 
     def instantiateEncoders(self):
         self.lbMotor.configSelectedFeedbackSensor(0, 0, 0)
@@ -110,13 +110,13 @@ class driveTrain():
         #print("Encoders Reset")
 
     def printEncoderPosition(self):
-        lbEncoder = -(self.lbMotor.getQuadraturePosition())
-        rbEncoder = self.rbMotor.getQuadraturePosition()
+        lbEncoder = (self.lbMotor.getQuadraturePosition())
+        rbEncoder = -(self.rbMotor.getQuadraturePosition())
         distanceDrivenInches = (lbEncoder / self.ENCODER_CODES_PER_REV) * self.wheelCircumference
         #averageEncoders = (lbEncoder + rbEncoder) / 2
         #print(averageEncoders)
-        #print(rbEncoder)
-        #print(lbEncoder)
+        print('Right encoder   ' + str(rbEncoder))
+        print('Left Encoder   ' + str(lbEncoder))
         #print(distanceDrivenInches)
         #print(self.getGyroAngle())
 
@@ -193,13 +193,13 @@ class driveTrain():
             #print('passed first check')#Debugging
             #self.encoderReset()#Resets encoders
             self.oldGyro = self.gyro.getAngle()
-            self.oldPositionLeft =  -(self.lbMotor.getQuadraturePosition())
-            self.oldPositionRight =  self.rbMotor.getQuadraturePosition()
+            self.oldPositionLeft =  (self.lbMotor.getQuadraturePosition())
+            self.oldPositionRight =  -(self.rbMotor.getQuadraturePosition())
             self.autonCounter = 0
             self.firstTime = False
 
-        self.lfEncoderPosition = -(self.lbMotor.getQuadraturePosition()) - self.oldPositionLeft
-        self.rbEncoderPosition = self.rbMotor.getQuadraturePosition() - self.oldPositionRight
+        self.lfEncoderPosition = (self.lbMotor.getQuadraturePosition()) - self.oldPositionLeft
+        self.rbEncoderPosition = -(self.rbMotor.getQuadraturePosition()) - self.oldPositionRight
         #print(self.lfEncoderPosition)
         #print(self.rbEncoderPosition)
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
