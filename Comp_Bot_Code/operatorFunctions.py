@@ -26,11 +26,11 @@ class operatorFunctions():
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
 
         self.winchMotorOne = ctre.wpi_victorspx.WPI_VictorSPX(6)
-        self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
-        self.winchMotorThree = ctre.wpi_victorspx.WPI_VictorSPX(8)
+        self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(8)
+        self.winchMotorThree = ctre.wpi_victorspx.WPI_VictorSPX(10)
 
-        self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
-        self.rightManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(10)
+        self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(7)
+        self.rightManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
 
         self.doWeHaveACube = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from digital input 0
 

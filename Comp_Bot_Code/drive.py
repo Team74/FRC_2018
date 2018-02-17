@@ -142,7 +142,7 @@ class driveTrain():
             pass
 
     def autonPivot(self, turnAngle, turnSpeed):
-        slowDownSpeed = .14
+        slowDownSpeed = .12
         correctionDeadzone = .5
         if self.firstRun:
             self.oldGyro = self.gyro.getAngle()
@@ -200,6 +200,9 @@ class driveTrain():
 
         self.lfEncoderPosition = (self.lbMotor.getQuadraturePosition()) - self.oldPositionLeft
         self.rbEncoderPosition = -(self.rbMotor.getQuadraturePosition()) - self.oldPositionRight
+        if speed < 0:#If speed is negetive, this lets us drive backward
+            self.lfEncoderPosition *= -1
+            self.rbEncoderPosition *= -1
         #print(self.lfEncoderPosition)
         #print(self.rbEncoderPosition)
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2

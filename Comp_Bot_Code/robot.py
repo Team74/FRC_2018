@@ -153,9 +153,9 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
-        #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
+        self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
-        self.auton = autonDrive('any', 'any', 'any', self.drive)
+        #self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
         self.drive.printEncoderPosition()#Prints the position of the encoders
         #print(self.drive.getGyroAngle())
