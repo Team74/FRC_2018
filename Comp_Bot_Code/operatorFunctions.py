@@ -55,7 +55,7 @@ S
     def raiseLowerLift(self, leftY):
         currentEncoderPosition = 1
         #currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
-        if (currentEncoderPosition >= self.MIN_LIFT_HEIGHT) and (currentEncoderPosition <= self.MAX_LIFT_HEIGHT):
+        if (currentEncoderPosition >= self.MIN_LIFT_HEIGHT) and (currentEncoderPosition <= (self.MAX_LIFT_HEIGHT - 250):
             self.liftMotor.set(leftY)
         else:
             self.liftMotor.set(0)
