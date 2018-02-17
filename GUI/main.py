@@ -229,10 +229,11 @@ class SideButtons(DragBehavior, BoxLayout):
         self.local = True
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
+        self.local_path = r"C:\Users\Will Hescott"
+
         #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/lvuser/"
-        self.local_path = "/home/svanderark/FRC_2018/GUI"
-        #self.local_path = r"C:\Users\Will Hescott"
+        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/"
+        #self.local_path = "/home/svanderark/FRC_2018/GUI"
 
 
 
@@ -276,9 +277,9 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8)
+                filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8, local=True)#, local=self.local) SSHFileChooserVC
             else:
-                filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path)
+                filechooser = SSHFileChooserVC(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, local = False)
             blah.content.add_widget(filechooser)
             textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
             blah.content.add_widget(textinput)
@@ -289,9 +290,9 @@ class SideButtons(DragBehavior, BoxLayout):
                 if textinput.text == "" and filechooser.selection == []:
                     return
                 if filechooser.selection == []:
-                    filename = filechooser.path + "/" + textinput.text
+                    filename = filechooser.path.replace("C:\\",'/').replace('\\', '/') + "/" + textinput.text
                 else:
-                    filename = filechooser.selection[0]
+                    filename = filechooser.selection[0].replace("C:\\",'/').replace('\\', '/')
 
                 x = self.parent.head
                 commandList = []
@@ -301,6 +302,10 @@ class SideButtons(DragBehavior, BoxLayout):
                     for i in x.command_list:
                         commandList.append(str("Comm> " + i + "\n"))
                     x = x.next_node
+
+                if len(commandList) == 0:
+                    #return
+                    self.asdfghjklkjhgfdfg()[5:-1].exec()
 
                 nodepos = commandList[0][6:].split(", ")
                 nodepos = [float(nodepos[0].split(":")[1])*self.WIDTH, float(nodepos[1].split(":")[1])*self.HEIGHT]
@@ -324,7 +329,7 @@ class SideButtons(DragBehavior, BoxLayout):
                 for i in newlist:
                     outputstring += (i + "\n")
 
-                with (open(filename, 'w') ) as f:# if self.local else filechooser.file_system.sftp.open(filename, 'w')) as f:
+                with (open(filename, 'w') if self.local else filechooser.file_system.sftp.open(filename, 'w')) as f:
                     if not self.local:
                         outputstring = outputstring.encode('utf-8')
                     f.write(outputstring)
@@ -340,9 +345,9 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose input file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
             if self.local:
-                filechooser = FileChooserListView(path=self.local_path, size_hint_y=0.8)
+                filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8, local=True)
             else:
-                filechooser = FileChooserListView(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, rootpath=self.path)
+                filechooser = SSHFileChooserVC(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, local=True)
 
             blah.content.add_widget(filechooser)
             button = Button(text='Select', size_hint_y=0.1)
@@ -353,7 +358,8 @@ class SideButtons(DragBehavior, BoxLayout):
                 clear_callback(None)
 
                 commandlist = []
-                with (open(filechooser.selection[0], 'r') ) as file:#if self.local else filechooser.file_system.sftp.open(filechooser.selection[0], 'r')) as file:
+                filename = filechooser.selection[0].replace("C:\\",'/').replace('\\', '/')
+                with (open(filename, 'r') if self.local else filechooser.file_system.sftp.open(filename, 'r')) as file:
                     angle = 0
                     position = [None, None]
 
@@ -441,12 +447,12 @@ class FileSystemOverSSH(FileSystemAbstract):
     def listdir(self, fn):
         #print(fn, "\tlistdir")
         # assume robot is on linux
-        #fn = fn.replace("C:\\",'').replace('\\', '/')
+        fn = fn.replace("C:\\",'').replace('\\', '/')
         return self.sftp.listdir(fn)
 
     def getsize(self, fn):
         #print(fn, "\tgetsize")
-        #fn = fn.replace("C:\\",'').replace('\\', '/')
+        fn = fn.replace("C:\\",'').replace('\\', '/')
         return self.sftp.stat(fn).st_size
 
     def is_hidden(self, fn):
@@ -456,66 +462,30 @@ class FileSystemOverSSH(FileSystemAbstract):
 
     def is_dir(self, fn):
         #print(fn, "\tis_dir")
-        #fn = fn.replace("C:\\",'').replace('\\', '/')
+        fn = fn.replace("C:\\",'').replace('\\', '/')
         return stat.S_ISDIR(self.sftp.stat(fn).st_mode)
 
 
 class SSHFileChooserVC(FileChooserListView):
     def __init__(self, *args, **kwargs):
-        print(args, kwargs)
-        print("OOOOGLLY BOOOOGLY")
-        kwargs["rootpath"] = kwargs["path"]
+        #print(args, kwargs)
+        #print("OOOOGLLY BOOOOGLY")
+        #kwargs["rootpath"] = kwargs["path"]
+        self.local = kwargs["local"]    #Assuming this program is run on windows, True is the other one is also windows, false is connecting to linux
+        del kwargs["local"]
         super().__init__(*args, **kwargs)
-        print(self.path)
+        #print(self.path)
 
     def _generate_file_entries(self, *args, **kwargs):		#dooo
         print(args, "\t", kwargs)
+        kwargs["path"] = kwargs["path"].replace("C:\\",'/').replace('\\', '/')
         x = super(SSHFileChooserVC, self)._generate_file_entries(*args, **kwargs)
-        print([i for i in x])
-        return x
-        '''# Generator that will create all the files entries.
-        # the generator is used via _update_files() and _create_files_entries()
-        # don't use it directly.
-        sep = "/"
-
-        is_root = False
-        path = kwargs.get('path', self.path)
-        have_parent = kwargs.get('parent', None) is not None
-
-        # Add the components that are always needed
-        if self.rootpath:
-            rootpath = realpath(self.rootpath)
-            path = realpath(path)
-            if not path.startswith(rootpath):
-                self.path = rootpath
-                return
-            elif path == rootpath:
-                is_root = True
-        else:
-            #if platform == 'win':   #platform
-            #    is_root = splitdrive(path)[1] in (sep, altsep)
-            #elif platform in ('macosx', 'linux', 'android', 'ios'):
-            #    is_root = normpath(expanduser(path)) == sep
-            is_root = normpath(expanduser(path)) == "/"
-            #else:
-                # Unknown fs, just always add the .. entry but also log
-            #    Logger.warning('Filechooser: Unsupported OS: %r' % platform)
-        # generate an entries to go back to previous
-        if not is_root and not have_parent:             #DINGDINGDING
-            back = '..' + sep
-            pardir = self._create_entry_widget(dict(
-                name=back, size='', path=back, controller=ref(self),
-                isdir=True, parent=None, sep=sep, get_nice_size=lambda: ''))
-            yield 0, 1, pardir
-
-        # generate all the entries for files
-        try:
-            for index, total, item in self._add_files(path):
-                yield index, total, item
-        except OSError:
-            Logger.exception('Unable to open directory <%s>' % self.path)
-            self.files[:] = []'''
-
+        temp = [i for i in x]
+        for i in temp:
+            if not self.local:
+                i[2].path = i[2].path.replace("C:\\",'/').replace('\\', '/')
+            #print(i, i[2].path)
+            yield i
 
 #------------------------------------------------------------------------------------------
 
