@@ -152,12 +152,12 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = AutonInterpreter(3,3,3,self.drive)
 
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
-        self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
+        #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
         #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
-        #self.auton = autonNearScale('left', 'L', 'L', self.drive)
+        self.auton = autonNearScale('left', 'L', 'L', self.drive)
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
         #self.gameData=DriverStation.getInstance().getGameSpecificMessage()
@@ -168,19 +168,15 @@ class MyRobot(wpilib.IterativeRobot):
         else:
             self.autonCounter = self.autonCounter + 1
         #self.AutonHandling.readCommandList(None, "square")
-        #lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
-        #rbEncoderPosition = self.drive.rbMotor.getQuadraturePosition()
-        #averageEncoder = (lfEncoderPosition + rbEncoderPosition) / 2
+        self.drive.printEncoderPosition()
         #wpilib.SmartDashboard.putNumber('Left Encoder Position', lfEncoderPosition)
         #wpilib.SmartDashboard.putNumber('Right Encoder Position', rbEncoderPosition)
         #wpilib.SmartDashboard.putNumber(' Average Encodes', averageEncoder)
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #self.drive.printer()
     def teleopPeriodic(self):
-        lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
-        rfEncoderPosition = self.drive.rbMotor.getQuadraturePosition()
-        #self.drive.printEncoderPosition()
-        #print("Gyro Angle", self.drive.getGyroAngle())
+        self.drive.printEncoderPosition()
+        print("Gyro Angle", self.drive.getGyroAngle())
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())

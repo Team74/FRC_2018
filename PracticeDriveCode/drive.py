@@ -117,11 +117,12 @@ class driveTrain():
         #print("Encoders Reset")
 
     def printEncoderPosition(self):
-        lfEncoder = -(self.lfMotor.getQuadraturePosition())
-        rbEncoder = self.rbMotor.getQuadraturePosition()
+        lfEncoder = (self.lfMotor.getQuadraturePosition())
+        rbEncoder = (self.rbMotor.getQuadraturePosition() * -1)
         averageEncoders = (lfEncoder + rbEncoder) / 2
         #print(averageEncoders)
-        #print(rbEncoder)
+        print(lfEncoder)
+        print(rbEncoder)
 
     def manualEncoderReset(self, aButton):
         if aButton:
@@ -166,7 +167,7 @@ class driveTrain():
             def setFunction(output):
                 print('Output')
                 output = math.copysign(abs(output)+0.0,output)
-                self.drive.tankDrive((output) , -(output) , False)
+                self.drive.tankDrive(-(output) , (output) , False)
 
             self.pivotLoopOut.pidWrite = setFunction
             self.pivotPID = wpilib.PIDController(0.03, 0.00, 0.19, 0.1, source=self.pivotLoopSource, output=self.pivotLoopOut, period=0.02) #parameters:0.03,0,0.19,0.1
@@ -269,13 +270,13 @@ class driveTrain():
             #print('passed first check')#Debugging
             #self.encoderReset()#Resets encoders
             self.oldGyro = self.gyro.getAngle()
-            self.oldPositionLeft =  -(self.lfMotor.getQuadraturePosition())
-            self.oldPositionRight =  self.rbMotor.getQuadraturePosition()
+            self.oldPositionLeft =  (self.lfMotor.getQuadraturePosition())
+            self.oldPositionRight =  (self.rbMotor.getQuadraturePosition() * -1)
             self.autonCounter = 0
             self.firstTime = False
 
-        self.lfEncoderPosition = -(self.lfMotor.getQuadraturePosition()) - self.oldPositionLeft
-        self.rbEncoderPosition = self.rbMotor.getQuadraturePosition() - self.oldPositionRight
+        self.lfEncoderPosition = (self.lfMotor.getQuadraturePosition()) - self.oldPositionLeft
+        self.rbEncoderPosition = (self.rbMotor.getQuadraturePosition() * -1) - self.oldPositionRight
         #print(self.lfEncoderPosition)
         #print(self.rbEncoderPosition)
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
