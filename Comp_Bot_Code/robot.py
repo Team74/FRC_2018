@@ -22,7 +22,7 @@ import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from autonSmartDashBoardInterpret import interpret
 from AutonInterpreter import *
-import timeOut
+from timeOut import *
 #import AutonHandling
 #import Autoninterpret
 from wpilib import RobotDrive
@@ -34,7 +34,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
         self.drive = driveTrain(self)
-        #self.time = timeOut(self)
+        self.time = timeOut()
         self.interpret = interpret()
 
         self.controllerOne = XboxController(0)
