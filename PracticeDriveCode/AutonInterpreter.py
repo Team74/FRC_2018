@@ -13,11 +13,11 @@ class AutonInterpreter(autonBaseInit):
 
         #name = "FARSWITCH" #    <-----
 
-        with open("prog_auton.txt") as f:
+        with open("/home/lvuser/prog_auton.txt") as f:
             name = f.readline().strip()
 
         self.masterlist = []
-        self.default_loc = "/home/lvuser/" #"/home/svanderark/FRC_2018/GUI/convert/"
+        self.default_loc = "/home/lvuser/prog_auton_dir" #"/home/svanderark/FRC_2018/GUI/convert/"
         with open(self.default_loc + name, "r") as f:
             data = f.readlines()
             i = 0

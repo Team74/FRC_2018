@@ -233,8 +233,10 @@ class SideButtons(DragBehavior, BoxLayout):
         #self.local_path = "/home/svanderark/FRC_2018/GUI"
 
         #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/"
+        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/prog_auton_dir"
 
+        #self.target_file = ["/rhome/svanderark/test_prog", "/home/svanderark/FRC_2018/GUI/test_prog_auton.txt"]
+        self.target_file = ["/home/lvuser/prog_auton.txt", r"C:\Users\Will Hescott\test_prog"]
 
 
         self.switch = Button(text="Select");
@@ -276,15 +278,31 @@ class SideButtons(DragBehavior, BoxLayout):
         def encode_callback(instance):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
+            blah.selector = content=BoxLayout(orientation='vertical', size_hint=(1,1.5))
+            blah.content.add_widget(blah.selector)
+            blah.otherthing = content=BoxLayout(orientation='vertical',size_hint=(1,0.5))
+            blah.content.add_widget(blah.otherthing)
+
+
+            try:
+                with (open(self.target_file[self.local], 'r') if self.local else filechooser.file_system.sftp.open(self.target_file[self.local], "r")) as f:
+                    name = f.readline().strip()
+            except Exception:
+                name = '!error!' #ayy
+            blah.otherthing.add_widget(Label(text="-----------------------"))
+            blah.otherthing.add_widget(Label(text="Select current targeted auton"))
+            blah.target = TextInput(text=name, multiline=False)
+            blah.otherthing.add_widget(blah.target)
+
             if self.local:
                 filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8, local=True)#, local=self.local) SSHFileChooserVC
             else:
                 filechooser = SSHFileChooserVC(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, local = False)
-            blah.content.add_widget(filechooser)
+            blah.selector.add_widget(filechooser)
             textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
-            blah.content.add_widget(textinput)
+            blah.selector.add_widget(textinput)
             button = Button(text='Select', size_hint_y=0.1)
-            blah.content.add_widget(button)
+            blah.selector.add_widget(button)
             def choose(thing):
                 filename = ''
                 if textinput.text == "" and filechooser.selection == []:
@@ -335,6 +353,11 @@ class SideButtons(DragBehavior, BoxLayout):
                     f.write(outputstring)
                 blah.dismiss()
             button.bind(on_release=choose)
+            def save_target(instance):
+                with (open(self.target_file[self.local], 'w') if self.local else filechooser.file_system.sftp.open(self.target_file[self.local], 'w')) as f:
+                    f.write(blah.target.text)
+                return False
+            blah.bind(on_dismiss=save_target)
             blah.open()
         self.encode.bind(on_press=encode_callback)
         self.add_widget(self.encode)
