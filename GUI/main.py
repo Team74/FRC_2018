@@ -276,88 +276,96 @@ class SideButtons(DragBehavior, BoxLayout):
 
         self.encode = Button(text="Encode");
         def encode_callback(instance):
+
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
-            blah.selector = content=BoxLayout(orientation='vertical', size_hint=(1,1.5))
-            blah.content.add_widget(blah.selector)
-            blah.otherthing = content=BoxLayout(orientation='vertical',size_hint=(1,0.5))
-            blah.content.add_widget(blah.otherthing)
-
 
             try:
                 with (open(self.target_file[self.local], 'r') if self.local else filechooser.file_system.sftp.open(self.target_file[self.local], "r")) as f:
                     name = f.readline().strip()
             except Exception:
                 name = '!error!' #ayy
+            blah.otherthing = BoxLayout(orientation='vertical',size_hint=(1,0.5))
             blah.otherthing.add_widget(Label(text="-----------------------"))
             blah.otherthing.add_widget(Label(text="Select current targeted auton"))
             blah.target = TextInput(text=name, multiline=False)
             blah.otherthing.add_widget(blah.target)
 
-            if self.local:
-                filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8, local=True)#, local=self.local) SSHFileChooserVC
+            if self.parent.head == None:
+                blah.selector = Label(text="Error: Please create a route to be able to save file")
             else:
-                filechooser = SSHFileChooserVC(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, local = False)
-            blah.selector.add_widget(filechooser)
-            textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
-            blah.selector.add_widget(textinput)
-            button = Button(text='Select', size_hint_y=0.1)
-            blah.selector.add_widget(button)
-            def choose(thing):
-                filename = ''
-                if textinput.text == "" and filechooser.selection == []:
-                    return
-                if filechooser.selection == []:
-                    filename = filechooser.path.replace("C:\\",'/').replace('\\', '/') + "/" + textinput.text
+                blah.selector = BoxLayout(orientation='vertical', size_hint=(1,1.5))
+                if self.local:
+                    filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8, local=True)#, local=self.local) SSHFileChooserVC
                 else:
-                    filename = filechooser.selection[0].replace("C:\\",'/').replace('\\', '/')
-
-                x = self.parent.head
-                commandList = []
-                while x is not None:
-                    text = str("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
-                    commandList.append(text)
-                    for i in x.command_list:
-                        commandList.append(str("Comm> " + i + "\n"))
-                    x = x.next_node
-
-                if len(commandList) == 0:
-                    return
-                    self.asdfghjklkjhgfdfg()[5:-1].exec()   #deliberately crash it
-
-                nodepos = commandList[0][6:].split(", ")
-                nodepos = [float(nodepos[0].split(":")[1])*self.WIDTH, float(nodepos[1].split(":")[1])*self.HEIGHT]
-                newlist = [str(nodepos[0]) + "," + str(nodepos[1])]
-                angle = 0
-                for line in commandList[1:]:
-                    if line[:6] == "Node> ":
-                        x = line[6:-1].split(", ")
-                        temp = [float(x[0].split(":")[1])*self.WIDTH, float(x[1].split(":")[1])*self.HEIGHT]
-                        new_angle = math.degrees(math.atan2(-(temp[0] - nodepos[0]), (temp[1] - nodepos[1])))
-                        newlist.append("1," + str((angle - new_angle + 180) % 360 - 180)) #assuming the robot points forward on the field, do -x, y for y,x to account for 90 degree rotation
-                        dist = math.sqrt((nodepos[0] - temp[0])**2 + (nodepos[1] - temp[1])**2)
-                        newlist.append("0,1," + str(dist) + ",1," + str(dist))
-                        nodepos = temp
-                        angle = new_angle
-                    elif line[:6] == "Comm> ":
-                        newlist.append(self.commandOptions[line[6:-1]])
+                    filechooser = SSHFileChooserVC(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, local = False)
+                blah.selector.add_widget(filechooser)
+                textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
+                blah.selector.add_widget(textinput)
+                button = Button(text='Select', size_hint_y=0.1)
+                blah.selector.add_widget(button)
+                def choose(thing):
+                    filename = ''
+                    if textinput.text == "" and filechooser.selection == []:
+                        return
+                    if filechooser.selection == []:
+                        filename = filechooser.path.replace("C:\\",'/').replace('\\', '/') + "/" + textinput.text
                     else:
-                        print("Type Not Found")
-                outputstring = ""
-                for i in newlist:
-                    outputstring += (i + "\n")
+                        filename = filechooser.selection[0].replace("C:\\",'/').replace('\\', '/')
 
-                with (open(filename, 'w') if self.local else filechooser.file_system.sftp.open(filename, 'w')) as f:
-                    if not self.local:
-                        outputstring = outputstring.encode('utf-8')
-                    f.write(outputstring)
-                blah.dismiss()
-            button.bind(on_release=choose)
+                    x = self.parent.head
+                    commandList = []
+                    while x is not None:
+                        text = str("Node> " + "x:" + str(x.pos_hint["x"]) + ", y:" + str(x.pos_hint["y"]) + "\n" )
+                        commandList.append(text)
+                        for i in x.command_list:
+                            commandList.append(str("Comm> " + i + "\n"))
+                        x = x.next_node
+
+                    #if len(commandList) == 0:
+                    #    return
+                    #    self.asdfghjklkjhgfdfg()[5:-1].exec()   #deliberately crash it
+
+                    nodepos = commandList[0][6:].split(", ")
+                    nodepos = [float(nodepos[0].split(":")[1])*self.WIDTH, float(nodepos[1].split(":")[1])*self.HEIGHT]
+                    newlist = [str(nodepos[0]) + "," + str(nodepos[1])]
+                    angle = 0
+                    for line in commandList[1:]:
+                        if line[:6] == "Node> ":
+                            x = line[6:-1].split(", ")
+                            temp = [float(x[0].split(":")[1])*self.WIDTH, float(x[1].split(":")[1])*self.HEIGHT]
+                            new_angle = math.degrees(math.atan2(-(temp[0] - nodepos[0]), (temp[1] - nodepos[1])))
+                            newlist.append("1," + str((angle - new_angle + 180) % 360 - 180)) #assuming the robot points forward on the field, do -x, y for y,x to account for 90 degree rotation
+                            dist = math.sqrt((nodepos[0] - temp[0])**2 + (nodepos[1] - temp[1])**2)
+                            newlist.append("0,1," + str(dist) + ",1," + str(dist))
+                            nodepos = temp
+                            angle = new_angle
+                        elif line[:6] == "Comm> ":
+                            newlist.append(self.commandOptions[line[6:-1]])
+                        else:
+                            print("Type Not Found")
+                    outputstring = ""
+                    for i in newlist:
+                        outputstring += (i + "\n")
+
+                    with (open(filename, 'w') if self.local else filechooser.file_system.sftp.open(filename, 'w')) as f:
+                        if not self.local:
+                            outputstring = outputstring.encode('utf-8')
+                        f.write(outputstring)
+
+                    blah.dismiss()
+
+                button.bind(on_release=choose)
+
+            blah.content.add_widget(blah.selector)
+            blah.content.add_widget(blah.otherthing)
+
             def save_target(instance):
                 with (open(self.target_file[self.local], 'w') if self.local else filechooser.file_system.sftp.open(self.target_file[self.local], 'w')) as f:
                     f.write(blah.target.text)
                 return False
             blah.bind(on_dismiss=save_target)
+
             blah.open()
         self.encode.bind(on_press=encode_callback)
         self.add_widget(self.encode)
