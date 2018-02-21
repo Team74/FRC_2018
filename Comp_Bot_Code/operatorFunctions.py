@@ -26,10 +26,10 @@ class operatorFunctions():
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
 
         self.winchMotorOne = ctre.wpi_victorspx.WPI_VictorSPX(6)
-        self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(8)
+        self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
         self.winchMotorThree = ctre.wpi_victorspx.WPI_VictorSPX(10)
 
-        self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(7)
+        self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(8)
         self.rightManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
 
         self.tilter = wpilib.DoubleSolenoid(20, 2, 3)
@@ -38,6 +38,8 @@ class operatorFunctions():
 
         self.currentInput = None
         self.newInput = None
+        self.etoggle = False
+        self.toggle = False
 
         self.compressor = wpilib.Compressor()
         self.compressor.setClosedLoopControl(True)
@@ -49,8 +51,8 @@ class operatorFunctions():
         self.liftTilt(rightBumper, leftBumper)
         self.raiseLowerLift(leftY)
         self.winchUpDown(rightY)
-        self.manipulatorIntake(aButton)
-        self.ejectCube(xButton)
+        self.manipulatorIntake(aButton, bButton)
+        self.ejectCube(xButton, yButton)
         self.deployClimber(startButton, backButton)
 
     def liftTest(self):
@@ -149,18 +151,25 @@ class operatorFunctions():
         if stopTimer > cycleTime:
             self.currentInput = self.newInput
         return self.currentInput
-    def manipulatorIntake(self, aButton):#operator can toggle the intake using A, the intake will run until it detects that it has a cube, or the operator can toggle if off using A
-        if aButton:#If a has been pressed, it will intake cubes
-            self.leftManipulatorMotor.set(1)
+    def manipulatorIntake(self, aButton, bButton):#operator can toggle the intake using A, the intake will run until it detects that it has a cube, or the operator can toggle if off using A
+        if aButton and not self.toggle:#If a has been pressed, it will intake cubes
+            self.toggle = True
+        if bButton and self.toggle:
+            self.toggle = False
+        if self.toggle:
+            self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(-1)
         else:
             self.leftManipulatorMotor.set(0)
             self.rightManipulatorMotor.set(0)
-
-    def ejectCube(self, xButton):#Ejects cube from the manipulator
-        if self.xButton:#If X has been pressed, it will eject cubes
+    def ejectCube(self, xButton, yButton):#Ejects cube from the manipulator
+        if xButton and not self.etoggle:#If a has been pressed, it will intake cubes
+            self.etoggle = True
+        if yButton and self.etoggle:
+            self.etoggle = False
+        if self.etoggle:
             self.leftManipulatorMotor.set(-1)
-            self.rightManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(-1)
         else:
             self.leftManipulatorMotor.set(0)
             self.rightManipulatorMotor.set(0)
