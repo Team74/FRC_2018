@@ -11,8 +11,8 @@ import ctre
 import math
 
 class operatorFunctions():
-    MIN_LIFT_HEIGHT = -1000000000#Value in encoder codes
-    MAX_LIFT_HEIGHT = 100000000000000#Value in encoder codes
+    MIN_LIFT_HEIGHT = -100000000000000000000000000000000000000#Value in encoder codes
+    MAX_LIFT_HEIGHT = 10000000000000000000000000000000000000#Value in encoder codes
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
     TIME_TO_EJECT = 1#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
 
