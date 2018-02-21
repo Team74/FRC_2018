@@ -128,12 +128,12 @@ class driveTrain():
             pass
 
     def autonShift(self, gear):
-        if gear == 'low':
+        if gear == 'high':
             if self.shifter.get() == 1 or self.shifter.get() == 0:
                 self.shifter.set(2)
                 #print('Shift to low')
                 #return False
-        elif gear == 'high':
+        elif gear == 'low':
             if self.shifter.get() == 2 or self.shifter.get() == 0:
                 self.shifter.set(1)
                 #print('Shift to high')
@@ -143,10 +143,8 @@ class driveTrain():
 
     def autonPivot(self, turnAngle, turnSpeed):
         slowDownSpeed = .12
-        correctionDeadzone = .5
-        if self.firstRun:
-            self.oldGyro = self.gyro.getAngle()
-            self.firstRun = False
+        correctionDeadzone = 1
+
 
         turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
         turnSpeed = max(turnSpeed, slowDownSpeed)

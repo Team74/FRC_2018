@@ -170,8 +170,8 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
-        self.drive.printEncoderPosition()#Prints the position of the encoders
-        #print(self.drive.getGyroAngle())
+        #self.drive.printEncoderPosition()#Prints the position of the encoders
+        print(self.drive.getGyroAngle())
         if self.autonCounter >= 5:
             self.auton.run()
         else:
