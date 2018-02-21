@@ -55,7 +55,7 @@ class driveTrain():
         self.instantiateEncoders()
 
     def setWheelCircumference(self):
-        #$ inch wheels circ = 12.5663706144, 6 inch wheels circ = 18.849
+        #4 inch wheels circ = 12.5663706144, 6 inch wheels circ = 18.849, egghead circ = 69.420
         self.wheelCircumference = 12.5663706144
 
     def instantiateEncoders(self):
@@ -115,8 +115,8 @@ class driveTrain():
         distanceDrivenInches = (lbEncoder / self.ENCODER_CODES_PER_REV) * self.wheelCircumference
         #averageEncoders = (lbEncoder + rbEncoder) / 2
         #print(averageEncoders)
-        #print(rbEncoder)
-        #print(lbEncoder)
+        print('Right   ' + str(rbEncoder))
+        print('Left   ' + str(lbEncoder))
         #print(distanceDrivenInches)
         #print(self.getGyroAngle())
 
