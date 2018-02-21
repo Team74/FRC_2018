@@ -38,8 +38,6 @@ class operatorFunctions():
 
         self.currentInput = None
         self.newInput = None
-        self.aToggle = False#Initilizes the A toggle to an off state
-        self.xToggle = False#Initilizes the X toggle to an off state
 
         self.compressor = wpilib.Compressor()
         self.compressor.setClosedLoopControl(True)
@@ -152,26 +150,20 @@ class operatorFunctions():
             self.currentInput = self.newInput
         return self.currentInput
     def manipulatorIntake(self, aButton):#operator can toggle the intake using A, the intake will run until it detects that it has a cube, or the operator can toggle if off using A
-        debouncedInput = self.deBounceIntake(aButton)
-        if debouncedInput:#Runs when A is pressed
-            if self.aToggle:#If A has been toggled, it untoggles A
-                self.leftManipulatorMotor.set(0)
-                self.rightManipulatorMotor.set(0)
-                self.aToggle = False
-            else:#If A has not been toggled, it toggles A
-                self.aToggle = True
-                self.leftManipulatorMotor.set(1)
-                self.rightManipulatorMotor.set(-1)
+        if aButton:#If a has been pressed, it will intake cubes
+            self.leftManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(-1)
+        else:
+            self.leftManipulatorMotor.set(0)
+            self.rightManipulatorMotor.set(0)
 
     def ejectCube(self, xButton):#Ejects cube from the manipulator
-        if xButton:#Runs when X is pressed
-            if self.xToggle:#If X has been toggled, it untoggles X
-                self.xToggle = False
-            else:#If X has not been toggled, it toggles X
-                self.xToggle = True
-        if self.xToggle:#If X has been toggled, it will eject cubes
+        if self.xButton:#If X has been pressed, it will eject cubes
             self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(1)
+        else:
+            self.leftManipulatorMotor.set(0)
+            self.rightManipulatorMotor.set(0)
 
     def startRunTimeClock(self):
         self.runTime = 0
