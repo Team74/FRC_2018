@@ -59,6 +59,7 @@ class MyRobot(wpilib.IterativeRobot):
         #switchLscaleL.addObject('PrepScaleScore', '4')
         self.switchLscaleL.addDefault('Drive', 'drive')##Default for all sendable Choosers
         self.switchLscaleL.addObject('Two Cube Scale', 'Two Cube Scale')
+        self.switchLscaleL.addObject('Scale and Switch', 'Scale and Switch')
 
         self.switchRscaleR = wpilib.SendableChooser()
         self.switchRscaleR.addDefault('Switch and Scale RIGHT', '1')
@@ -67,6 +68,7 @@ class MyRobot(wpilib.IterativeRobot):
         #switchRscaleR.addObject('PrepScaleScore', '4')
         self.switchRscaleR.addDefault('Drive', 'drive')
         self.switchRscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
+        self.switchRscaleR.addObject('Scale and Switch', 'Scale and Switch')
 
         self.switchRscaleL = wpilib.SendableChooser()
         self.switchRscaleL.addDefault('Switch RIGHT, Scale LEFT', '1')
@@ -75,6 +77,7 @@ class MyRobot(wpilib.IterativeRobot):
         #switchRscaleL.addObject('PrepScaleScore', '4')
         self.switchRscaleL.addDefault('Drive', 'drive')
         self.switchRscaleL.addObject('Two Cube Scale', 'Two Cube Scale')
+        self.switchRscaleL.addObject('Scale and Switch', 'Scale and Switch')
 
         self.switchLscaleR = wpilib.SendableChooser()
         self.switchLscaleR.addDefault('Switch LEFT, Scale RIGHT', '1')
@@ -83,6 +86,7 @@ class MyRobot(wpilib.IterativeRobot):
         #switchLscaleR.addObject('PrepScaleScore', '4')
         self.switchLscaleR.addDefault('Drive', 'drive')
         self.switchLscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
+        self.switchLscaleR.addObject('Scale and Switch', 'Scale and Switch')
 
         #print('Dashboard Test')
         wpilib.SmartDashboard.putData('Starting Position', self.positionChooser)
@@ -137,7 +141,11 @@ class MyRobot(wpilib.IterativeRobot):
                 self.auton = autonTwoCubeSale(startingPosition, switchPosition, scalePosition, self.drive)
             elif (startingPosition == 'left' and scalePosition == 'R') or (startingPosition == 'right' and scalePosition == 'L'):
                 self.auton = autonFarScale(startingPosition, switchPosition, scalePosition, self.drive)
-        elif
+        elif  objective == 'Scale and Switch':
+            if (startingPosition == 'left' and scalePosition == 'L') or (startingPosition == 'right' and scalePosition == 'R'):
+                self.auton = autonScaleAndSwitch(startingPosition, switchPosition, scalePosition, self.drive)
+            elif (startingPosition == 'left' and scalePosition == 'R') or (startingPosition == 'right' and scalePosition == 'L'):
+                self.auton = autonFarSwitch(startingPosition, switchPosition, scalePosition, self.drive)
         elif objective == 'drive':
             self.auton = autonDrive(startingPosition, switchPosition, scalePosition, self.drive)
         print(self.auton)
