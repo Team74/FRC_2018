@@ -14,9 +14,11 @@ from drive_2017 import driveTrain2017
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
 from autonFarSwitch import *
+from autonFarScale import *
 from autonTwoCubeScale import *
 from autonNearScale import *
 from autonDrive import *
+from autonScaleAndSwitch import *
 from autonTurningTuning import *
 import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
@@ -135,6 +137,7 @@ class MyRobot(wpilib.IterativeRobot):
                 self.auton = autonTwoCubeSale(startingPosition, switchPosition, scalePosition, self.drive)
             elif (startingPosition == 'left' and scalePosition == 'R') or (startingPosition == 'right' and scalePosition == 'L'):
                 self.auton = autonFarScale(startingPosition, switchPosition, scalePosition, self.drive)
+        elif
         elif objective == 'drive':
             self.auton = autonDrive(startingPosition, switchPosition, scalePosition, self.drive)
         print(self.auton)
@@ -151,9 +154,11 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('left', 'L', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
+        self.auton = autonFarScale('left', 'L', 'R', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
-        self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
+        #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
+        #self.auton = autonScaleAndSwitch('left', 'L', 'L', self.drive)
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
