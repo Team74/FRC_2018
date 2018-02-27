@@ -34,8 +34,8 @@ class operatorFunctions():
 
         self.doWeHaveACube = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from digital input 0
 
-        self.aToggle = False#Initilizes the A toggle to an off state
-        self.xToggle = False#Initilizes the X toggle to an off state
+        self.toggle = False#Initilizes the A toggle to an off state
+        self.etoggle = False#Initilizes the X toggle to an off state
         #Set motors that are apired to do the same task to a control group
         #Note that these are theoretical and subject to change as of 1-13-2018
 
@@ -43,10 +43,11 @@ class operatorFunctions():
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
     def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
+        self.liftTilt(rightBumper, leftBumper)
         self.raiseLowerLift(leftY)
         self.winchUpDown(rightY)
-        self.manipulatorIntake(aButton)
-        self.ejectCube(xButton)
+        self.manipulatorIntake(aButton, bButton)
+        self.ejectCube(xButton, yButton)
         self.deployClimber(startButton, backButton)
 
     def liftTest(self):
@@ -119,25 +120,28 @@ class operatorFunctions():
         self.cubeInManinpulator = self.doWeHaveACube.get()#Gets input from proximity sensor and setes it to self.cubeInManinpulator
         return self.cubeInManipulator
 
-    def manipulatorIntake(self, aButton):#operator can toggle the intake using A, the intake will run until it detects that it has a cube, or the operator can toggle if off using A
-        if aButton:#Runs when A is pressed
-            if self.aToggle:#If A has been toggled, it untoggles A
-                self.aToggle = False
-            else:#If A has not been toggled, it toggles A
-                self.aToggle = True
-        if self.aToggle and not doWeHaveACube():#If A has been toggled and we have no cube, it will intake cubes
-            self.leftManipulatorMotor.set(1)
-            self.rightManipulatorMotor.set(-1)
-
-    def ejectCube(self, xButton):#Ejects cube from the manipulator
-        if xButton:#Runs when X is pressed
-            if self.xToggle:#If X has been toggled, it untoggles X
-                self.xToggle = False
-            else:#If X has not been toggled, it toggles X
-                self.xToggle = True
-        if self.xToggle:#If X has been toggled, it will eject cubes
+    def manipulatorIntake(self, aButton, bButton):#operator can toggle the intake using A, the intake will run until it detects that it has a cube, or the operator can toggle if off using A
+        if aButton and not self.toggle:#If a has been pressed, it will intake cubes
+            self.toggle = True
+        if bButton and self.toggle:
+            self.toggle = False
+        if self.toggle:
             self.leftManipulatorMotor.set(-1)
-            self.rightManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(-1)
+        else:
+            self.leftManipulatorMotor.set(0)
+            self.rightManipulatorMotor.set(0)
+    def ejectCube(self, xButton, yButton):#Ejects cube from the manipulator
+        if xButton and not self.etoggle:#If a has been pressed, it will intake cubes
+            self.etoggle = True
+        if yButton and self.etoggle:
+            self.etoggle = False
+        if self.etoggle:
+            self.leftManipulatorMotor.set(-1)
+            self.rightManipulatorMotor.set(-1)
+        else:
+            self.leftManipulatorMotor.set(0)
+            self.rightManipulatorMotor.set(0)
 
     def startRunTimeClock(self):
         self.runTime = 0
