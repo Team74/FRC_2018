@@ -45,6 +45,7 @@ class driveTrain():
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
+        self.firstAngleTurn = True#Check for autonAngledTurn
 
         self.setWheelCircumference()
 
@@ -144,14 +145,12 @@ class driveTrain():
     def autonPivot(self, turnAngle, turnSpeed):
         slowDownSpeed = .12
         correctionDeadzone = 1
-
-
         turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
         turnSpeed = max(turnSpeed, slowDownSpeed)
         if turnAngle < 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() >= turnAngle:
-                    self.drive.tankDrive(-(turnSpeed) * self.MOTOR_SPEED_CONTROL, (turnSpeed) * self.MOTOR_SPEED_CONTROL,False)
+                    self.drive.tankDrive(-(turnSpeed) * self.MOTOR_SPEED_CONTROL, (turnSpeed) * self.MOTOR_SPEED_CONTROL, False)
                     #print('Turning Left')
                     return True
                 elif self.getGyroAngle() <= turnAngle:
@@ -168,7 +167,7 @@ class driveTrain():
         elif turnAngle > 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() <= turnAngle:
-                    self.drive.tankDrive((turnSpeed) * self.MOTOR_SPEED_CONTROL, -(turnSpeed) * self.MOTOR_SPEED_CONTROL,False)
+                    self.drive.tankDrive((turnSpeed) * self.MOTOR_SPEED_CONTROL, -(turnSpeed) * self.MOTOR_SPEED_CONTROL, False)
                     return True
                 elif self.getGyroAngle() >= turnAngle:
                     self.drive.tankDrive(-.2, .2)
@@ -232,6 +231,48 @@ class driveTrain():
                 self.drive.stopMotor()
                 #print(self.lfEncoderPosition)
                 print(self.rbEncoderPosition)
+                return False
+
+    def autonAngledTurn(self, radius, turnangle, speed):
+        if self.firstAngleTurn:#Checks for first time through the function to only reset encoders on the first time
+            #print('passed first check')#Debugging
+            #self.encoderReset()#Resets encoders
+            self.oldGyro = self.gyro.getAngle()
+            self.oldPositionLeft =  (self.lbMotor.getQuadraturePosition())
+            self.oldPositionRight =  -(self.rbMotor.getQuadraturePosition())
+            self.autonCounter = 0
+            self.firstAngleTurn = False
+        robotSpeed = 8
+        robotSpeedInchesPerSecond = robotSpeed * 12
+        wheelWidth = 24.3
+        wheelDistanceFromCenter = wheelWidth / 2
+        overallCircumference 2 * (3.14159265 * radius)
+        cirlcePercentage = 360 / turnAngle
+        if turnAngle > 0:#IF we are turning right, the left wheels have to travel further
+            leftTurnDistance = (overallCircumference + wheelDistanceFromCenter) / circlePercentage
+            rightTurnDistance = (overallCircumference - wheelDistanceFromCenter) / circlePercentage
+            leftSpeed = speed
+            turnTime = (leftTurnDistance / robotSpeedInchesPerSecond)
+            rightSpeed = (rightTurnDistance / turnTime)
+            rightSpeedPercentage = (rightSpeed / leftSpeed)
+            leftTurnSpeed = leftSpeed
+            rightTurnSpeed = rightSpeedPercentage
+            if turnAngle > self.getGyroAngle():
+                self.drive.tankDrive(leftTurnSpeed, rightTurnSpeed, False)
+            else:
+                return False
+        elif turnAngle < 0:#If we are turning left, the right wheels have to travel further
+            leftTurnDistance = (overallCircumference - wheelDistanceFromCenter) / circlePercentage
+            rightTurnDistance = (overallCircumference + wheelDistanceFromCenter) / circlePercentage
+            rightSpeed = speed
+            turnTime = (rightTurnDistance / robotSpeedInchesPerSecond)
+            leftSpeed = (leftTurnDistance / turnTime)
+            leftSpeedPercentage = (leftSpeed / rightSpeed)
+            rightTurnSpeed = rightSpeed
+            leftTurnSpeed = leftSpeedPercentage
+            if turnAngle < self.getGyroAngle():
+                self.drive.tankDrive(leftTurnSpeed, rightTurnSpeed, False)
+            else:
                 return False
 
     def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed, setLiftPosition, intakeMode):
