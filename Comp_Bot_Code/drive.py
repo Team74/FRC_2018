@@ -277,7 +277,7 @@ class driveTrain():
 
     def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed, setLiftPosition, intakeMode):
         if moveNumberPass == self.moveNumber:
-            #print(self.moveNumber)
+            print(self.moveNumber)
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
@@ -285,8 +285,8 @@ class driveTrain():
                     if self.operate.autonIntakeControl(intakeMode):
                         pass
                 else:
-                    #print(self.getGyroAngle())
-                    #print('Move ' + str(moveNumberPass) + ' Complete')
+                    print(self.getGyroAngle())
+                    print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber += 1
             elif commandNumber == 1:
                 if self.autonPivot(turnAngle, turnSpeed):
@@ -295,8 +295,8 @@ class driveTrain():
                     if self.operate.autonIntakeControl(intakeMode):
                         pass
                 else:
-                    #print(self.getGyroAngle())
-                    #print('Move ' + str(moveNumberPass) + ' Complete')
+                    print(self.getGyroAngle())
+                    print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber += 1
             elif commandNumber == 2:
                 if self.operate.standaloneAutonRaiseLowerLift(setLiftPosition):

@@ -19,7 +19,7 @@ class AutonInterpreter(autonBaseInit):
             data = f.readlines()
             i = 0
             del data[0] #first line is absolute position, for later re-import
-            del data[1] #let's assume it starts facing the right way
+            del data[0] #let's assume it starts facing the right way
             for line in data:
                 i += 1
                 temp = line[:-1].split(",")
@@ -35,4 +35,5 @@ class AutonInterpreter(autonBaseInit):
             i()
 
     def bloob(self, a, b, c, d, e, f, g, _h=0, _i=0):
+        print("SOOPASUIT: ",b,c,d,e,f,g)
         a.autonMove(b,c,d,e,f,g,0,0)
