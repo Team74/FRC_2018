@@ -14,7 +14,7 @@ class AutonInterpreter(autonBaseInit):
             name = f.readline().strip()
 
         self.masterlist = []
-        self.default_loc = "/home/lvuser/prog_auton_dir" #"/home/svanderark/FRC_2018/GUI/convert/"
+        self.default_loc = "/home/lvuser/prog_auton_dir/" #"/home/svanderark/FRC_2018/GUI/convert/"
         with open(self.default_loc + name, "r") as f:
             data = f.readlines()
             i = 0

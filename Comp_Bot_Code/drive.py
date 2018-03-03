@@ -246,7 +246,7 @@ class driveTrain():
         robotSpeedInchesPerSecond = robotSpeed * 12
         wheelWidth = 24.3
         wheelDistanceFromCenter = wheelWidth / 2
-        overallCircumference 2 * (3.14159265 * radius)
+        overallCircumference = 2 * (3.14159265 * radius)
         cirlcePercentage = 360 / turnAngle
         if turnAngle > 0:#IF we are turning right, the left wheels have to travel further
             leftTurnDistance = (overallCircumference + wheelDistanceFromCenter) / circlePercentage
