@@ -32,14 +32,14 @@ class operatorFunctions():
         self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(8)
         self.rightManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
 
+        self.leftManipulatorMotor.setNeutralMode(2)
+        self.rightManipulatorMotor.setNeutralMode(2)
+
         self.tilter = wpilib.DoubleSolenoid(20, 2, 3)
 
         self.doWeHaveACube = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from digital input 0
 
-        self.currentInput = None
-        self.newInput = None
-        self.etoggle = False
-        self.toggle = False
+        self.toggle = 0
 
         self.compressor = wpilib.Compressor()
         self.compressor.setClosedLoopControl(True)
@@ -51,8 +51,7 @@ class operatorFunctions():
         self.liftTilt(rightBumper, leftBumper)
         self.raiseLowerLift(leftY)
         self.winchUpDown(rightY)
-        self.manipulatorIntake(aButton, bButton)
-        self.ejectCube(xButton, yButton)
+        self.manipulatorControl(aButton, xButton, yButton)
         self.deployClimber(startButton, backButton)
 
     def liftTest(self):
@@ -70,7 +69,7 @@ class operatorFunctions():
         currentEncoderPosition = 50
         #currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         if (currentEncoderPosition >= self.MIN_LIFT_HEIGHT) and (currentEncoderPosition <= (self.MAX_LIFT_HEIGHT - 250)):
-            self.liftMotor.set(leftY)
+            self.liftMotor.set(-leftY)
         else:
             self.liftMotor.set(0)
 
@@ -139,40 +138,20 @@ class operatorFunctions():
         self.cubeInManinpulator = self.doWeHaveACube.get()#Gets input from proximity sensor and setes it to self.cubeInManinpulator
         return self.cubeInManipulator
 
-    def deBounceIntake(self, anyInput):
-        waitTime = 4#Number in miiseconds, can only accept even numbers
-        cycleTime = waitTime / 2
-        stopTimer = 1
-        if self.newInput != anyInput:
-            self.newInput = anyInput
-            stopTimer = 0
-        else:
-            stopTimer += 1
-        if stopTimer > cycleTime:
-            self.currentInput = self.newInput
-        return self.currentInput
-    def manipulatorIntake(self, aButton, bButton):#operator can toggle the intake using A, the intake will run until it detects that it has a cube, or the operator can toggle if off using A
-        if aButton and not self.toggle:#If a has been pressed, it will intake cubes
-            self.toggle = True
-        if bButton and self.toggle:
-            self.toggle = False
-        if self.toggle:
+    def manipulatorControl(self, aButton, xButton, yButton):
+        if aButton:#Intake
             self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(-1)
+        elif xButton:#Eject 3/4
+            self.leftManipulatorMotor.set(.5)
+            self.rightManipulatorMotor.set(.5)
+        elif yButton:#Eject Full
+            self.leftManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(1)
         else:
             self.leftManipulatorMotor.set(0)
             self.rightManipulatorMotor.set(0)
-    def ejectCube(self, xButton, yButton):#Ejects cube from the manipulator
-        if xButton and not self.etoggle:#If a has been pressed, it will intake cubes
-            self.etoggle = True
-        if yButton and self.etoggle:
-            self.etoggle = False
-        if self.etoggle:
-            self.leftManipulatorMotor.set(-1)
-            self.rightManipulatorMotor.set(-1)
-        else:
-            self.leftManipulatorMotor.set(0)
-            self.rightManipulatorMotor.set(0)
+
 
     def startRunTimeClock(self):
         self.runTime = 0
@@ -182,24 +161,15 @@ class operatorFunctions():
             if self.doWeHaveACube():
                 intakeMode = 0
             elif intakeMode == 1:
-                self.leftManipulatorMotor.set(1)
+                self.leftManipulatorMotor.set(-1)
                 self.rightManipulatorMotor.set(-1)
                 return True
             else:
                 pass
         elif intakeMode == 2:#Eject Mode
-            if self.firstEject:
-                self.startRunTimeClock()
-                self.firstEject = False
-            if self.runTime <= self.TIME_TO_EJECT:
-                self.leftManipulatorMotor.set(-1)
-                self.rightManipulatorMotor.set(1)
-                self.runTime += 1
-                return True
-            else:
-                intakeMode = 0
-            if intakeMode == 2:
-                self.firstEject = True
+            self.leftManipulatorMotor.set(-1)
+            self.rightManipulatorMotor.set(1)
+            return True
         elif intakeMode == 0:#Neutral Mode
             self.leftManipulatorMotor.set(0)
             self.rightManipulatorMotor.set(0)
