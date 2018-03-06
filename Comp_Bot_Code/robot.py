@@ -157,13 +157,13 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.autonShift('low')#Forces into low gear at start of auton
         #print('reset moveNumber')
         #self.interperetDashboard()
-        self.auton = AutonInterpreter(3,3,3,self.drive)
+        #self.auton = AutonInterpreter(3,3,3,self.drive)
 
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('left', 'L', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonFarScale('left', 'L', 'R', self.drive)
-        #self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
+        self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
         #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
         #self.auton = autonScaleAndSwitch('left', 'L', 'L', self.drive)
@@ -180,12 +180,12 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #self.drive.printer()
     def teleopPeriodic(self):
-        self.drive.operate.liftTest()
+        #self.drive.operate.liftTest()
         self.drive.printEncoderPosition()
-        print("Gyro Angle  ", self.drive.getGyroAngle())
-        self.drive.printer()
+        #print("Gyro Angle  ", self.drive.getGyroAngle())
+        #self.drive.printer()
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
         self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack())
-        self.time.time += 1
+        #self.time.time += 1
 if __name__ == "__main__":
     wpilib.run(MyRobot)
