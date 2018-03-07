@@ -200,9 +200,12 @@ class driveTrain():
         if speed < 0:#If speed is negetive, this lets us drive backward
             self.lfEncoderPosition *= -1
             self.rbEncoderPosition *= -1
+        #print("Encoders: ", self.lfEncoderPosition, ",   ", self.rbEncoderPosition )
         #print(self.lfEncoderPosition)
         #print(self.rbEncoderPosition)
+        #print("\n")
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
+        print("Distances: ", averageEncoders, ", ", encoderDistance)
         #print('Average Encodes' + str(averageEncoders))
         if averageEncoders < encoderDistance and self.autonCounter == 0:
             speedAdjustment = .1
@@ -210,7 +213,7 @@ class driveTrain():
             gyroAngle = self.getGyroAngle()
             speedAdjustment /= 1+math.exp(-gyroAngle)
             speedAdjustment -= 0.05
-            print(speedAdjustment)
+            #print(speedAdjustment)
             rSpeed += speedAdjustment
             lSpeed -= speedAdjustment
             if averageEncoders > encoderDistance - 500:
@@ -230,7 +233,7 @@ class driveTrain():
                 self.firstTime = True
                 self.drive.stopMotor()
                 #print(self.lfEncoderPosition)
-                print(self.rbEncoderPosition)
+                #print(self.rbEncoderPosition)
                 return False
 
     def autonAngledTurn(self, radius, turnangle, speed):
@@ -277,7 +280,7 @@ class driveTrain():
 
     def autonMove(self, moveNumberPass, commandNumber, speed, distance, turnAngle, turnSpeed, setLiftPosition, intakeMode):
         if moveNumberPass == self.moveNumber:
-            print(self.moveNumber)
+            #print(self.moveNumber)
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
@@ -285,7 +288,7 @@ class driveTrain():
                     if self.operate.autonIntakeControl(intakeMode):
                         pass
                 else:
-                    print(self.getGyroAngle())
+                    #print(self.getGyroAngle())
                     print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber += 1
             elif commandNumber == 1:
@@ -295,7 +298,7 @@ class driveTrain():
                     if self.operate.autonIntakeControl(intakeMode):
                         pass
                 else:
-                    print(self.getGyroAngle())
+                    #print(self.getGyroAngle())
                     print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber += 1
             elif commandNumber == 2:

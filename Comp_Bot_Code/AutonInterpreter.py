@@ -12,7 +12,7 @@ class AutonInterpreter(autonBaseInit):
 
         with open("/home/lvuser/prog_auton.txt") as f:
             name = f.readline().strip()
-
+        print("sfhdjkfhwsdkjfhjskdhfjksdhfkjsd\t" + name)
         self.masterlist = []
         self.default_loc = "/home/lvuser/prog_auton_dir/" #"/home/svanderark/FRC_2018/GUI/convert/"
         with open(self.default_loc + name, "r") as f:
@@ -35,5 +35,4 @@ class AutonInterpreter(autonBaseInit):
             i()
 
     def bloob(self, a, b, c, d, e, f, g, _h=0, _i=0):
-        print("SOOPASUIT: ",b,c,d,e,f,g)
         a.autonMove(b,c,d,e,f,g,0,0)
