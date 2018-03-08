@@ -102,7 +102,7 @@ class operatorFunctions():
             self.liftLoopSource.getPIDSourceType() = sourceTypFunction()
             self.liftLoopOut = wpilib.interfaces.PIDOutput()
             def setFunction(output):
-                self.liftmotor.set(-output)
+                self.liftmotor.set(-output)#LiftMotor outputs reversed, positive is down, negetive is up, correcting for that here
             self.liftLoopOut = setFunction
     '''
 
