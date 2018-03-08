@@ -18,6 +18,7 @@ from autonTwoCubeScale import *
 from autonNearScale import *
 from autonDrive import *
 from autonTurningTuning import *
+from autonLiftTest import *
 import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
 from autonSmartDashBoardInterpret import interpret
@@ -144,10 +145,12 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.zeroGyro()
         self.drive.resetMoveNumber()
         self.drive.autonShift('low')#Forces into low gear at start of auton
+        self.drive.operate.liftTilt(False, True)
         #print('reset moveNumber')
         #self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
 
+        #self.auton = autonLiftTest('any', 'any', 'any', self.drive)
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
@@ -157,11 +160,14 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
-        self.drive.printEncoderPosition()#Prints the position of the encoders
+        self.drive.operate.liftTilt(False, True)
+        #self.drive.printEncoderPosition()#Prints the position of the encoders
         #print(self.drive.getGyroAngle())
         if self.autonCounter >= 5:
             self.auton.run()
         else:
+            self.drive.operate.liftTilt(False, True)
+            self.drive.operate.autonIntakeControl(1)
             self.autonCounter = self.autonCounter + 1
         #self.AutonHandling.readCommandList(None, "square")
         #lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
@@ -174,6 +180,7 @@ class MyRobot(wpilib.IterativeRobot):
         #self.drive.printer()
     def teleopPeriodic(self):
         self.drive.operate.printLiftEncoder()
+        self.drive.operate.printLiftOutputCurrent()
         #self.drive.printEncoderPosition()
         #print("Gyro Angle  ", self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())

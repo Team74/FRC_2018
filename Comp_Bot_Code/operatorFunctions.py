@@ -14,16 +14,19 @@ class operatorFunctions():
     MIN_LIFT_HEIGHT = -100000000000000000000000000000000000000#Value in encoder codes
     MAX_LIFT_HEIGHT = 10000000000000000000000000000000000000#Value in encoder codes
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
+    MAX_LIFT_CURRENT = 10000000000000000000000000000000000000000000
     TIME_TO_EJECT = 1#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
 
     def __init__(self, robot, drive):
         self.time = timeOut()
         self.drive = drive
+        self.firstUse = True
         #Set each motor to a talon
         #Note that these are theoretical and subject to change as of 1-13-2018
         self.liftMotor = ctre.wpi_talonsrx.WPI_TalonSRX(3)
         self.liftMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
+        self.liftMotor.setSensorPhase(True)
 
         self.winchMotorOne = ctre.wpi_victorspx.WPI_VictorSPX(6)
         self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
@@ -53,36 +56,60 @@ class operatorFunctions():
         self.winchUpDown(rightY)
         self.manipulatorControl(aButton, xButton, yButton)
         self.deployClimber(startButton, backButton)
+        self.zeroLiftEncoder(bButton)
 
     def liftTest(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
     def liftTilt(self, rightBumper, leftBumper):#Controls the tilt of the lift
         if leftBumper:
-            if self.tilter.get() == 1:#Checks to see what position the lift is in and tilts accordingly
-                self.tilter.set(2)
+            #if self.tilter.get() == 1:#Checks to see what position the lift is in and tilts accordingly
+            self.tilter.set(2)
         if rightBumper:
-            if self.tilter.get() == 2 or self.tilter.get() == 0:
-                self.tilter.set(1)
+            #if self.tilter.get() == 2 or self.tilter.get() == 0:
+            self.tilter.set(1)
 
     def raiseLowerLift(self, leftY):
         currentEncoderPosition = 50
         #currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         if (currentEncoderPosition >= self.MIN_LIFT_HEIGHT) and (currentEncoderPosition <= (self.MAX_LIFT_HEIGHT - 250)):
-            self.liftMotor.set(-leftY)
+            if self.MAX_LIFT_CURRENT > self.liftMotor.getOutputCurrent():
+                self.liftMotor.set(-leftY)
+            else:
+                self.liftMotor.set(0)
         else:
             self.liftMotor.set(0)
 
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
+    def zeroLiftEncoder(self, bButton):
+        if bButton:
+            self.liftMotor.setSelectedSensorPosition(0, 0, 0)
+
+    def printLiftOutputCurrent(self):
+        print(self.liftMotor.getOutputCurrent())
+    '''
+    def pidLift(self):
+        if self.firstUse:
+            self.firstUse = False
+            self.liftLoopSource = wpilib.interfaces.PIDSource()
+            def getFunction():
+                return self.liftMotor.getSelectedSensorPosition(0, 0, 0)
+            def sourceTypFunction():
+                return 0
+            self.liftLoopSource.pidGet() = getFunction
+            self.liftLoopSource.getPIDSourceType() = sourceTypFunction()
+            self.liftLoopOut = wpilib.interfaces.PIDOutput()
+    '''
+
     def autonRaiseLowerLift(self, setLiftPosition):#Note encoder values do not scale linearly with lift hieght
-        currentEncoderPosition = 1
-        #currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
+        currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
-        liftPositionOne = 1#Lift position when lift is all the way down in encoder values
-        liftPositionTwo = 1#Lift position to place cubes on the switch in encoder values
-        liftPositionThree = 1#Lift position to place cubes on the scale in encoder values
+        liftPositionOne = 0#Lift position when lift is all the way down in encoder values
+        liftPositionTwo = 500#Lift position for
+        liftPositionThree = 12000#Lift position to place cubes on the switch in encoder values
+        liftPositionFour = 1#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -90,21 +117,33 @@ class operatorFunctions():
             liftHeight = liftPositionTwo
         elif setLiftPosition == 2:
             liftHeight = liftPositionThree
-        if currentEncoderPosition <= (liftHeight + 250):
-            self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))))
+        elif setLiftPosition == 3:
+            liftHeight = liftPositionFour
+        print(currentEncoderPosition)
+        if currentEncoderPosition <= (liftHeight + 500):
+            #self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))))
+            self.liftMotor.set(.75)
+            print('Going up')
             return True
-        elif currentEncoderPosition >= (liftHeight + 250):
-            self.liftMotor.set((math.sqrt(abs(1-(currentEncoderPosition/liftHeight)))) * -1)
-        else:
+
+        elif currentEncoderPosition >= (liftHeight - 500):
+            #self.liftMotor.set((math.sqrt(abs(1-(currentEncoderPosition/liftHeight)))) * -1)
+            #self.liftMotor.set(-.75)
+            #print('going down')
             self.liftMotor.set(0)
             return True
 
+        else:
+            self.liftMotor.set(0)
+            print('Holding')
+            return True
+
     def standaloneAutonRaiseLowerLift(self, setLiftPosition):
-        currentEncoderPosition = 1
-        #currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
+        #currentEncoderPosition = 1
+        currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
-        liftPositionOne = 1#Lift position when lift is all the way down in encoder values
-        liftPositionTwo = 1#Lift position to place cubes on the switch in encoder values
+        liftPositionOne = 500#Lift position when lift is all the way down in encoder values
+        liftPositionTwo = 8854#Lift position to place cubes on the switch in encoder values
         liftPositionThree = 1#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
@@ -115,6 +154,9 @@ class operatorFunctions():
             liftHeight = liftPositionThree
         if currentEncoderPosition <= (liftHeight + 250):
             self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))))
+            return True
+        elif currentEncoderPosition >= (liftHeight - 250):
+            self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))) * -1)
             return True
         else:
             self.liftMotor.set(0)
@@ -158,16 +200,17 @@ class operatorFunctions():
 
     def autonIntakeControl(self, intakeMode):
         if intakeMode == 1:#Intake mode
-            if self.doWeHaveACube():
-                intakeMode = 0
-            elif intakeMode == 1:
+            #if self.doWeHaveACube():
+                #intakeMode = 0
+            if intakeMode == 1:
                 self.leftManipulatorMotor.set(-1)
                 self.rightManipulatorMotor.set(-1)
                 return True
             else:
                 pass
         elif intakeMode == 2:#Eject Mode
-            self.leftManipulatorMotor.set(-1)
+            print('Ejecting')
+            self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(1)
             return True
         elif intakeMode == 0:#Neutral Mode
