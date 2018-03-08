@@ -101,6 +101,9 @@ class operatorFunctions():
             self.liftLoopSource.pidGet() = getFunction
             self.liftLoopSource.getPIDSourceType() = sourceTypFunction()
             self.liftLoopOut = wpilib.interfaces.PIDOutput()
+            def setFunction(output):
+                self.liftmotor.set(-output)
+            self.liftLoopOut = setFunction
     '''
 
     def autonRaiseLowerLift(self, setLiftPosition):#Note encoder values do not scale linearly with lift hieght
