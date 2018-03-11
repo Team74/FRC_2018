@@ -15,7 +15,7 @@ class operatorFunctions():
     MAX_LIFT_HEIGHT = 10000000000000000000000000000000000000#Value in encoder codes
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
     MAX_LIFT_CURRENT = 10000000000000000000000000000000000000000000
-    TIME_TO_EJECT = 1#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
+    TIME_TO_EJECT = 100#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
 
     def __init__(self, robot, drive):
         self.time = timeOut()
@@ -108,8 +108,8 @@ class operatorFunctions():
         #Defines three set lift positions
         liftPositionOne = 0#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 500#Lift position for
-        liftPositionThree = 12000#Lift position to place cubes on the switch in encoder values
-        liftPositionFour = 1#Lift position to place cubes on the scale in encoder values
+        liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
+        liftPositionFour = 21000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -143,8 +143,8 @@ class operatorFunctions():
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
         liftPositionOne = 500#Lift position when lift is all the way down in encoder values
-        liftPositionTwo = 8854#Lift position to place cubes on the switch in encoder values
-        liftPositionThree = 1#Lift position to place cubes on the scale in encoder values
+        liftPositionTwo = 10000#Lift position to place cubes on the switch in encoder values
+        liftPositionThree = 21000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -152,12 +152,14 @@ class operatorFunctions():
             liftHeight = liftPositionTwo
         elif setLiftPosition == 2:
             liftHeight = liftPositionThree
-        if currentEncoderPosition <= (liftHeight + 250):
-            self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))))
+        if currentEncoderPosition <= (liftHeight + 500):
+            self.liftMotor.set(.75)
             return True
-        elif currentEncoderPosition >= (liftHeight - 250):
-            self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))) * -1)
-            return True
+            '''
+            elif currentEncoderPosition >= (liftHeight - 250):
+                self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))) * -1)
+                return True
+            '''
         else:
             self.liftMotor.set(0)
             return False
@@ -203,12 +205,18 @@ class operatorFunctions():
             #if self.doWeHaveACube():
                 #intakeMode = 0
             if intakeMode == 1:
+                print('Intaking')
                 self.leftManipulatorMotor.set(-1)
                 self.rightManipulatorMotor.set(-1)
                 return True
             else:
                 pass
         elif intakeMode == 2:#Eject Mode
+            print('Ejecting')
+            self.leftManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(1)
+            return True
+        elif intakeMode == 3:#Full Power eject
             print('Ejecting')
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(1)
@@ -224,19 +232,19 @@ class operatorFunctions():
                 if self.doWeHaveACube():
                     return False
                 elif intakeMode == 1:
-                    self.leftManipulatorMotor.set(1)
+                    self.leftManipulatorMotor.set(-1)
                     self.rightManipulatorMotor.set(-1)
                     return True
                 else:
                     pass
         if intakeMode == 2:
             if self.firstEject:
-                self.startRunTimeClock()
+                self.ejectClock = 0
                 self.firstEject = False
-            if self.runTime <= self.TIME_TO_EJECT:
-                self.leftManipulatorMotor.set(-1)
-                self.rightManipulatorMotor.set(1)
-                self.runTime += 1
+            if self.ejectClock <= self.TIME_TO_EJECT:
+                self.leftManipulatorMotor.set(.5)
+                self.rightManipulatorMotor.set(.5)
+                self.ejectClock += 1
                 return True
             else:
                 self.firstEject = True

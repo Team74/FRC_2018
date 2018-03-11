@@ -258,16 +258,21 @@ class driveTrain():
                     self.moveNumber += 1
             elif commandNumber == 2:
                 if self.operate.standaloneAutonRaiseLowerLift(setLiftPosition):
-                    pass
+                    if self.operate.autonIntakeControl(intakeMode):
+                        pass
                 else:
                     self.moveNumber += 1
             elif commandNumber == 3:
                 if self.operate.standaloneAutonIntakeControl(intakeMode):
-                    pass
+                    if self.operate.autonRaiseLowerLift(setLiftPosition):
+                        pass
                 else:
                     self.moveNumber += 1
-            else:
-                pass
+            elif commandNumber == 4:
+                self.operate.liftMotor.set(0)
+                self.operae.rightManipulatorMotor.set(1)
+                self.operate.rightManipulatorMotor.set(1)
+                self.drive.tankDrive.stop()
         else:
             pass
 

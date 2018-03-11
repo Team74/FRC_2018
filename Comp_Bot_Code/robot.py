@@ -125,12 +125,14 @@ class MyRobot(wpilib.IterativeRobot):
             elif startingPosition == 'center':
                 self.auton = autonCenterEitherSwitch(startingPosition, switchPosition, scalePosition, self.drive)
             elif (startingPosition == 'left' and switchPosition == 'R') or (startingPosition == 'right' and switchPosition == 'L'):
-                self.auton = autonFarSwitch(startingPosition, switchPosition, scalePosition, self.drive)
+                #self.auton = autonFarSwitch(startingPosition, switchPosition, scalePosition, self.drive)
+                self.auton = autonDrive('any', 'any', 'any', self.drive)
         elif objective == 'scale':
             if (startingPosition == 'left' and scalePosition == 'L') or (startingPosition == 'right' and scalePosition == 'R'):
                 self.auton = autonNearScale(startingPosition, switchPosition, scalePosition, self.drive)
             elif (startingPosition == 'left' and scalePosition == 'R') or (startingPosition == 'right' and scalePosition == 'L'):
-                self.auton = autonFarScale(startingPosition, switchPosition, scalePosition, self.drive)
+                #self.auton = autonFarScale(startingPosition, switchPosition, scalePosition, self.drive)
+                self.auton = autonDrive('any', 'any', 'any', self.drive)
         elif objective == 'Two Cube Scale':
             if (startingPosition == 'left' and scalePosition == 'L') or (startingPosition == 'right' and scalePosition == 'R'):
                 self.auton = autonTwoCubeSale(startingPosition, switchPosition, scalePosition, self.drive)
@@ -147,12 +149,12 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.autonShift('low')#Forces into low gear at start of auton
         self.drive.operate.liftTilt(False, True)
         #print('reset moveNumber')
-        #self.interperetDashboard()
+        self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
 
         #self.auton = autonLiftTest('any', 'any', 'any', self.drive)
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
-        self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
+        #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
@@ -161,10 +163,12 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
     def autonomousPeriodic(self):
         self.drive.operate.liftTilt(False, True)
+        self.drive.autonShift('low')#Keeps it in low gear during auton
         #self.drive.printEncoderPosition()#Prints the position of the encoders
         #print(self.drive.getGyroAngle())
-        if self.autonCounter >= 5:
+        if self.autonCounter >= 40:
             self.auton.run()
+            print('Running auton')
         else:
             self.drive.operate.liftTilt(False, True)
             self.drive.operate.autonIntakeControl(1)
@@ -179,9 +183,10 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #self.drive.printer()
     def teleopPeriodic(self):
-        self.drive.operate.printLiftEncoder()
-        self.drive.operate.printLiftOutputCurrent()
-        #self.drive.printEncoderPosition()
+        wpilib.SmartDashboard.putNumber('Lift Encoder', self.drive.operate.liftMotor.getSelectedSensorPosition(0))
+        #self.drive.operate.printLiftOutputCurrent()
+        wpilib.SmartDashboard.putNumber('Left Drive Encoders', -(self.drive.lbMotor.getQuadraturePosition()))
+        wpilib.SmartDashboard.putNumber('Right Drive Encders', self.drive.rbMotor.getQuadraturePosition())
         #print("Gyro Angle  ", self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
