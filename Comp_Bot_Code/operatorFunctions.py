@@ -11,10 +11,7 @@ import ctre
 import math
 
 class operatorFunctions():
-    MIN_LIFT_HEIGHT = -100000000000000000000000000000000000000#Value in encoder codes
-    MAX_LIFT_HEIGHT = 10000000000000000000000000000000000000#Value in encoder codes
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
-    MAX_LIFT_CURRENT = 10000000000000000000000000000000000000000000
     TIME_TO_EJECT = 100#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
 
     def __init__(self, robot, drive):
@@ -41,6 +38,7 @@ class operatorFunctions():
         self.tilter = wpilib.DoubleSolenoid(20, 2, 3)
 
         self.doWeHaveACube = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from digital input 0
+        self.isLiftDown = wpilib.DigitalInput(1)#Initilizes a limit switch to see if the lift is at it's minnimum height, sets it to read from DIO 1
 
         self.toggle = 0
 
@@ -70,15 +68,10 @@ class operatorFunctions():
             self.tilter.set(1)
 
     def raiseLowerLift(self, leftY):
-        currentEncoderPosition = 50
-        #currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
-        if (currentEncoderPosition >= self.MIN_LIFT_HEIGHT) and (currentEncoderPosition <= (self.MAX_LIFT_HEIGHT - 250)):
-            if self.MAX_LIFT_CURRENT > self.liftMotor.getOutputCurrent():
-                self.liftMotor.set(-leftY)
-            else:
-                self.liftMotor.set(0)
-        else:
-            self.liftMotor.set(0)
+        output = leftY
+        if self.isLiftDown.get():
+            output = max(0, output)
+        self.liftMotor.set(-(output))
 
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
@@ -138,13 +131,11 @@ class operatorFunctions():
             liftHeight = liftPositionFour
         print(currentEncoderPosition)
         if currentEncoderPosition <= (liftHeight + 500):
-            #self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))))
             self.liftMotor.set(.75)
             print('Going up')
             return True
 
         elif currentEncoderPosition >= (liftHeight - 500):
-            #self.liftMotor.set((math.sqrt(abs(1-(currentEncoderPosition/liftHeight)))) * -1)
             #self.liftMotor.set(-.75)
             #print('going down')
             self.liftMotor.set(0)
@@ -229,14 +220,14 @@ class operatorFunctions():
             else:
                 pass
         elif intakeMode == 2:#Eject Mode
-            print('Ejecting')
+            print('Ejecting Full Power')
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(1)
             return True
         elif intakeMode == 3:#Full Power eject
-            print('Ejecting')
-            self.leftManipulatorMotor.set(1)
-            self.rightManipulatorMotor.set(1)
+            print('Ejecting Half Power')
+            self.leftManipulatorMotor.set(.5)
+            self.rightManipulatorMotor.set(.5)
             return True
         elif intakeMode == 0:#Neutral Mode
             self.leftManipulatorMotor.set(0)
@@ -266,3 +257,5 @@ class operatorFunctions():
             else:
                 self.firstEject = True
                 return False
+        if intakeMode == 0:
+            return False

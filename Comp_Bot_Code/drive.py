@@ -211,7 +211,7 @@ class driveTrain():
             speedAdjustment /= 1+math.exp(-gyroAngle)
             speedAdjustment -= 0.05
             print(speedAdjustment)
-            rSpeed += speedAdjustment
+            rSpeed += speedAdjustment#Comment Line 214 and 215 out to remove the speed adjustment functions
             lSpeed -= speedAdjustment
             if averageEncoders > encoderDistance - 500:
                 lSpeed = slowDownSpeed
@@ -223,7 +223,7 @@ class driveTrain():
             if self.autonCounter < 4:
                 #print('Active Breaking')
                 self.drive.tankDrive(-.15 * self.MOTOR_SPEED_CONTROL, -.15 * self.MOTOR_SPEED_CONTROL,False)
-                self.autonCounter = self.autonCounter + 1
+                self.autonCounter += 1
                 return True
             else:
                 #print('EndLoop')
