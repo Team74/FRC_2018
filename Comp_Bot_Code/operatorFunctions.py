@@ -90,7 +90,20 @@ class operatorFunctions():
     def printLiftOutputCurrent(self):
         print(self.liftMotor.getOutputCurrent())
     '''
-    def pidLift(self):
+    def pidLift(self, setLiftPosition):
+        liftPositionOne = 0#Lift position when lift is all the way down in encoder values
+        liftPositionTwo = 500#Lift position for
+        liftPositionThree = 12000#Lift position to place cubes on the switch in encoder values
+        liftPositionFour = 1#Lift position to place cubes on the scale in encoder values
+        #Reads the desiried lift position and sets how high we need to lift the lift
+        if setLiftPosition == 0:
+            liftHeight = liftPositionOne
+        elif setLiftPosition == 1:
+            liftHeight = liftPositionTwo
+        elif setLiftPosition == 2:
+            liftHeight = liftPositionThree
+        elif setLiftPosition == 3:
+            liftHeight = liftPositionFour
         if self.firstUse:
             self.firstUse = False
             self.liftLoopSource = wpilib.interfaces.PIDSource()
@@ -101,6 +114,10 @@ class operatorFunctions():
             self.liftLoopSource.pidGet() = getFunction
             self.liftLoopSource.getPIDSourceType() = sourceTypFunction()
             self.liftLoopOut = wpilib.interfaces.PIDOutput()
+            def setFunction(output):
+                self.liftmotor.set(-output)#LiftMotor outputs reversed, positive is down, negetive is up, correcting for that here
+            self.liftLoopOut = setFunction
+            self.liftPID = wpilib.PIDController(p, i, d, f, source=self.liftLoopSource, output=self.liftLoopOut, period=0.02)
     '''
 
     def autonRaiseLowerLift(self, setLiftPosition):#Note encoder values do not scale linearly with lift hieght

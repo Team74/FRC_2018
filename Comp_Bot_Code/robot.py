@@ -174,12 +174,8 @@ class MyRobot(wpilib.IterativeRobot):
             self.drive.operate.autonIntakeControl(1)
             self.autonCounter = self.autonCounter + 1
         #self.AutonHandling.readCommandList(None, "square")
-        #lfEncoderPosition = -(self.drive.lfMotor.getQuadraturePosition())
-        #rbEncoderPosition = self.drive.rbMotor.getQuadraturePosition()
-        #averageEncoder = (lfEncoderPosition + rbEncoderPosition) / 2
-        #wpilib.SmartDashboard.putNumber('Left Encoder Position', lfEncoderPosition)
-        #wpilib.SmartDashboard.putNumber('Right Encoder Position', rbEncoderPosition)
-        #wpilib.SmartDashboard.putNumber(' Average Encodes', averageEncoder)
+        wpilib.SmartDashboard.putNumber('Left Velocity', self.drive.lbMotor.getQuadratureVelocity())
+        wpilib.SmartDashboard.putNumber('Right Velocity', self.drive.rbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #self.drive.printer()
     def teleopPeriodic(self):
@@ -187,6 +183,8 @@ class MyRobot(wpilib.IterativeRobot):
         #self.drive.operate.printLiftOutputCurrent()
         wpilib.SmartDashboard.putNumber('Left Drive Encoders', -(self.drive.lbMotor.getQuadraturePosition()))
         wpilib.SmartDashboard.putNumber('Right Drive Encders', self.drive.rbMotor.getQuadraturePosition())
+        wpilib.SmartDashboard.putNumber('Left Velocity', self.drive.lbMotor.getQuadratureVelocity())
+        wpilib.SmartDashboard.putNumber('Right Velocity', self.drive.rbMotor.getQuadratureVelocity())
         #print("Gyro Angle  ", self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
