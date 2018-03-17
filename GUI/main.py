@@ -229,14 +229,15 @@ class SideButtons(DragBehavior, BoxLayout):
         self.local = True
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
-        self.local_path = r"C:\Users\Will Hescott"
-        #self.local_path = "/home/svanderark/FRC_2018/GUI"
 
-        #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/prog_auton_dir"
 
-        #self.target_file = ["/rhome/svanderark/test_prog", "/home/svanderark/FRC_2018/GUI/test_prog_auton.txt"]
-        self.target_file = ["/home/lvuser/prog_auton.txt", r"C:\Users\Will Hescott\test_prog"]
+        self.local_path = "/home/svanderark/FRC_2018/GUI"
+        self.ip, self.username, self.password, self.path = '192.168.1.113', 'svanderark', 'chaos', "/rhome/svanderark/"
+        self.target_file = ["/rhome/svanderark/test_prog", "/home/svanderark/FRC_2018/GUI/test_prog_auton.txt"]
+
+        #self.local_path = r"C:\Users\Will Hescott"
+        #self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/prog_auton_dir"
+        #self.target_file = ["/home/lvuser/prog_auton.txt", r"C:\Users\Will Hescott\test_prog"]
 
 
         self.switch = Button(text="Select");
@@ -280,6 +281,11 @@ class SideButtons(DragBehavior, BoxLayout):
             self.parent.close_menu()
             blah = Popup(title="Choose output file", content=BoxLayout(orientation='vertical'), size_hint=(0.75,0.75))
 
+            if self.local:
+                filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8, local=True)#, local=self.local) SSHFileChooserVC
+            else:
+                filechooser = SSHFileChooserVC(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, local = False)
+
             try:
                 with (open(self.target_file[self.local], 'r') if self.local else filechooser.file_system.sftp.open(self.target_file[self.local], "r")) as f:
                     name = f.readline().strip()
@@ -295,10 +301,6 @@ class SideButtons(DragBehavior, BoxLayout):
                 blah.selector = Label(text="Error: Please create a route to be able to save file")
             else:
                 blah.selector = BoxLayout(orientation='vertical', size_hint=(1,1.5))
-                if self.local:
-                    filechooser = SSHFileChooserVC(path=self.local_path, size_hint_y=0.8, local=True)#, local=self.local) SSHFileChooserVC
-                else:
-                    filechooser = SSHFileChooserVC(file_system=FileSystemOverSSH(self.ip, self.username, self.password), size_hint_y=0.8, path=self.path, local = False)
                 blah.selector.add_widget(filechooser)
                 textinput = TextInput(text='', hint_text="[enter new filename here, or leave blank if you've selected a file to overwrite]", multiline=False, size_hint_y=0.1)
                 blah.selector.add_widget(textinput)
