@@ -12,14 +12,14 @@ class AutonInterpreter(autonBaseInit):
 
         with open("/home/lvuser/prog_auton.txt") as f:
             name = f.readline().strip()
-
+        print("sfhdjkfhwsdkjfhjskdhfjksdhfkjsd\t" + name)
         self.masterlist = []
-        self.default_loc = "/home/lvuser/prog_auton_dir" #"/home/svanderark/FRC_2018/GUI/convert/"
+        self.default_loc = "/home/lvuser/prog_auton_dir/" #"/home/svanderark/FRC_2018/GUI/convert/"
         with open(self.default_loc + name, "r") as f:
             data = f.readlines()
             i = 0
             del data[0] #first line is absolute position, for later re-import
-            del data[1] #let's assume it starts facing the right way
+            del data[0] #let's assume it starts facing the right way
             for line in data:
                 i += 1
                 temp = line[:-1].split(",")
