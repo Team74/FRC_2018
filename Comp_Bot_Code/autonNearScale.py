@@ -19,6 +19,6 @@ class autonNearScale(autonBaseInit):
 
             self.drive.autonMove(3, 0, .75, 10, 0, 0, 3, 0)
 
-            self.drive.autonMove(4, 3, 0, 0, 0, 0, 3, 2
+            self.drive.autonMove(4, 3, 0, 0, 0, 0, 3, 2)
         else:
             pass

@@ -37,8 +37,9 @@ class operatorFunctions():
 
         self.tilter = wpilib.DoubleSolenoid(20, 2, 3)
 
-        self.doWeHaveACube = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from digital input 0
+        self.doWeHaveACube = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from DIO 0
         self.isLiftDown = wpilib.DigitalInput(1)#Initilizes a limit switch to see if the lift is at it's minnimum height, sets it to read from DIO 1
+        self.isLiftUp = wpilib.DigitalInput(2)#)#Initilizes a limit switch to see if the lift is at it's minnimum height, sets it to read from DIO 2
 
         self.toggle = 0
 
@@ -47,6 +48,7 @@ class operatorFunctions():
 
         self.winchMotorControlGroup = wpilib.SpeedControllerGroup(self.winchMotorOne, self.winchMotorTwo, self.winchMotorThree)
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
+        self.firstUse = True
     def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(rightBumper, leftBumper)
@@ -71,6 +73,8 @@ class operatorFunctions():
         output = leftY
         if self.isLiftDown.get():
             output = max(0, output)
+        if self.isLiftUp.get():
+            output = min(0, output)
         self.liftMotor.set(-(output))
 
     def printLiftEncoder(self):
@@ -100,20 +104,24 @@ class operatorFunctions():
         if self.firstUse:
             self.firstUse = False
             self.liftLoopSource = wpilib.interfaces.PIDSource()
+            self.liftLoopSource.setContinuous(True)
             def getFunction():
                 return self.liftMotor.getSelectedSensorPosition(0, 0, 0)
             def sourceTypFunction():
                 return 0
-            self.liftLoopSource.pidGet() = getFunction
-            self.liftLoopSource.getPIDSourceType() = sourceTypFunction()
+            self.liftLoopSource.pidGet = getFunction
+            self.liftLoopSource.getPIDSourceType = sourceTypFunction
             self.liftLoopOut = wpilib.interfaces.PIDOutput()
             def setFunction(output):
                 self.liftmotor.set(-output)#LiftMotor outputs reversed, positive is down, negetive is up, correcting for that here
             self.liftLoopOut = setFunction
-            self.liftPID = wpilib.PIDController(p, i, d, f, source=self.liftLoopSource, output=self.liftLoopOut, period=0.02)
+            self.liftPID = wpilib.PIDController(p, i, d, f, source=self.liftLoopSource, output=self.liftLoopOut, period=0.02)#p =, i =, d =, f =
+        else:
+            self.liftLoopSource.setSetpoint(liftHeight)
     '''
 
     def autonRaiseLowerLift(self, setLiftPosition):#Note encoder values do not scale linearly with lift hieght
+        speed = 0
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
         liftPositionOne = 0#Lift position when lift is all the way down in encoder values
@@ -131,21 +139,23 @@ class operatorFunctions():
             liftHeight = liftPositionFour
         print(currentEncoderPosition)
         if currentEncoderPosition <= (liftHeight + 500):
-            self.liftMotor.set(.75)
+            speed = .75
             print('Going up')
-            return True
 
         elif currentEncoderPosition >= (liftHeight - 500):
-            #self.liftMotor.set(-.75)
+            #speed = -.75
             #print('going down')
-            self.liftMotor.set(0)
-            return True
+            speed = 0
 
         else:
-            self.liftMotor.set(0)
+            speed = 0
             print('Holding')
-            return True
-
+        if isliftUp.get():
+            speed = min(0, speed)
+        if isliftDown.get():
+            speed = max(0, speed)
+        self.liftMotor.set(speed)
+        return True
     def standaloneAutonRaiseLowerLift(self, setLiftPosition):
         #currentEncoderPosition = 1
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
@@ -160,18 +170,23 @@ class operatorFunctions():
             liftHeight = liftPositionTwo
         elif setLiftPosition == 2:
             liftHeight = liftPositionThree
-        if currentEncoderPosition <= (liftHeight + 500):
-            self.liftMotor.set(.75)
-            return True
-            '''
-            elif currentEncoderPosition >= (liftHeight - 250):
-                self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))) * -1)
-                return True
-            '''
+        if self.isliftDown.get():
+            if self.isLiftUp.get():
+                if currentEncoderPosition <= (liftHeight + 500):
+                    self.liftMotor.set(.75)
+                    return True
+                    '''
+                    elif currentEncoderPosition >= (liftHeight - 250):
+                        self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))) * -1)
+                        return True
+                    '''
+                else:
+                    self.liftMotor.set(0)
+                    return False
+            else:
+                return False
         else:
-            self.liftMotor.set(0)
             return False
-        return True
     def deployClimber(self, startButton, backButton):
             if (startButton or backButton) and (self.time.time >= self.TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
                 pass
