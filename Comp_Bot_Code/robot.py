@@ -186,6 +186,8 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Right Drive Encders', self.drive.rbMotor.getQuadraturePosition())
         wpilib.SmartDashboard.putNumber('Left Velocity', self.drive.lbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Right Velocity', self.drive.rbMotor.getQuadratureVelocity())
+        wpilib.SmartDashboard.putNumber('Left Current', self.drive.lbMotor.getOutputCurrent())
+        wpilib.SmartDashboard.putNumber('Right Current', self.drive.rbMotor.getOutputCurrent())
         #print("Gyro Angle  ", self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())

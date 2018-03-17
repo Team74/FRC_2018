@@ -11,7 +11,7 @@ import ctre
 import math
 
 class operatorFunctions():
-    TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
+    TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code loops per second
     TIME_TO_EJECT = 100#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
 
     def __init__(self, robot, drive):
@@ -19,7 +19,6 @@ class operatorFunctions():
         self.drive = drive
         self.firstUse = True
         #Set each motor to a talon
-        #Note that these are theoretical and subject to change as of 1-13-2018
         self.liftMotor = ctre.wpi_talonsrx.WPI_TalonSRX(3)
         self.liftMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
@@ -37,9 +36,8 @@ class operatorFunctions():
 
         self.tilter = wpilib.DoubleSolenoid(20, 2, 3)
 
-        self.doWeHaveACube = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from DIO 0
+        self.proximitySensor = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from DIO 0
         self.isLiftDown = wpilib.DigitalInput(1)#Initilizes a limit switch to see if the lift is at it's minnimum height, sets it to read from DIO 1
-        self.isLiftUp = wpilib.DigitalInput(2)#)#Initilizes a limit switch to see if the lift is at it's minnimum height, sets it to read from DIO 2
 
         self.toggle = 0
 
@@ -54,7 +52,8 @@ class operatorFunctions():
         self.liftTilt(rightBumper, leftBumper)
         self.raiseLowerLift(leftY)
         self.winchUpDown(rightY)
-        self.manipulatorControl(aButton, xButton, yButton)
+        #self.manipulatorControl(aButton, xButton, yButton)
+        self.manipulatorControlTwo(rightY)
         self.deployClimber(startButton, backButton)
         self.zeroLiftEncoder(bButton)
 
@@ -70,13 +69,11 @@ class operatorFunctions():
             self.tilter.set(1)
 
     def raiseLowerLift(self, leftY):
+        print(self.isLiftDown.get())
         output = leftY
         if self.isLiftDown.get():
-            output = max(0, output)
-        if self.isLiftUp.get():
             output = min(0, output)
-        self.liftMotor.set(-(output))
-
+        self.liftMotor.set(output)
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
@@ -150,10 +147,10 @@ class operatorFunctions():
         else:
             speed = 0
             print('Holding')
-        if isliftUp.get():
-            speed = min(0, speed)
-        if isliftDown.get():
+        '''
+        if self.isliftDown.get():
             speed = max(0, speed)
+        '''
         self.liftMotor.set(speed)
         return True
     def standaloneAutonRaiseLowerLift(self, setLiftPosition):
@@ -170,23 +167,20 @@ class operatorFunctions():
             liftHeight = liftPositionTwo
         elif setLiftPosition == 2:
             liftHeight = liftPositionThree
-        if self.isliftDown.get():
-            if self.isLiftUp.get():
-                if currentEncoderPosition <= (liftHeight + 500):
-                    self.liftMotor.set(.75)
-                    return True
-                    '''
-                    elif currentEncoderPosition >= (liftHeight - 250):
-                        self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))) * -1)
-                        return True
-                    '''
-                else:
-                    self.liftMotor.set(0)
-                    return False
-            else:
-                return False
+        #if self.isliftDown.get():
+        if currentEncoderPosition <= (liftHeight + 500):
+            self.liftMotor.set(.75)
+            return True
+            '''
+            elif currentEncoderPosition >= (liftHeight - 250):
+                self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))) * -1)
+                return True
+            '''
         else:
+            self.liftMotor.set(0)
             return False
+        #else:
+            #return False
     def deployClimber(self, startButton, backButton):
             if (startButton or backButton) and (self.time.time >= self.TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
                 pass
@@ -202,14 +196,14 @@ class operatorFunctions():
             self.winchMotorControlGroup.set((rightY * 1) * .5)#Testing only, remove when done
 
     def doWeHaveACube(self):
-        self.cubeInManinpulator = self.doWeHaveACube.get()#Gets input from proximity sensor and setes it to self.cubeInManinpulator
-        return self.cubeInManipulator
+        cubeInManipulator = self.proximitySensor.get()#Gets input from proximity sensor and setes it to cubeInManinpulator
+        return cubeInManipulator
 
     def manipulatorControl(self, aButton, xButton, yButton):
         if aButton:#Intake
             self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(-1)
-        elif xButton:#Eject 3/4
+        elif xButton:#Eject 1/2
             self.leftManipulatorMotor.set(.5)
             self.rightManipulatorMotor.set(.5)
         elif yButton:#Eject Full
@@ -219,14 +213,19 @@ class operatorFunctions():
             self.leftManipulatorMotor.set(0)
             self.rightManipulatorMotor.set(0)
 
+    def manipulatorControlTwo(self, rightY):
+        speed = -(rightY)
+        self.leftManipulatorMotor.set(speed)
+        self.rightManipulatorMotor.set(speed)
+
 
     def startRunTimeClock(self):
         self.runTime = 0
 
     def autonIntakeControl(self, intakeMode):
         if intakeMode == 1:#Intake mode
-            #if self.doWeHaveACube():
-                #intakeMode = 0
+            if self.doWeHaveACube():
+                intakeMode = 0
             if intakeMode == 1:
                 print('Intaking')
                 self.leftManipulatorMotor.set(-1)

@@ -6,9 +6,9 @@ class autonCenterEitherSwitch(autonBaseInit):
     def run(self):
         if self.side == 'center':
             if self.switchPosition == 'L':
-                self.drive.autonMove(1, 0, .6, 12, 0, 0, 0, 0)
+                self.drive.autonMove(1, 0, speed = .6, distance = 12, setLiftPosition = 0, intakeMode = 0)
 
-                self.drive.autonMove(2, 1, 0, 0, -35, .5, 0, 0)
+                self.drive.autonMove(2, 1,turnAngle = -35, turnSpeed = .5, setLiftPosition = 0, intakeMode = 0)
 
                 self.drive.autonMove(3, 0, 1, 65, 0, 0, 2, 0)
 

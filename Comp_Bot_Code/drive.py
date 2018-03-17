@@ -15,12 +15,12 @@ import ctre
 import math
 
 class driveTrain():
-    #MOTOR_SPEED_CONTROL = .87#Practice base
-    MOTOR_SPEED_CONTROL = 1#Comp Base
-    ENCODER_CODES_PER_REV = 5000#Comp Base
-    #ENCODER_CODES_PER_REV = 5887#Practice Base
-    WHEEL_CIRCUMFERENCE = 12.5663706144#Comp Base
-    #WHEEL_CIRCUMFERENCE = 18.849#Practice base
+    MOTOR_SPEED_CONTROL = .87#Practice base
+    #MOTOR_SPEED_CONTROL = 1#Comp Base
+    #ENCODER_CODES_PER_REV = 5000#Comp Base
+    ENCODER_CODES_PER_REV = 5887#Practice Base
+    #WHEEL_CIRCUMFERENCE = 12.5663706144#Comp Base
+    WHEEL_CIRCUMFERENCE = 18.849#Practice base
 
     def __init__(self, robot):
         self.operate = operatorFunctions(drive = self, robot = robot)#Creates the operator functions
@@ -176,7 +176,7 @@ class driveTrain():
 
     def autonPivot(self, turnAngle, turnSpeed):
         slowDownSpeed = .14
-        correctionDeadzone = .5
+        correctionDeadzone = 1
         if self.firstRun:
             self.oldGyro = self.gyro.getAngle()
             self.firstRun = False
