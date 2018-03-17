@@ -182,16 +182,12 @@ class Connector(Widget):    #class to represent the lines between widgets
         self.COLOR = Color(0.6,0.9,0.6)
         self.prev_line = Line(width=1)
         self.old_prev_node = None
-        self.radius = 0
 
         self.prev_change()
         self.node.bind(parent=self.node_change, prev_node=self.prev_change, pos=self.check_set_points)
 
     def set_points(self, _inst=0, _val=0):
-        if self.radius == 0:
-            self.prev_line.points=[self.node.prev_node.center_x, self.node.prev_node.center_y, self.node.center_x, self.node.center_y]
-        else:
-            self.prev_line = Line(width=1, circle=())
+        self.prev_line.points=[self.node.prev_node.center_x, self.node.prev_node.center_y, self.node.center_x, self.node.center_y]
 
     def check_set_points(self, _x=0, _y=0):
         self.canvas.clear()
@@ -233,14 +229,15 @@ class SideButtons(DragBehavior, BoxLayout):
         self.local = True
         self.WIDTH = 27*12*2
         self.HEIGHT = 27*12
-        self.local_path = r"C:\Users\Will Hescott"
-        #self.local_path = "/home/svanderark/FRC_2018/GUI"
 
-        #self.ip, self.username, self.password, self.path = '10.111.49.27', 'svanderark', 'chaos', "/rhome/svanderark/"
-        self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/prog_auton_dir"
 
-        #self.target_file = ["/rhome/svanderark/test_prog", "/home/svanderark/FRC_2018/GUI/test_prog_auton.txt"]
-        self.target_file = ["/home/lvuser/prog_auton.txt", r"C:\Users\Will Hescott\test_prog"]
+        self.local_path = "/home/svanderark/FRC_2018/GUI"
+        self.ip, self.username, self.password, self.path = '192.168.1.113', 'svanderark', 'chaos', "/rhome/svanderark/"
+        self.target_file = ["/rhome/svanderark/test_prog", "/home/svanderark/FRC_2018/GUI/test_prog_auton.txt"]
+
+        #self.local_path = r"C:\Users\Will Hescott"
+        #self.ip, self.username, self.password, self.path = '10.0.74.99', 'admin', '', "/home/lvuser/prog_auton_dir"
+        #self.target_file = ["/home/lvuser/prog_auton.txt", r"C:\Users\Will Hescott\test_prog"]
 
 
         self.switch = Button(text="Select");
