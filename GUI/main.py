@@ -182,12 +182,16 @@ class Connector(Widget):    #class to represent the lines between widgets
         self.COLOR = Color(0.6,0.9,0.6)
         self.prev_line = Line(width=1)
         self.old_prev_node = None
+        self.radius = 0
 
         self.prev_change()
         self.node.bind(parent=self.node_change, prev_node=self.prev_change, pos=self.check_set_points)
 
     def set_points(self, _inst=0, _val=0):
-        self.prev_line.points=[self.node.prev_node.center_x, self.node.prev_node.center_y, self.node.center_x, self.node.center_y]
+        if self.radius == 0:
+            self.prev_line.points=[self.node.prev_node.center_x, self.node.prev_node.center_y, self.node.center_x, self.node.center_y]
+        else:
+            self.prev_line = Line(width=1, circle=())
 
     def check_set_points(self, _x=0, _y=0):
         self.canvas.clear()
