@@ -12,7 +12,7 @@ import math
 
 class operatorFunctions():
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code loops per second
-    TIME_TO_EJECT = 100#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
+    TIME_TO_EJECT = 50#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
 
     def __init__(self, robot, drive):
         self.time = timeOut()
@@ -69,10 +69,12 @@ class operatorFunctions():
             self.tilter.set(1)
 
     def raiseLowerLift(self, leftY):
-        print(self.isLiftDown.get())
         output = leftY
+        '''
         if self.isLiftDown.get():
+            self.liftMotor.setSelectedSensorPosition(0, 0, 0)
             output = min(0, output)
+        '''
         self.liftMotor.set(output)
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
@@ -136,7 +138,7 @@ class operatorFunctions():
             liftHeight = liftPositionFour
         print(currentEncoderPosition)
         if currentEncoderPosition <= (liftHeight + 500):
-            speed = .75
+            speed = 1
             print('Going up')
 
         elif currentEncoderPosition >= (liftHeight - 500):
@@ -169,7 +171,10 @@ class operatorFunctions():
             liftHeight = liftPositionThree
         #if self.isliftDown.get():
         if currentEncoderPosition <= (liftHeight + 500):
-            self.liftMotor.set(.75)
+            if self.isLiftDown.get():
+                self.liftMotor.setSelectedSensorPosition(0, 0, 0)
+                return False
+            self.liftMotor.set(1)
             return True
             '''
             elif currentEncoderPosition >= (liftHeight - 250):
@@ -234,14 +239,14 @@ class operatorFunctions():
             else:
                 pass
         elif intakeMode == 2:#Eject Mode
-            print('Ejecting Full Power')
-            self.leftManipulatorMotor.set(1)
-            self.rightManipulatorMotor.set(1)
-            return True
-        elif intakeMode == 3:#Full Power eject
             print('Ejecting Half Power')
             self.leftManipulatorMotor.set(.5)
             self.rightManipulatorMotor.set(.5)
+            return True
+        elif intakeMode == 3:#Full Power eject
+            print('Ejecting Full Power')
+            self.leftManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(1)
             return True
         elif intakeMode == 0:#Neutral Mode
             self.leftManipulatorMotor.set(0)
@@ -259,7 +264,7 @@ class operatorFunctions():
                     return True
                 else:
                     pass
-        if intakeMode == 2:
+        if intakeMode == 2:#Half eject
             if self.firstEject:
                 self.ejectClock = 0
                 self.firstEject = False
@@ -271,5 +276,17 @@ class operatorFunctions():
             else:
                 self.firstEject = True
                 return False
-        if intakeMode == 0:
+        if intakeMode == 3:#Full eject
+            if self.firstEject:
+                self.ejectClock = 0
+                self.firstEject = False
+            if self.ejectClock <= self.TIME_TO_EJECT:
+                self.leftManipulatorMotor.set(1)
+                self.rightManipulatorMotor.set(1)
+                self.ejectClock += 1
+                return True
+            else:
+                self.firstEject = True
+                return False
+        if intakeMode == 0:#Neutral, exit function
             return False

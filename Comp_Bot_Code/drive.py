@@ -15,12 +15,12 @@ import ctre
 import math
 
 class driveTrain():
-    MOTOR_SPEED_CONTROL = .87#Practice base
-    #MOTOR_SPEED_CONTROL = 1#Comp Base
-    #ENCODER_CODES_PER_REV = 5000#Comp Base
-    ENCODER_CODES_PER_REV = 5887#Practice Base
-    #WHEEL_CIRCUMFERENCE = 12.5663706144#Comp Base
-    WHEEL_CIRCUMFERENCE = 18.849#Practice base
+    #MOTOR_SPEED_CONTROL = .87#Practice base
+    MOTOR_SPEED_CONTROL = 1#Comp Base
+    ENCODER_CODES_PER_REV = 5000#Comp Base
+    #ENCODER_CODES_PER_REV = 5887#Practice Base
+    WHEEL_CIRCUMFERENCE = 12.5663706144#Comp Base
+    #WHEEL_CIRCUMFERENCE = 18.849#Practice base
 
     def __init__(self, robot):
         self.operate = operatorFunctions(drive = self, robot = robot)#Creates the operator functions
@@ -44,6 +44,7 @@ class driveTrain():
 
         self.firstTime = True#Check for autonDriveStraight
         self.firstRun = True#Check for autonPivot
+        self.firstAngleTurn = True#Check for first angled turn
 
         self.oldGyro = 0
 
@@ -131,7 +132,7 @@ class driveTrain():
         else:
             pass
 
-    def autonAngledTurn(self, radius, turnangle, turnSpeed):
+    def autonAngledTurn(self, radius, turnAngle, turnSpeed):
         if self.firstAngleTurn:#Checks for first time through the function to only reset encoders on the first time
             #print('passed first check')#Debugging
             #self.encoderReset()#Resets encoders
@@ -140,12 +141,12 @@ class driveTrain():
             self.oldPositionRight =  -(self.rbMotor.getQuadraturePosition())
             self.autonCounter = 0
             self.firstAngleTurn = False
-        robotSpeed = 8
-        robotSpeedInchesPerSecond = robotSpeed * 12
+        robotSpeedFeetPerSecond = 8
+        robotSpeedInchesPerSecond = robotSpeedFeetPerSecond * 12
         wheelWidth = 24.3
         wheelDistanceFromCenter = wheelWidth / 2
         overallCircumference = 2 * (3.14159265 * radius)
-        cirlcePercentage = 360 / turnAngle
+        circlePercentage = 360 / turnAngle
         if turnAngle > 0:#IF we are turning right, the left wheels have to travel further
             leftTurnDistance = (overallCircumference + (2 * 3.14159265 * wheelDistanceFromCenter)) / circlePercentage
             rightTurnDistance = (overallCircumference - (2 * 3.14159265 * wheelDistanceFromCenter)) / circlePercentage
@@ -162,7 +163,7 @@ class driveTrain():
         elif turnAngle < 0:#If we are turning left, the right wheels have to travel further
             leftTurnDistance = (overallCircumference - wheelDistanceFromCenter) / circlePercentage
             rightTurnDistance = (overallCircumference + wheelDistanceFromCenter) / circlePercentage
-            rightSpeed = tunrSpeed
+            rightSpeed = turnSpeed
             turnTime = (rightTurnDistance / robotSpeedInchesPerSecond)
             leftSpeed = (leftTurnDistance / turnTime)
             leftSpeedPercentage = (leftSpeed / rightSpeed)

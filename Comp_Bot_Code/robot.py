@@ -11,6 +11,7 @@ from wpilib import DriverStation
 from drive import driveTrain
 from operatorFunctions import *
 from drive_2017 import driveTrain2017
+from autonCenterEitherSwitchAngledTurningTesting import *
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
 from autonFarSwitch import *
@@ -157,11 +158,12 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
-        #self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
+        self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
         #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
-        self.auton = autonDrive('any', 'any', 'any', self.drive)
+        #self.auton = autonDrive('any', 'any', 'any', self.drive)
+        #self.auton = autonCenterEitherSwitchAngledTurningTesting('left', 'L', 'L', self.drive)
     def autonomousPeriodic(self):
         self.drive.operate.liftTilt(False, True)
         self.drive.autonShift('low')#Keeps it in low gear during auton
@@ -189,7 +191,7 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Left Current', self.drive.lbMotor.getOutputCurrent())
         wpilib.SmartDashboard.putNumber('Right Current', self.drive.rbMotor.getOutputCurrent())
         #print("Gyro Angle  ", self.drive.getGyroAngle())
-        #wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
+        wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
         #self.drive.printer()
