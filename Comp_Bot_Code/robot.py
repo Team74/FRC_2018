@@ -38,6 +38,8 @@ class MyRobot(wpilib.IterativeRobot):
         self.time = timeOut()
         self.interpret = interpret()
 
+
+
         self.controllerOne = XboxController(0)
         self.controllerTwo = XboxController(1)
         self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up
@@ -83,6 +85,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.switchLscaleR.addDefault('Drive', 'drive')
         self.switchLscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
 
+        wpilib.CameraServer.launch()#('vision.py:main')
         #print('Dashboard Test')
         wpilib.SmartDashboard.putData('Starting Position', self.positionChooser)
         wpilib.SmartDashboard.putData('Switch and Scale Left', self.switchLscaleL)
