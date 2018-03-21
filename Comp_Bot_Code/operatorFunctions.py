@@ -11,15 +11,14 @@ import ctre
 import math
 
 class operatorFunctions():
-    TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code's period
-    TIME_TO_EJECT = 100#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
+    TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code loops per second
+    TIME_TO_EJECT = 50#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
 
     def __init__(self, robot, drive):
         self.time = timeOut()
         self.drive = drive
         self.firstUse = True
         #Set each motor to a talon
-        #Note that these are theoretical and subject to change as of 1-13-2018
         self.liftMotor = ctre.wpi_talonsrx.WPI_TalonSRX(3)
         self.liftMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
@@ -37,7 +36,7 @@ class operatorFunctions():
 
         self.tilter = wpilib.DoubleSolenoid(20, 2, 3)
 
-        self.doWeHaveACube = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from digital input 0
+        self.proximitySensor = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from DIO 0
         self.isLiftDown = wpilib.DigitalInput(1)#Initilizes a limit switch to see if the lift is at it's minnimum height, sets it to read from DIO 1
 
         self.toggle = 0
@@ -47,12 +46,14 @@ class operatorFunctions():
 
         self.winchMotorControlGroup = wpilib.SpeedControllerGroup(self.winchMotorOne, self.winchMotorTwo, self.winchMotorThree)
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
+        self.firstUse = True
     def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(rightBumper, leftBumper)
         self.raiseLowerLift(leftY)
-        self.winchUpDown(rightY)
-        self.manipulatorControl(aButton, xButton, yButton)
+        #self.winchUpDown(rightY)
+        #self.manipulatorControl(aButton, xButton, yButton)
+        self.manipulatorControlTwo(rightY)
         self.deployClimber(startButton, backButton)
         self.zeroLiftEncoder(bButton)
 
@@ -69,10 +70,12 @@ class operatorFunctions():
 
     def raiseLowerLift(self, leftY):
         output = leftY
+        
         if self.isLiftDown.get():
-            output = max(0, output)
-        self.liftMotor.set(-(output))
+            self.liftMotor.setSelectedSensorPosition(0, 0, 0)
+            output = min(0, output)
 
+        self.liftMotor.set(-output)
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
@@ -100,20 +103,24 @@ class operatorFunctions():
         if self.firstUse:
             self.firstUse = False
             self.liftLoopSource = wpilib.interfaces.PIDSource()
+            self.liftLoopSource.setContinuous(True)
             def getFunction():
                 return self.liftMotor.getSelectedSensorPosition(0, 0, 0)
             def sourceTypFunction():
                 return 0
-            self.liftLoopSource.pidGet() = getFunction
-            self.liftLoopSource.getPIDSourceType() = sourceTypFunction()
+            self.liftLoopSource.pidGet = getFunction
+            self.liftLoopSource.getPIDSourceType = sourceTypFunction
             self.liftLoopOut = wpilib.interfaces.PIDOutput()
             def setFunction(output):
                 self.liftmotor.set(-output)#LiftMotor outputs reversed, positive is down, negetive is up, correcting for that here
             self.liftLoopOut = setFunction
-            self.liftPID = wpilib.PIDController(p, i, d, f, source=self.liftLoopSource, output=self.liftLoopOut, period=0.02)
+            self.liftPID = wpilib.PIDController(p, i, d, f, source=self.liftLoopSource, output=self.liftLoopOut, period=0.02)#p =, i =, d =, f =
+        else:
+            self.liftLoopSource.setSetpoint(liftHeight)
     '''
 
     def autonRaiseLowerLift(self, setLiftPosition):#Note encoder values do not scale linearly with lift hieght
+        speed = 0
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
         liftPositionOne = 0#Lift position when lift is all the way down in encoder values
@@ -131,21 +138,23 @@ class operatorFunctions():
             liftHeight = liftPositionFour
         print(currentEncoderPosition)
         if currentEncoderPosition <= (liftHeight + 500):
-            self.liftMotor.set(.75)
+            speed = 1
             print('Going up')
-            return True
 
         elif currentEncoderPosition >= (liftHeight - 500):
-            #self.liftMotor.set(-.75)
+            #speed = -.75
             #print('going down')
-            self.liftMotor.set(0)
-            return True
+            speed = 0
 
         else:
-            self.liftMotor.set(0)
+            speed = 0
             print('Holding')
-            return True
-
+        '''
+        if self.isliftDown.get():
+            speed = max(0, speed)
+        '''
+        self.liftMotor.set(speed)
+        return True
     def standaloneAutonRaiseLowerLift(self, setLiftPosition):
         #currentEncoderPosition = 1
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
@@ -160,8 +169,12 @@ class operatorFunctions():
             liftHeight = liftPositionTwo
         elif setLiftPosition == 2:
             liftHeight = liftPositionThree
+        #if self.isliftDown.get():
         if currentEncoderPosition <= (liftHeight + 500):
-            self.liftMotor.set(.75)
+            if self.isLiftDown.get():
+                self.liftMotor.setSelectedSensorPosition(0, 0, 0)
+                return False
+            self.liftMotor.set(1)
             return True
             '''
             elif currentEncoderPosition >= (liftHeight - 250):
@@ -171,7 +184,8 @@ class operatorFunctions():
         else:
             self.liftMotor.set(0)
             return False
-        return True
+        #else:
+            #return False
     def deployClimber(self, startButton, backButton):
             if (startButton or backButton) and (self.time.time >= self.TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
                 pass
@@ -187,14 +201,14 @@ class operatorFunctions():
             self.winchMotorControlGroup.set((rightY * 1) * .5)#Testing only, remove when done
 
     def doWeHaveACube(self):
-        self.cubeInManinpulator = self.doWeHaveACube.get()#Gets input from proximity sensor and setes it to self.cubeInManinpulator
-        return self.cubeInManipulator
+        cubeInManipulator = self.proximitySensor.get()#Gets input from proximity sensor and setes it to cubeInManinpulator
+        return cubeInManipulator
 
     def manipulatorControl(self, aButton, xButton, yButton):
         if aButton:#Intake
             self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(-1)
-        elif xButton:#Eject 3/4
+        elif xButton:#Eject 1/2
             self.leftManipulatorMotor.set(.5)
             self.rightManipulatorMotor.set(.5)
         elif yButton:#Eject Full
@@ -204,14 +218,19 @@ class operatorFunctions():
             self.leftManipulatorMotor.set(0)
             self.rightManipulatorMotor.set(0)
 
+    def manipulatorControlTwo(self, rightY):
+        speed = -(rightY)
+        self.leftManipulatorMotor.set(speed)
+        self.rightManipulatorMotor.set(speed)
+
 
     def startRunTimeClock(self):
         self.runTime = 0
 
     def autonIntakeControl(self, intakeMode):
         if intakeMode == 1:#Intake mode
-            #if self.doWeHaveACube():
-                #intakeMode = 0
+            if self.doWeHaveACube():
+                intakeMode = 0
             if intakeMode == 1:
                 print('Intaking')
                 self.leftManipulatorMotor.set(-1)
@@ -220,14 +239,14 @@ class operatorFunctions():
             else:
                 pass
         elif intakeMode == 2:#Eject Mode
-            print('Ejecting Full Power')
-            self.leftManipulatorMotor.set(1)
-            self.rightManipulatorMotor.set(1)
-            return True
-        elif intakeMode == 3:#Full Power eject
             print('Ejecting Half Power')
             self.leftManipulatorMotor.set(.5)
             self.rightManipulatorMotor.set(.5)
+            return True
+        elif intakeMode == 3:#Full Power eject
+            print('Ejecting Full Power')
+            self.leftManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(1)
             return True
         elif intakeMode == 0:#Neutral Mode
             self.leftManipulatorMotor.set(0)
@@ -245,7 +264,7 @@ class operatorFunctions():
                     return True
                 else:
                     pass
-        if intakeMode == 2:
+        if intakeMode == 2:#Half eject
             if self.firstEject:
                 self.ejectClock = 0
                 self.firstEject = False
@@ -257,5 +276,17 @@ class operatorFunctions():
             else:
                 self.firstEject = True
                 return False
-        if intakeMode == 0:
+        if intakeMode == 3:#Full eject
+            if self.firstEject:
+                self.ejectClock = 0
+                self.firstEject = False
+            if self.ejectClock <= self.TIME_TO_EJECT:
+                self.leftManipulatorMotor.set(1)
+                self.rightManipulatorMotor.set(1)
+                self.ejectClock += 1
+                return True
+            else:
+                self.firstEject = True
+                return False
+        if intakeMode == 0:#Neutral, exit function
             return False

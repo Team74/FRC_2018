@@ -11,6 +11,7 @@ from wpilib import DriverStation
 from drive import driveTrain
 from operatorFunctions import *
 from drive_2017 import driveTrain2017
+from autonCenterEitherSwitchAngledTurningTesting import *
 from autonNearSwitch import *
 from autonCenterEitherSwitch import *
 from autonFarSwitch import *
@@ -18,6 +19,7 @@ from autonTwoCubeScale import *
 from autonNearScale import *
 from autonDrive import *
 from autonTurningTuning import *
+from autonAngledTurnTesting import *
 from autonLiftTest import *
 import ctre
 from robotpy_ext.common_drivers.navx.ahrs import AHRS
@@ -154,7 +156,7 @@ class MyRobot(wpilib.IterativeRobot):
         #print('reset moveNumber')
         self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
-
+        #self.auton = autonAngledTurnTesting('any', 'any', 'any', self.drive)
         #self.auton = autonLiftTest('any', 'any', 'any', self.drive)
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
@@ -164,6 +166,7 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
+        #self.auton = autonCenterEitherSwitchAngledTurningTesting('left', 'L', 'L', self.drive)
     def autonomousPeriodic(self):
         self.drive.operate.liftTilt(False, True)
         self.drive.autonShift('low')#Keeps it in low gear during auton
@@ -171,7 +174,6 @@ class MyRobot(wpilib.IterativeRobot):
         #print(self.drive.getGyroAngle())
         if self.autonCounter >= 40:
             self.auton.run()
-            print('Running auton')
         else:
             self.drive.operate.liftTilt(False, True)
             self.drive.operate.autonIntakeControl(1)
@@ -188,13 +190,15 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Right Drive Encders', self.drive.rbMotor.getQuadraturePosition())
         wpilib.SmartDashboard.putNumber('Left Velocity', self.drive.lbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Right Velocity', self.drive.rbMotor.getQuadratureVelocity())
+        wpilib.SmartDashboard.putNumber('Left Current', self.drive.lbMotor.getOutputCurrent())
+        wpilib.SmartDashboard.putNumber('Right Current', self.drive.rbMotor.getOutputCurrent())
         #print("Gyro Angle  ", self.drive.getGyroAngle())
-        #wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
+        wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
         #self.drive.printer()
         #self.drive.operate.liftTest()
-        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightX(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
+        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA())
         self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack())
         #self.time.time += 1
 if __name__ == "__main__":
