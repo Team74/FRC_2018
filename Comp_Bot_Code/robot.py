@@ -151,14 +151,14 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.autonShift('low')#Forces into low gear at start of auton
         self.drive.operate.liftTilt(False, True)
         #print('reset moveNumber')
-        #self.interperetDashboard()
+        self.interperetDashboard()
         #self.auton = AutonInterpreter(3,3,3,self.drive)
         #self.auton = autonAngledTurnTesting('any', 'any', 'any', self.drive)
         #self.auton = autonLiftTest('any', 'any', 'any', self.drive)
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
         #self.auton = autonNearSwitch('right', 'R', 'L', self.drive)
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
-        self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
+        #self.auton = autonCenterEitherSwitch('center', 'R', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'L', 'R', self.drive)
         #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
@@ -171,7 +171,6 @@ class MyRobot(wpilib.IterativeRobot):
         #print(self.drive.getGyroAngle())
         if self.autonCounter >= 40:
             self.auton.run()
-            print('Running auton')
         else:
             self.drive.operate.liftTilt(False, True)
             self.drive.operate.autonIntakeControl(1)

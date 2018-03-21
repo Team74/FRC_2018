@@ -177,7 +177,7 @@ class driveTrain():
 
     def autonPivot(self, turnAngle, turnSpeed):
         slowDownSpeed = .14
-        correctionDeadzone = 1
+        correctionDeadzone = 5
         if self.firstRun:
             self.oldGyro = self.gyro.getAngle()
             self.firstRun = False
@@ -239,15 +239,16 @@ class driveTrain():
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
         #print('Average Encodes' + str(averageEncoders))
         if averageEncoders < encoderDistance and self.autonCounter == 0:
-            speedAdjustment = .1
+            speedAdjustmentMultiplier = 4
+            speedAdjustment = (.1 * speedAdjustmentMultiplier)
             slowDownSpeed = .25
             gyroAngle = self.getGyroAngle()
             speedAdjustment /= 1+math.exp(-gyroAngle)
-            speedAdjustment -= 0.05
+            speedAdjustment -= (0.05 * speedAdjustmentMultiplier)
             print(speedAdjustment)
-            rSpeed += speedAdjustment#Comment Line 214 and 215 out to remove the speed adjustment functions
+            rSpeed += speedAdjustment#Comment Line 248 and 249 out to remove the speed adjustment functions
             lSpeed -= speedAdjustment
-            if averageEncoders > encoderDistance - 500:
+            if averageEncoders > (encoderDistance - 500):
                 lSpeed = slowDownSpeed
                 rSpeed = slowDownSpeed
                 #print('Slowing Down')
@@ -272,6 +273,7 @@ class driveTrain():
             #print(self.moveNumber)
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):
+                    print(distance)
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
                         pass
                     if self.operate.autonIntakeControl(intakeMode):

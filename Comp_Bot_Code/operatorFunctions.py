@@ -51,7 +51,7 @@ class operatorFunctions():
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(rightBumper, leftBumper)
         self.raiseLowerLift(leftY)
-        self.winchUpDown(rightY)
+        #self.winchUpDown(rightY)
         #self.manipulatorControl(aButton, xButton, yButton)
         self.manipulatorControlTwo(rightY)
         self.deployClimber(startButton, backButton)
@@ -70,12 +70,12 @@ class operatorFunctions():
 
     def raiseLowerLift(self, leftY):
         output = leftY
-        '''
+        
         if self.isLiftDown.get():
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
             output = min(0, output)
-        '''
-        self.liftMotor.set(output)
+
+        self.liftMotor.set(-output)
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
