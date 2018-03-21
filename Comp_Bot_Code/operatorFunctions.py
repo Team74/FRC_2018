@@ -38,6 +38,7 @@ class operatorFunctions():
 
         self.proximitySensor = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from DIO 0
         self.isLiftDown = wpilib.DigitalInput(1)#Initilizes a limit switch to see if the lift is at it's minnimum height, sets it to read from DIO 1
+        self.isLiftUp = wpilib.DigitalInput(2)#Initilizes a limit switch to see if the lift is at it's maximum height, sets it to read from DIO 2
 
         self.toggle = 0
 
@@ -54,8 +55,7 @@ class operatorFunctions():
         #self.winchUpDown(rightY)
         #self.manipulatorControl(aButton, xButton, yButton)
         self.manipulatorControlTwo(rightY)
-        self.deployClimber(startButton, backButton)
-        self.zeroLiftEncoder(bButton)
+        self.zeroLiftEncoder(startButton)
 
     def liftTest(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
@@ -70,17 +70,17 @@ class operatorFunctions():
 
     def raiseLowerLift(self, leftY):
         output = leftY
-        
         if self.isLiftDown.get():
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
             output = min(0, output)
-
+        if self.isLiftUp.get():
+            output = max(0, output)
         self.liftMotor.set(-output)
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
-    def zeroLiftEncoder(self, bButton):
-        if bButton:
+    def zeroLiftEncoder(self, startButton):
+        if startButton:
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
 
     def printLiftOutputCurrent(self):
@@ -140,28 +140,28 @@ class operatorFunctions():
         if currentEncoderPosition <= (liftHeight + 500):
             speed = 1
             print('Going up')
-
         elif currentEncoderPosition >= (liftHeight - 500):
             #speed = -.75
             #print('going down')
             speed = 0
-
         else:
             speed = 0
             print('Holding')
-        '''
         if self.isliftDown.get():
             speed = max(0, speed)
-        '''
+        if self.isLiftUp.get():
+            speed = min(0, speed)
+
         self.liftMotor.set(speed)
         return True
     def standaloneAutonRaiseLowerLift(self, setLiftPosition):
-        #currentEncoderPosition = 1
+        speed = 0
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
-        #Defines three set lift positions
-        liftPositionOne = 500#Lift position when lift is all the way down in encoder values
-        liftPositionTwo = 10000#Lift position to place cubes on the switch in encoder values
-        liftPositionThree = 21000#Lift position to place cubes on the scale in encoder values
+        #Defines four set lift positions
+        liftPositionOne = 0#Lift position when lift is all the way down in encoder values
+        liftPositionTwo = 500#Lift position for
+        liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
+        liftPositionFour = 21000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -169,23 +169,29 @@ class operatorFunctions():
             liftHeight = liftPositionTwo
         elif setLiftPosition == 2:
             liftHeight = liftPositionThree
-        #if self.isliftDown.get():
+        elif setLiftPosition == 3:
+            liftHeight = liftPositionFour
         if currentEncoderPosition <= (liftHeight + 500):
+            speed = 1
             if self.isLiftDown.get():
                 self.liftMotor.setSelectedSensorPosition(0, 0, 0)
-                return False
-            self.liftMotor.set(1)
+                speed = max(0, speed)
+            elif self.isLiftUp.get():
+                self.liftMotor.setSelectedSensorPosition(21000, 0, 0)
+                speed = min(0, speed)
             return True
-            '''
-            elif currentEncoderPosition >= (liftHeight - 250):
-                self.liftMotor.set(math.sqrt(abs(1-(currentEncoderPosition/liftHeight))) * -1)
-                return True
-            '''
+        elif currentEncoderPosition >= (liftHeight):
+            speed = -1
+            if self.isLiftDown.get():
+                self.liftMotor.setSelectedSensorPosition(0, 0, 0)
+                speed = max(0, speed)
+            elif self.isLiftUp.get():
+                self.liftMotor.setSelectedSensorPosition(21000, 0, 0)
+                speed = min(0, speed)
+            return True
         else:
             self.liftMotor.set(0)
             return False
-        #else:
-            #return False
     def deployClimber(self, startButton, backButton):
             if (startButton or backButton) and (self.time.time >= self.TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
                 pass

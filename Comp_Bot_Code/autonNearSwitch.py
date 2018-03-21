@@ -7,22 +7,18 @@ class autonNearSwitch(autonBaseInit):
         if self.side == 'left' and self.switchPosition == 'L':
             self.drive.autonMove(1, 0, 1, 130, 0, 0, 1, 0)
 
-            self.drive.autonMove(2, 2, 0, 0, 0, 0, 2, 0)
+            self.drive.autonMove(2, 1, 0, 0, 93, .5, 2, 0)
 
-            self.drive.autonMove(3, 1, 0, 0, 93, .5, 2, 0)
+            self.drive.autonMove(3, 0, .5, 17, 0, 0, 2, 0)
 
-            self.drive.autonMove(4, 0, .5, 17, 0, 0, 2, 0)
-
-            self.drive.autonMove(5, 0, 0, 1000000000000000000, 0, 0, 2, 2)
+            self.drive.autonMove(4, 3, 0, 0, 0, 0, 2, 2)
         elif self.side == 'right' and self.switchPosition == 'R':
             self.drive.autonMove(1, 0, 1, 130, 0, 0, 1, 0)
 
-            self.drive.autonMove(2, 2, 0, 0, 0, 0, 2, 0)
+            self.drive.autonMove(2, 1, 0, 0, -90, .5, 2, 0)
 
-            self.drive.autonMove(3, 1, 0, 0, -90, .5, 2, 0)
+            self.drive.autonMove(3, 0, .5, 5, 0, 0, 2, 0)
 
-            self.drive.autonMove(4, 0, .5, 5, 0, 0, 2, 0)
-
-            self.drive.autonMove(5, 0, 0, 10000000000000, 0, 0, 2, 2)
+            self.drive.autonMove(4, 3, 0, 0, 0, 0, 2, 2)
         else:
             pass
