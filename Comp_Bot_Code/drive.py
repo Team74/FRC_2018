@@ -58,17 +58,19 @@ class driveTrain():
 
         self.lbMotor.setSensorPhase(True)
 
-    def drivePass(self, leftY, rightY, leftBumper, rightBumper, aButton):
-        self.tankDrive(-leftY, -rightY)
+    def drivePass(self, leftY, rightY, leftBumper, rightBumper, aButton, rightTrigger):
         self.shift(leftBumper, rightBumper)
         self.manualEncoderReset(aButton)
+        self.scaleInputs(-leftY, -rightY, rightTrigger)
         pass
 
-    def scaleInputs(self, leftY, rightX):
-        if abs(leftY) < .05:
-            return .75 * rightX
-        rightX = (-(math.log10((2*(abs(leftY)))+1)-1)*rightX)
-        return rightX
+    def scaleInputs(self,leftY, rightY, rightTrigger):
+        leftOutput = leftY
+        rightOutput = rightY
+        if rightTrigger:
+            leftOutput = leftOutput / 1.8
+            rightOutput = rightOutput / 1.8
+        self.tankDrive(leftOutput, rightOutput)
 
     def printer(self):
         print('Why does Hescott look so much like shrek?')
@@ -239,7 +241,7 @@ class driveTrain():
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
         #print('Average Encodes' + str(averageEncoders))
         if averageEncoders < encoderDistance and self.autonCounter == 0:
-            speedAdjustmentMultiplier = 4
+            speedAdjustmentMultiplier = 5
             speedAdjustment = (.1 * speedAdjustmentMultiplier)
             slowDownSpeed = .25
             gyroAngle = self.getGyroAngle()
@@ -269,11 +271,15 @@ class driveTrain():
                 return False
 
     def autonMove(self, moveNumberPass, commandNumber, speed = 0, distance = 0, turnAngle = 0, turnSpeed = 0, setLiftPosition = 0, intakeMode = 0, radius = 0):
+        print(moveNumberPass)
+        print('Spac')
+        print(commandNumber)
         if moveNumberPass == self.moveNumber:
             #print(self.moveNumber)
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):
-                    print(distance)
+                    #print(distance)
+                    print('Driving')
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
                         pass
                     if self.operate.autonIntakeControl(intakeMode):
@@ -284,6 +290,7 @@ class driveTrain():
                     self.moveNumber += 1
             elif commandNumber == 1:
                 if self.autonPivot(turnAngle, turnSpeed):
+                    print('Turning')
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
                         pass
                     if self.operate.autonIntakeControl(intakeMode):
@@ -294,12 +301,14 @@ class driveTrain():
                     self.moveNumber += 1
             elif commandNumber == 2:
                 if self.operate.standaloneAutonRaiseLowerLift(setLiftPosition):
+                    print('Lift')
                     if self.operate.autonIntakeControl(intakeMode):
                         pass
                 else:
                     self.moveNumber += 1
             elif commandNumber == 3:
                 if self.operate.standaloneAutonIntakeControl(intakeMode):
+                    print('Manipulator')
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
                         pass
                 else:
@@ -307,7 +316,7 @@ class driveTrain():
             elif commandNumber == 4:
                 self.operate.liftMotor.set(0)
                 self.operae.rightManipulatorMotor.set(1)
-                self.operate.rightManipulatorMotor.set(1)
+                self.operate.leftManipulatorMotor.set(1)
                 self.drive.tankDrive.stop()
             elif commandNumber == 5:
                 if self.autonAngledTurn(radius, turnAngle, turnSpeed):

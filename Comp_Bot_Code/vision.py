@@ -1,7 +1,7 @@
 from cscore import CameraServer
 
 import cv2
-import numPy as np
+import numpy as np
 
 def main():
     cs=CameraServer.getInstance()
@@ -9,8 +9,8 @@ def main():
 
     camera=cs.startAutomaticCapture()
 
-    dimensions = (1280, 720)
-
+    dimensions = (320, 180)
+    camera.setFPS(20)
     camera.setResolution(dimensions[0],dimensions[1])
     #camera.setResolution(240,320)
 
@@ -24,7 +24,7 @@ def main():
 
     # Allocating new images is very expensive, always try to preallocate
     img = np.zeros(shape=(dimensions[0],dimensions[1], 3), dtype=np.uint8)
-
+    #img = 0
     while True:
         # Tell the CvSink to grab a frame from the camera and put it
         # in the source image.  If there is an error notify the output.

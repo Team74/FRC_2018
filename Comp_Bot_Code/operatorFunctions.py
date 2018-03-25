@@ -48,13 +48,14 @@ class operatorFunctions():
         self.winchMotorControlGroup = wpilib.SpeedControllerGroup(self.winchMotorOne, self.winchMotorTwo, self.winchMotorThree)
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
         self.firstUse = True
+        self.liftAccel = 0
     def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(rightBumper, leftBumper)
         self.raiseLowerLift(leftY)
         #self.winchUpDown(rightY)
-        #self.manipulatorControl(aButton, xButton, yButton)
-        self.manipulatorControlTwo(rightY)
+        self.manipulatorControl(aButton, bButton, xButton, yButton)
+        #self.manipulatorControlTwo(rightY)
         self.zeroLiftEncoder(startButton)
 
     def liftTest(self):
@@ -62,20 +63,34 @@ class operatorFunctions():
 
     def liftTilt(self, rightBumper, leftBumper):#Controls the tilt of the lift
         if leftBumper:
+            print('Tipping Foward')
             #if self.tilter.get() == 1:#Checks to see what position the lift is in and tilts accordingly
             self.tilter.set(2)
         if rightBumper:
+            print('Tiping Back')
             #if self.tilter.get() == 2 or self.tilter.get() == 0:
             self.tilter.set(1)
 
     def raiseLowerLift(self, leftY):
+        accelerationDeadzone = .1
         output = leftY
+        if abs(leftY) >= accelerationDeadzone:
+            self.liftAccel += 1
+        else:
+            self.liftAccel = 0
+        maxSpeedLimit = .045 * self.liftAccel + .04
+        if self.liftAccel < 15:
+            if leftY < 0:
+                output = max(output, (-1 * maxSpeedLimit))
+            else:
+                output = min(output, maxSpeedLimit)
         if self.isLiftDown.get():
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
             output = min(0, output)
         if self.isLiftUp.get():
+            self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
             output = max(0, output)
-        self.liftMotor.set(-output)
+        self.liftMotor.set(output)
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
@@ -126,7 +141,7 @@ class operatorFunctions():
         liftPositionOne = 0#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 500#Lift position for
         liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
-        liftPositionFour = 21000#Lift position to place cubes on the scale in encoder values
+        liftPositionFour = 35000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -139,21 +154,23 @@ class operatorFunctions():
         print(currentEncoderPosition)
         if currentEncoderPosition <= (liftHeight + 500):
             speed = 1
-            print('Going up')
+            #print('Going up')
         elif currentEncoderPosition >= (liftHeight - 500):
             #speed = -.75
             #print('going down')
             speed = 0
         else:
             speed = 0
-            print('Holding')
+            #print('Holding')
+        '''
         if self.isliftDown.get():
             speed = max(0, speed)
         if self.isLiftUp.get():
             speed = min(0, speed)
-
-        self.liftMotor.set(speed)
+        '''
+        self.liftMotor.set(-speed)
         return True
+
     def standaloneAutonRaiseLowerLift(self, setLiftPosition):
         speed = 0
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
@@ -161,7 +178,7 @@ class operatorFunctions():
         liftPositionOne = 0#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 500#Lift position for
         liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
-        liftPositionFour = 21000#Lift position to place cubes on the scale in encoder values
+        liftPositionFour = 35000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -173,21 +190,27 @@ class operatorFunctions():
             liftHeight = liftPositionFour
         if currentEncoderPosition <= (liftHeight + 500):
             speed = 1
+            '''
             if self.isLiftDown.get():
                 self.liftMotor.setSelectedSensorPosition(0, 0, 0)
-                speed = max(0, speed)
-            elif self.isLiftUp.get():
-                self.liftMotor.setSelectedSensorPosition(21000, 0, 0)
                 speed = min(0, speed)
+            elif self.isLiftUp.get():
+                self.liftMotor.setSelectedSensorPosition(36000, 0, 0)
+                speed = max(0, speed)
+            '''
+            self.liftMotor.set(-speed)
             return True
-        elif currentEncoderPosition >= (liftHeight):
+        elif currentEncoderPosition >= (liftHeight - 500):
             speed = -1
+            '''
             if self.isLiftDown.get():
                 self.liftMotor.setSelectedSensorPosition(0, 0, 0)
-                speed = max(0, speed)
-            elif self.isLiftUp.get():
-                self.liftMotor.setSelectedSensorPosition(21000, 0, 0)
                 speed = min(0, speed)
+            elif self.isLiftUp.get():
+                self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
+                speed = max(0, speed)
+            '''
+            self.liftMotor.set(-speed)
             return True
         else:
             self.liftMotor.set(0)
@@ -210,10 +233,13 @@ class operatorFunctions():
         cubeInManipulator = self.proximitySensor.get()#Gets input from proximity sensor and setes it to cubeInManinpulator
         return cubeInManipulator
 
-    def manipulatorControl(self, aButton, xButton, yButton):
+    def manipulatorControl(self, aButton, bButton, xButton, yButton):
         if aButton:#Intake
+            self.leftManipulatorMotor.set(-.75)
+            self.rightManipulatorMotor.set(-.75)
+        elif bButton:#Experimental function to pick up cubes in short configuration, further testing required, oneside intakes, the other ejects
             self.leftManipulatorMotor.set(-1)
-            self.rightManipulatorMotor.set(-1)
+            self.rightManipulatorMotor.set(1)
         elif xButton:#Eject 1/2
             self.leftManipulatorMotor.set(.5)
             self.rightManipulatorMotor.set(.5)
@@ -260,17 +286,16 @@ class operatorFunctions():
             return True
 
     def standaloneAutonIntakeControl(self, intakeMode):
-        if intakeMode == 1:
-            if intakeMode == 1:#Intake mode
-                if self.doWeHaveACube():
-                    return False
-                elif intakeMode == 1:
-                    self.leftManipulatorMotor.set(-1)
-                    self.rightManipulatorMotor.set(-1)
-                    return True
-                else:
-                    pass
-        if intakeMode == 2:#Half eject
+        if intakeMode == 1:#Intake mode
+            if self.doWeHaveACube():
+                return False
+            elif intakeMode == 1:
+                self.leftManipulatorMotor.set(-1)
+                self.rightManipulatorMotor.set(-1)
+                return True
+            else:
+                pass
+        elif intakeMode == 2:#Half eject
             if self.firstEject:
                 self.ejectClock = 0
                 self.firstEject = False
@@ -282,7 +307,7 @@ class operatorFunctions():
             else:
                 self.firstEject = True
                 return False
-        if intakeMode == 3:#Full eject
+        elif intakeMode == 3:#Full eject
             if self.firstEject:
                 self.ejectClock = 0
                 self.firstEject = False
@@ -294,5 +319,4 @@ class operatorFunctions():
             else:
                 self.firstEject = True
                 return False
-        if intakeMode == 0:#Neutral, exit function
-            return False
+        return False#Must be mode 0
