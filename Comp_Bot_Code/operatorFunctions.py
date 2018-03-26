@@ -12,7 +12,7 @@ import math
 
 class operatorFunctions():
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code loops per second
-    TIME_TO_EJECT = 50#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
+    TIME_TO_EJECT = 15#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
 
     def __init__(self, robot, drive):
         self.time = timeOut()
@@ -58,9 +58,6 @@ class operatorFunctions():
         #self.manipulatorControlTwo(rightY)
         self.zeroLiftEncoder(startButton)
 
-    def liftTest(self):
-        print(self.liftMotor.getSelectedSensorPosition(0))
-
     def liftTilt(self, rightBumper, leftBumper):#Controls the tilt of the lift
         if leftBumper:
             print('Tipping Foward')
@@ -91,15 +88,11 @@ class operatorFunctions():
             self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
             output = max(0, output)
         self.liftMotor.set(output)
-    def printLiftEncoder(self):
-        print(self.liftMotor.getSelectedSensorPosition(0))
 
     def zeroLiftEncoder(self, startButton):
         if startButton:
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
 
-    def printLiftOutputCurrent(self):
-        print(self.liftMotor.getOutputCurrent())
     '''
     def pidLift(self, setLiftPosition):
         liftPositionOne = 0#Lift position when lift is all the way down in encoder values
@@ -162,12 +155,12 @@ class operatorFunctions():
         else:
             speed = 0
             #print('Holding')
-        '''
+
         if self.isliftDown.get():
             speed = max(0, speed)
         if self.isLiftUp.get():
             speed = min(0, speed)
-        '''
+
         self.liftMotor.set(-speed)
         return True
 
@@ -190,26 +183,26 @@ class operatorFunctions():
             liftHeight = liftPositionFour
         if currentEncoderPosition <= (liftHeight + 500):
             speed = 1
-            '''
+
             if self.isLiftDown.get():
                 self.liftMotor.setSelectedSensorPosition(0, 0, 0)
-                speed = min(0, speed)
+                speed = max(0, speed)
             elif self.isLiftUp.get():
                 self.liftMotor.setSelectedSensorPosition(36000, 0, 0)
-                speed = max(0, speed)
-            '''
+                speed = min(0, speed)
+
             self.liftMotor.set(-speed)
             return True
         elif currentEncoderPosition >= (liftHeight - 500):
             speed = -1
-            '''
+
             if self.isLiftDown.get():
                 self.liftMotor.setSelectedSensorPosition(0, 0, 0)
-                speed = min(0, speed)
+                speed = max(0, speed)
             elif self.isLiftUp.get():
                 self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
-                speed = max(0, speed)
-            '''
+                speed = min(0, speed)
+
             self.liftMotor.set(-speed)
             return True
         else:

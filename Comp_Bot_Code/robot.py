@@ -152,7 +152,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.autonCounter = 0
         self.drive.zeroGyro()
         self.drive.resetMoveNumber()
-        self.drive.autonShift('low')#Forces into low gear at start of auton
         self.drive.operate.liftTilt(False, True)
         #print('reset moveNumber')
         self.interperetDashboard()
@@ -171,9 +170,7 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonCenterEitherSwitchAngledTurningTesting('left', 'L', 'L', self.drive)
     def autonomousPeriodic(self):
         self.drive.operate.liftTilt(False, True)
-        self.drive.autonShift('low')#Keeps it in low gear during auton
-        #self.drive.printEncoderPosition()#Prints the position of the encoders
-        #print(self.drive.getGyroAngle())
+
         if self.autonCounter >= 26:
             self.auton.run()
             #print('running')
@@ -191,19 +188,15 @@ class MyRobot(wpilib.IterativeRobot):
         #self.drive.printer()
     def teleopPeriodic(self):
         wpilib.SmartDashboard.putNumber('Lift Encoder', self.drive.operate.liftMotor.getSelectedSensorPosition(0))
-        #self.drive.operate.printLiftOutputCurrent()
         wpilib.SmartDashboard.putNumber('Left Drive Encoders', -(self.drive.lbMotor.getQuadraturePosition()))
         wpilib.SmartDashboard.putNumber('Right Drive Encders', self.drive.rbMotor.getQuadraturePosition())
         wpilib.SmartDashboard.putNumber('Left Velocity', self.drive.lbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Right Velocity', self.drive.rbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Left Current', self.drive.lbMotor.getOutputCurrent())
         wpilib.SmartDashboard.putNumber('Right Current', self.drive.rbMotor.getOutputCurrent())
-        #print("Gyro Angle  ", self.drive.getGyroAngle())
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
         #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
-        #self.drive.printer()
-        #self.drive.operate.liftTest()
         #print('Down  ' + str(self.drive.operate.isLiftDown.get()))
         #print('Up   ' + str(self.drive.operate.isLiftUp.get()))
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA(), self.controllerOne.getRightTrigger())
