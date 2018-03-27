@@ -152,10 +152,10 @@ class operatorFunctions():
         elif setLiftPosition == 3:
             liftHeight = liftPositionFour
         print(currentEncoderPosition)
-        if currentEncoderPosition <= (liftHeight + 500):
+        if currentEncoderPosition <= (liftHeight + 250):
             speed = 1
             #print('Going up')
-        elif currentEncoderPosition >= (liftHeight - 500):
+        elif currentEncoderPosition >= (liftHeight - 250):
             #speed = -.75
             #print('going down')
             speed = 0
@@ -165,9 +165,10 @@ class operatorFunctions():
         '''
         if self.isliftDown.get():
             speed = max(0, speed)
+        '''
         if self.isLiftUp.get():
             speed = min(0, speed)
-        '''
+        
         self.liftMotor.set(-speed)
         return True
 
@@ -188,6 +189,9 @@ class operatorFunctions():
             liftHeight = liftPositionThree
         elif setLiftPosition == 3:
             liftHeight = liftPositionFour
+        if (currentEncoderPosition > (liftHeight - 125) and currentEncoderPosition <  (liftHeight + 125)) or (self.isLiftUp.get()):
+            self.liftMotor.set(0)
+            return False
         if currentEncoderPosition <= (liftHeight + 500):
             speed = 1
             '''

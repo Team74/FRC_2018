@@ -241,7 +241,7 @@ class driveTrain():
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
         #print('Average Encodes' + str(averageEncoders))
         if averageEncoders < encoderDistance and self.autonCounter == 0:
-            speedAdjustmentMultiplier = 5
+            speedAdjustmentMultiplier = 11.25
             speedAdjustment = (.1 * speedAdjustmentMultiplier)
             slowDownSpeed = .25
             gyroAngle = self.getGyroAngle()
@@ -271,11 +271,7 @@ class driveTrain():
                 return False
 
     def autonMove(self, moveNumberPass, commandNumber, speed = 0, distance = 0, turnAngle = 0, turnSpeed = 0, setLiftPosition = 0, intakeMode = 0, radius = 0):
-        print(moveNumberPass)
-        print('Spac')
-        print(commandNumber)
         if moveNumberPass == self.moveNumber:
-            #print(self.moveNumber)
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):
                     #print(distance)

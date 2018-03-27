@@ -152,7 +152,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.autonCounter = 0
         self.drive.zeroGyro()
         self.drive.resetMoveNumber()
-        self.drive.autonShift('low')#Forces into low gear at start of auton
+        self.drive.autonShift('high')#Forces into low gear at start of auton
         self.drive.operate.liftTilt(False, True)
         #print('reset moveNumber')
         self.interperetDashboard()
@@ -171,7 +171,7 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonCenterEitherSwitchAngledTurningTesting('left', 'L', 'L', self.drive)
     def autonomousPeriodic(self):
         self.drive.operate.liftTilt(False, True)
-        self.drive.autonShift('low')#Keeps it in low gear during auton
+        self.drive.autonShift('high')#Keeps it in low gear during auton
         #self.drive.printEncoderPosition()#Prints the position of the encoders
         #print(self.drive.getGyroAngle())
         if self.autonCounter >= 26:
