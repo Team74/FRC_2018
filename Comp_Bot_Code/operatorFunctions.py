@@ -18,15 +18,16 @@ class operatorFunctions():
         self.time = timeOut()
         self.drive = drive
         self.firstUse = True
-        #Set each motor to a talon
+        #Set each motor to a talon, and or victor
         self.liftMotor = ctre.wpi_talonsrx.WPI_TalonSRX(3)
         self.liftMotor.configSelectedFeedbackSensor(0, 0, 0)
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
         self.liftMotor.setSensorPhase(True)
+        self.liftMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
+        self.liftMotorTwo.set(5, 3)
 
         self.winchMotorOne = ctre.wpi_victorspx.WPI_VictorSPX(6)
-        self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
-        self.winchMotorThree = ctre.wpi_victorspx.WPI_VictorSPX(10)
+        self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(10)
 
         self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(8)
         self.rightManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
@@ -168,7 +169,7 @@ class operatorFunctions():
         '''
         if self.isLiftUp.get():
             speed = min(0, speed)
-        
+
         self.liftMotor.set(-speed)
         return True
 
