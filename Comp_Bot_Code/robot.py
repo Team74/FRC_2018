@@ -41,8 +41,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.time = timeOut()
         self.interpret = interpret()
 
-
-
         self.controllerOne = XboxController(0)
         self.controllerTwo = XboxController(1)
         self.speedLimiter = 1 #1 = standard speed, greater than 1 to slow down, less than 1 to speed up

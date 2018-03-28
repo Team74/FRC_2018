@@ -25,8 +25,10 @@ class operatorFunctions():
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
         self.liftMotor.setSensorPhase(True)
         self.liftMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
-        self.liftMotorTwo.set(5, 3)
+        self.liftMotor.setNeutralMode(2)
+        self.liftMotorTwo.setNeutralMode(2)
 
+        self.liftMotorControlGroup = wpilib.SpeedControllerGroup(self.liftMotor, self.liftMotorTwo)
         self.winchMotorOne = ctre.wpi_victorspx.WPI_VictorSPX(6)
         self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(10)
 
@@ -47,7 +49,7 @@ class operatorFunctions():
         self.compressor = wpilib.Compressor()
         self.compressor.setClosedLoopControl(True)
 
-        self.winchMotorControlGroup = wpilib.SpeedControllerGroup(self.winchMotorOne, self.winchMotorTwo, self.winchMotorThree)
+        self.winchMotorControlGroup = wpilib.SpeedControllerGroup(self.winchMotorOne, self.winchMotorTwo)
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
         self.firstUse = True
         self.liftAccel = 0
@@ -76,7 +78,10 @@ class operatorFunctions():
 
     def raiseLowerLift(self, leftY):
         accelerationDeadzone = .1
-        output = leftY
+        if abs(leftY) >= .05:
+            output = leftY
+        else:
+            output = 0
         if abs(leftY) >= accelerationDeadzone:
             self.liftAccel += 1
         else:
@@ -93,7 +98,7 @@ class operatorFunctions():
         if self.isLiftUp.get():
             self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
             output = max(0, output)
-        self.liftMotor.set(output)
+        self.liftMotorControlGroup.set(output)
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
@@ -130,7 +135,7 @@ class operatorFunctions():
             self.liftLoopSource.getPIDSourceType = sourceTypFunction
             self.liftLoopOut = wpilib.interfaces.PIDOutput()
             def setFunction(output):
-                self.liftmotor.set(-output)#LiftMotor outputs reversed, positive is down, negetive is up, correcting for that here
+                self.liftMotorControlGroup.set(-output)#LiftMotor outputs reversed, positive is down, negetive is up, correcting for that here
             self.liftLoopOut = setFunction
             self.liftPID = wpilib.PIDController(p, i, d, f, source=self.liftLoopSource, output=self.liftLoopOut, period=0.02)#p =, i =, d =, f =
         else:
@@ -172,7 +177,7 @@ class operatorFunctions():
         if self.isLiftUp.get():
             speed = min(0, speed)
 
-        self.liftMotor.set(-speed)
+        self.liftMotorControlGroup.set(-speed)
         return True
 
     def standaloneAutonRaiseLowerLift(self, setLiftPosition):
@@ -193,7 +198,7 @@ class operatorFunctions():
         elif setLiftPosition == 3:
             liftHeight = liftPositionFour
         if (currentEncoderPosition > (liftHeight - 125) and currentEncoderPosition <  (liftHeight + 125)) or (self.isLiftUp.get()):
-            self.liftMotor.set(0)
+            self.liftMotorControlGroup.set(0)
             return False
         if currentEncoderPosition <= (liftHeight + 500):
             speed = 1
@@ -205,7 +210,7 @@ class operatorFunctions():
                 self.liftMotor.setSelectedSensorPosition(36000, 0, 0)
                 speed = max(0, speed)
             '''
-            self.liftMotor.set(-speed)
+            self.liftMotorControlGroup.set(-speed)
             return True
         elif currentEncoderPosition >= (liftHeight - 500):
             speed = -1
@@ -217,10 +222,10 @@ class operatorFunctions():
                 self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
                 speed = max(0, speed)
             '''
-            self.liftMotor.set(-speed)
+            self.liftMotorControlGroup.set(-speed)
             return True
         else:
-            self.liftMotor.set(0)
+            self.liftMotorControlGroup.set(0)
             return False
     def deployClimber(self, startButton, backButton):
             if (startButton or backButton) and (self.time.time >= self.TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
@@ -248,7 +253,7 @@ class operatorFunctions():
             if self.firstSpin:
                 spinCounter = 0
                 self.firstSpin = False
-            if spinCounter =< self.TIME_TO_SPIN:
+            if spinCounter <= self.TIME_TO_SPIN:
                 self.leftManipulatorMotor.set(-1)
                 self.rightManipulatorMotor.set(1)
             else:

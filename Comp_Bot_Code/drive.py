@@ -310,7 +310,7 @@ class driveTrain():
                 else:
                     self.moveNumber += 1
             elif commandNumber == 4:
-                self.operate.liftMotor.set(0)
+                self.operate.liftMotorControlGroup.set(0)
                 self.operae.rightManipulatorMotor.set(1)
                 self.operate.leftManipulatorMotor.set(1)
                 self.drive.tankDrive.stop()
