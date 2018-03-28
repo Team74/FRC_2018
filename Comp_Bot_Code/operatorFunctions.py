@@ -12,7 +12,8 @@ import math
 
 class operatorFunctions():
     TIME_LEFT_UNTIL_ENDGAME = 105 * 50#105 is time in teleop before endgame, 50 is how many times our code loops per second
-    TIME_TO_EJECT = 50#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
+    TIME_TO_EJECT = 10#Value is in number of loops through the function and represents how long it takes to fully eject a cube with some to spare
+    TIME_TO_SPIN = 6#Value is in number of loops to spin the cube when realigning during intake
 
     def __init__(self, robot, drive):
         self.time = timeOut()
@@ -50,13 +51,14 @@ class operatorFunctions():
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
         self.firstUse = True
         self.liftAccel = 0
+        self.firstSpin = True
     def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(rightBumper, leftBumper)
         self.raiseLowerLift(leftY)
         #self.winchUpDown(rightY)
         self.manipulatorControl(aButton, bButton, xButton, yButton)
-        #self.manipulatorControlTwo(rightY)
+        self.manipulatorControlTwo(rightY)
         self.zeroLiftEncoder(startButton)
 
     def liftTest(self):
@@ -242,23 +244,32 @@ class operatorFunctions():
         if aButton:#Intake
             self.leftManipulatorMotor.set(-.75)
             self.rightManipulatorMotor.set(-.75)
-        elif bButton:#Experimental function to pick up cubes in short configuration, further testing required, oneside intakes, the other ejects
-            self.leftManipulatorMotor.set(-1)
-            self.rightManipulatorMotor.set(1)
+        elif bButton:#Automated function to spin cubes in the gripper to proper alignment
+            if self.firstSpin:
+                spinCounter = 0
+                self.firstSpin = False
+            if spinCounter =< self.TIME_TO_SPIN:
+                self.leftManipulatorMotor.set(-1)
+                self.rightManipulatorMotor.set(1)
+            else:
+                self.leftManipulatorMotor.set(-.75)
+                self.rightManipulatorMotor.set(-.75)
+        elif not bButton:
+            self.firstSpin = True
         elif xButton:#Eject 1/2
             self.leftManipulatorMotor.set(.5)
             self.rightManipulatorMotor.set(.5)
         elif yButton:#Eject Full
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(1)
-        else:
-            self.leftManipulatorMotor.set(0)
-            self.rightManipulatorMotor.set(0)
 
     def manipulatorControlTwo(self, rightY):
-        speed = -(rightY)
-        self.leftManipulatorMotor.set(speed)
-        self.rightManipulatorMotor.set(speed)
+        if rightY >= .075:
+            speed = -(rightY)
+            self.leftManipulatorMotor.set(speed)
+            self.rightManipulatorMotor.set(speed)
+        else:
+            pass
 
 
     def startRunTimeClock(self):
