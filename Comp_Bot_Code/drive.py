@@ -21,6 +21,7 @@ class driveTrain():
     #ENCODER_CODES_PER_REV = 5887#Practice Base
     WHEEL_CIRCUMFERENCE = 12.5663706144#Comp Base
     #WHEEL_CIRCUMFERENCE = 18.849#Practice base
+    RIGHT_MOTOR_BIAS = .9
 
     def __init__(self, robot):
         self.operate = operatorFunctions(drive = self, robot = robot)#Creates the operator functions
@@ -221,7 +222,7 @@ class driveTrain():
     def autonDriveStraight(self, speed, distance):
         #print('entered auton straight')
         lSpeed = speed
-        rSpeed = speed
+        rSpeed = speed * self.RIGHT_MOTOR_BIAS
         encoderDistance = (distance / self.WHEEL_CIRCUMFERENCE) * self.ENCODER_CODES_PER_REV#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
         #print('Encoder Distance' + str(encoderDistance))
 
@@ -241,7 +242,7 @@ class driveTrain():
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
         #print('Average Encodes' + str(averageEncoders))
         if averageEncoders < encoderDistance and self.autonCounter == 0:
-            speedAdjustmentMultiplier = 11.25
+            speedAdjustmentMultiplier = 4
             speedAdjustment = (.1 * speedAdjustmentMultiplier)
             slowDownSpeed = .25
             gyroAngle = self.getGyroAngle()

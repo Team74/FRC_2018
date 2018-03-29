@@ -18,11 +18,7 @@ class autonCenterEitherSwitch(autonBaseInit):
 
                 self.drive.autonMove(6, 3, setLiftPosition = 2, intakeMode = 2)
 
-                #self.drive.autonMove(7, 5,turnSpeed = -.5, radius = 27.5, turnAngle = 180)
-
-                #self.drive.autonMove(8, 0, speed = -1, distance = 36, setLiftPosition = 0, intakeMode = 0)
-
-                self.drive.autonMove(9, 4)
+                self.drive.autonMove(7, 0, speed = -1, distance = -40, setLiftPosition = 0)
             elif self.switchPosition == 'R':
                 self.drive.autonMove(1, 0, .6, 12, 0, 0, 0, 0)
 
@@ -36,10 +32,6 @@ class autonCenterEitherSwitch(autonBaseInit):
 
                 self.drive.autonMove(6, 3, setLiftPosition = 2, intakeMode = 2)
 
-                #self.drive.autonMove(7, 5, turnSpeed = -.5, radius = 27.5, turnAngle = -180)
-
-                #self.drive.autonMove(8, 0, speed = -1, distance = 36, setLiftPosition = 0, intakeMode = 0)
-
-                #self.drive.autonMove(9, 4)
+                self.drive.autonMove(7, 0, speed = -1, distance = -40, setLiftPosition = 0)
             else:
                 pass

@@ -25,6 +25,7 @@ class operatorFunctions():
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
         self.liftMotor.setSensorPhase(True)
         self.liftMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
+        #self.liftMotorTwo.Follow(3)#Possible implementation of follower mode, test later
         self.liftMotor.setNeutralMode(2)
         self.liftMotorTwo.setNeutralMode(2)
 
@@ -60,7 +61,7 @@ class operatorFunctions():
         self.raiseLowerLift(leftY)
         #self.winchUpDown(rightY)
         self.manipulatorControl(aButton, bButton, xButton, yButton)
-        self.manipulatorControlTwo(rightY)
+        #self.manipulatorControlTwo(rightY)
         self.zeroLiftEncoder(startButton)
 
     def liftTest(self):
@@ -146,7 +147,7 @@ class operatorFunctions():
         speed = 0
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
-        liftPositionOne = 0#Lift position when lift is all the way down in encoder values
+        liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 500#Lift position for
         liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
         liftPositionFour = 35000#Lift position to place cubes on the scale in encoder values
@@ -170,10 +171,10 @@ class operatorFunctions():
         else:
             speed = 0
             #print('Holding')
-        '''
+
         if self.isliftDown.get():
             speed = max(0, speed)
-        '''
+
         if self.isLiftUp.get():
             speed = min(0, speed)
 
@@ -246,7 +247,7 @@ class operatorFunctions():
         return cubeInManipulator
 
     def manipulatorControl(self, aButton, bButton, xButton, yButton):
-        if aButton:#Intake
+        elif aButton:#Intake
             self.leftManipulatorMotor.set(-.75)
             self.rightManipulatorMotor.set(-.75)
         elif bButton:#Automated function to spin cubes in the gripper to proper alignment
@@ -259,14 +260,17 @@ class operatorFunctions():
             else:
                 self.leftManipulatorMotor.set(-.75)
                 self.rightManipulatorMotor.set(-.75)
-        elif not bButton:
-            self.firstSpin = True
         elif xButton:#Eject 1/2
             self.leftManipulatorMotor.set(.5)
             self.rightManipulatorMotor.set(.5)
         elif yButton:#Eject Full
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(1)
+        else:
+            self.leftManipulatorMotor.set(0)
+            self.rightManipulatorMotor.set(0)
+        if not bButton:
+            self.firstSpin = True
 
     def manipulatorControlTwo(self, rightY):
         if rightY >= .075:
