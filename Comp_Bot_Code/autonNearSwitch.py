@@ -13,7 +13,7 @@ class autonNearSwitch(autonBaseInit):
 
             self.drive.autonMove(4, 3, 0, 0, 0, 0, 2, 3)
         elif self.side == 'right' and self.switchPosition == 'R':
-            self.drive.autonMove(1, 0, 1, 130, 0, 0, 1, 0)
+            self.drive.autonMove(1, 0, 1, 130, 0, 0, 2, 0)
 
             self.drive.autonMove(2, 1, 0, 0, -90, .5, 2, 0)
 

@@ -94,7 +94,7 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putData('Switch and Scale Right', self.switchRscaleR)
         wpilib.SmartDashboard.putData('Switch Left, Scale Right', self.switchLscaleR)
         #self.dash.putData('Switch Left, Scale Right', switchLscaleR)
-        self.dash.putString('SanityCheck', '1')        
+        self.dash.putString('SanityCheck', '1')
 
         self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
         self.dashTimer.start()
