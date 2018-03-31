@@ -21,12 +21,12 @@ class autonFarScale(autonBaseInit):
 
             self.drive.autonMove(2, 1, 0, 0, -82, .5, 2, 0)
 
-            self.drive.autonMove(3, 0, 1, 133, 0, 0, 3, 0)
+            self.drive.autonMove(3, 0, 1, 128, 0, 0, 3, 0)
 
             self.drive.autonMove(4, 1, 0, 0, 100, .5, 3, 0)
 
-            self.drive.autonMove(5, 0, 1, 16, 0, 0, 3, 0)
+            #self.drive.autonMove(5, 0, 1, 16, 0, 0, 3, 0)
 
-            self.drive.autonMove(6, 3, setLiftPosition = 3, intakeMode = 4)
+            self.drive.autonMove(5, 3, setLiftPosition = 3, intakeMode = 4)
         else:
             pass
