@@ -235,8 +235,8 @@ class driveTrain():
             self.autonCounter = 0
             self.firstTime = False
 
-        self.lfEncoderPosition = -(self.lbMotor.getQuadraturePosition()) - self.oldPositionLeft
-        self.rbEncoderPosition = self.rbMotor.getQuadraturePosition() - self.oldPositionRight
+        self.lfEncoderPosition = abs(-(self.lbMotor.getQuadraturePosition()) - self.oldPositionLeft)
+        self.rbEncoderPosition = abs(self.rbMotor.getQuadraturePosition() - self.oldPositionRight)
         #print(self.lfEncoderPosition)
         #print(self.rbEncoderPosition)
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
