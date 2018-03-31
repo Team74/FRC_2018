@@ -9,9 +9,7 @@ class autonNearScale(autonBaseInit):
 
             self.drive.autonMove(2, 1, 0, 0, 22, .75, 3, 0)
 
-            self.drive.autonMove(3, 2, setLiftPosition = 3, intakeMode = 0)
-
-            self.drive.autonMove(4, 3, 0, 0, 0, 0, 3, 3)
+            self.drive.autonMove(3, 3, setLiftPosition = 3, intakeMode = 3)
 
             #self.drive.autonMove(6, 1, turnAngle = 90, turnSpeed = .75, setLiftPosition = 3, intakeMode = 0)
 
@@ -24,9 +22,7 @@ class autonNearScale(autonBaseInit):
 
             self.drive.autonMove(2, 1, 0, 0, -28, .75, 3, 0)
 
-            self.drive.autonMove(3, 2, setLiftPosition = 3, intakeMode = 0)
-
-            self.drive.autonMove(4, 3, 0, 0, 0, 0, 3, 3)
+            self.drive.autonMove(3, 3, setLiftPosition = 3, intakeMode = 3)
 
             #self.drive.autonMove(6, 1, turnAngle = -90, turnSpeed = .75, setLiftPosition = 3, intakeMode = 0)
 

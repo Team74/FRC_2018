@@ -204,7 +204,6 @@ class operatorFunctions():
             return False
         if currentEncoderPosition <= (liftHeight + 500):
             speed = 1
-
             if self.isLiftDown.get():
                 self.liftMotor.setSelectedSensorPosition(0, 0, 0)
                 speed = max(0, speed)
