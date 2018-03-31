@@ -272,6 +272,9 @@ class driveTrain():
                 return False
 
     def autonMove(self, moveNumberPass, commandNumber, speed = 0, distance = 0, turnAngle = 0, turnSpeed = 0, setLiftPosition = 0, intakeMode = 0, radius = 0):
+        print(moveNumberPass)
+        print('space')
+        print(commandNumber)
         if moveNumberPass == self.moveNumber:
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):

@@ -332,6 +332,7 @@ class operatorFunctions():
             if self.firstEject:
                 self.ejectClockOne = 0
                 self.firstEject = False
+                return True
             else:
                 if self.ejectClockOne <= self.TIME_TO_EJECT:
                     self.leftManipulatorMotor.set(-.5)
@@ -345,6 +346,7 @@ class operatorFunctions():
             if self.firstEject:
                 self.ejectClockTwo = 0
                 self.firstEject = False
+                return True
             else:
                 if self.ejectClockTwo <= self.TIME_TO_EJECT:
                     self.leftManipulatorMotor.set(-1)
@@ -358,6 +360,7 @@ class operatorFunctions():
             if self.firstEject:
                 self.ejectClockThree = 0
                 self.firstEject = False
+                return True
             else:
                 if self.ejectClockThree <= self.TIME_TO_EJECT:
                     self.leftManipulatorMotor.set(-.75)
