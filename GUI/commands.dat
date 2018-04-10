@@ -1,3 +1,8 @@
-Turn On Camera:2,1
-Turn Off Camera:2,0
-Charge Mah Lasers:42,69,4,20
+Start Moving To Lift Position 0:2,0
+Start Moving To Lift Position 1:2,1
+Start Moving To Lift Position 2:2,2
+Start Moving To Lift Position 3:2,3
+Stop Intake:3,0
+Start Intake In:3,1
+Start Eject Light:3,2
+Start Eject Heavy:3,3
