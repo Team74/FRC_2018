@@ -154,7 +154,7 @@ class operatorFunctions():
         liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 500#Lift position for
         liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
-        liftPositionFour = 35000#Lift position to place cubes on the scale in encoder values
+        liftPositionFour = 36000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -189,7 +189,7 @@ class operatorFunctions():
         liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 500#Lift position for
         liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
-        liftPositionFour = 35000#Lift position to place cubes on the scale in encoder values
+        liftPositionFour = 36000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -199,7 +199,7 @@ class operatorFunctions():
             liftHeight = liftPositionThree
         elif setLiftPosition == 3:
             liftHeight = liftPositionFour
-        if (currentEncoderPosition > (liftHeight - 125) and currentEncoderPosition <  (liftHeight + 125)) or (self.isLiftUp.get()):
+        if ((currentEncoderPosition > (liftHeight - 250)) and (currentEncoderPosition <  (liftHeight + 250))) or (self.isLiftUp.get()):
             self.liftMotorControlGroup.set(0)
             return False
         if currentEncoderPosition <= (liftHeight + 500):
