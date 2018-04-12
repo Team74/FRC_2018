@@ -181,6 +181,7 @@ class MyRobot(wpilib.IterativeRobot):
             self.drive.operate.autonIntakeControl(1)
             self.autonCounter = self.autonCounter + 1
         #self.AutonHandling.readCommandList(None, "square")
+        wpilib.SmartDashboard.putNumber('Lift Encoder', self.drive.operate.liftMotor.getSelectedSensorPosition(0))
         wpilib.SmartDashboard.putNumber('Left Drive Encoders', -(self.drive.lbMotor.getQuadraturePosition()))
         wpilib.SmartDashboard.putNumber('Right Drive Encders', self.drive.rbMotor.getQuadraturePosition())
         wpilib.SmartDashboard.putNumber('Left Velocity', self.drive.lbMotor.getQuadratureVelocity())

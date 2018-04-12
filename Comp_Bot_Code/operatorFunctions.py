@@ -152,9 +152,9 @@ class operatorFunctions():
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
         liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
-        liftPositionTwo = 500#Lift position for
-        liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
-        liftPositionFour = 36000#Lift position to place cubes on the scale in encoder values
+        liftPositionTwo = 1000#Lift position for
+        liftPositionThree = 21000#Lift position to place cubes on the switch in encoder values
+        liftPositionFour = 67000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -165,17 +165,19 @@ class operatorFunctions():
         elif setLiftPosition == 3:
             liftHeight = liftPositionFour
         print(currentEncoderPosition)
-        if currentEncoderPosition <= (liftHeight - 500):
+        if currentEncoderPosition <= (liftHeight - 1500):
             speed = min((currentEncoderPosition/3000) + .3, 1)#up
-        elif currentEncoderPosition >= (liftHeight + 500):
+            if (liftHeight - currentEncoderPosition) < 4000:
+                speed = .6
+        elif currentEncoderPosition >= (liftHeight + 1500):
             speed = -1#down
+            speed = max((-1 * (currentEncoderPosition/3000) + .3), -1)#up
         else:
             speed = 0
             #print('Holding')
 
         if self.isLiftDown.get():#Bottom limit switch
             speed = max(0, speed)
-
         if self.isLiftUp.get():#Top limit switch
             speed = min(0, speed)
         #Set negative if motor is soldered up in reverse
@@ -188,8 +190,8 @@ class operatorFunctions():
         #Defines four set lift positions
         liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 500#Lift position for
-        liftPositionThree = 10000#Lift position to place cubes on the switch in encoder values
-        liftPositionFour = 36000#Lift position to place cubes on the scale in encoder values
+        liftPositionThree = 21000#Lift position to place cubes on the switch in encoder values
+        liftPositionFour = 67000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
         if setLiftPosition == 0:
             liftHeight = liftPositionOne
@@ -199,16 +201,18 @@ class operatorFunctions():
             liftHeight = liftPositionThree
         elif setLiftPosition == 3:
             liftHeight = liftPositionFour
-        if ((currentEncoderPosition > (liftHeight - 250)) and (currentEncoderPosition <  (liftHeight + 250))) or (self.isLiftUp.get()):
+        if ((currentEncoderPosition > (liftHeight - 1500)) and (currentEncoderPosition <  (liftHeight + 1500))) or (self.isLiftUp.get()):
             self.liftMotorControlGroup.set(0)
             return False
-        if currentEncoderPosition <= (liftHeight + 500):
+        if currentEncoderPosition <= (liftHeight + 1500):
             speed = 1
+            if (liftHeight - currentEncoderPosition) < 4000:
+                speed = .6
             if self.isLiftDown.get():
                 self.liftMotor.setSelectedSensorPosition(0, 0, 0)
                 speed = max(0, speed)
             elif self.isLiftUp.get():
-                self.liftMotor.setSelectedSensorPosition(36000, 0, 0)
+                self.liftMotor.setSelectedSensorPosition(67000, 0, 0)
                 speed = min(0, speed)
 
             self.liftMotorControlGroup.set(-speed)
@@ -289,15 +293,10 @@ class operatorFunctions():
 
     def autonIntakeControl(self, intakeMode):
         if intakeMode == 1:#Intake mode
-            if self.doWeHaveACube():
-                intakeMode = 0
-            if intakeMode == 1:
-                print('Intaking')
-                self.leftManipulatorMotor.set(1)
-                self.rightManipulatorMotor.set(-1)
-                return True
-            else:
-                pass
+            print('Intaking')
+            self.leftManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(-1)
+            return True
         elif intakeMode == 2:#Eject Mode
             print('Ejecting Half Power')
             self.leftManipulatorMotor.set(-.5)
@@ -319,14 +318,9 @@ class operatorFunctions():
 
     def standaloneAutonIntakeControl(self, intakeMode):
         if intakeMode == 1:#Intake mode
-            if self.doWeHaveACube():
-                return False
-            elif intakeMode == 1:
-                self.leftManipulatorMotor.set(1)
-                self.rightManipulatorMotor.set(-1)
-                return True
-            else:
-                pass
+            self.leftManipulatorMotor.set(1)
+            self.rightManipulatorMotor.set(-1)
+            return True
         elif intakeMode == 2:#Half eject
             if self.firstEject:
                 self.ejectClockOne = 0
