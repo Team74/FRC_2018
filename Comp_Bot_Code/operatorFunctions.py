@@ -151,7 +151,7 @@ class operatorFunctions():
         speed = 0
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
-        liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
+        liftPositionOne = -10000#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 2000#Lift position for
         liftPositionThree = 21000#Lift position to place cubes on the switch in encoder values
         liftPositionFour = 67000#Lift position to place cubes on the scale in encoder values
@@ -177,8 +177,10 @@ class operatorFunctions():
             #print('Holding')
 
         if self.isLiftDown.get():#Bottom limit switch
+            self.liftMotor.setSelectedSensorPosition(0, 0, 0)
             speed = max(0, speed)
         if self.isLiftUp.get():#Top limit switch
+            self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
             speed = min(0, speed)
         #Set negative if motor is soldered up in reverse
         self.liftMotorControlGroup.set(-speed)
@@ -188,7 +190,7 @@ class operatorFunctions():
         speed = 0
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines four set lift positions
-        liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
+        liftPositionOne = -10000#Lift position when lift is all the way down in encoder values
         liftPositionTwo = 2000#Lift position for carying cubes in encoder positions
         liftPositionThree = 21000#Lift position to place cubes on the switch in encoder values
         liftPositionFour = 67000#Lift position to place cubes on the scale in encoder values

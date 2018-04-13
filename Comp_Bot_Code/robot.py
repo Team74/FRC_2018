@@ -153,8 +153,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.autonShift('high')#Forces into low gear at start of auton
         self.drive.operate.liftTilt(False, True)
         #print('reset moveNumber')
-        #self.interperetDashboard()
-        #self.auton = AutonInterpreter(3,3,3,self.drive)
+        self.interperetDashboard()
         #self.auton = autonAngledTurnTesting('any', 'any', 'any', self.drive)
         #self.auton = autonLiftTest('any', 'any', 'any', self.drive)
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
@@ -162,7 +161,7 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonFarSwitch('left', 'R', 'L', self.drive)
         #self.auton = autonFarScale('right', 'L', 'L', self.drive)
         #self.auton = autonCenterEitherSwitch('center', 'R', 'R', self.drive)
-        self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
+        #self.auton = autonCenterEitherSwitch('center', 'L', 'L', self.drive)
         #self.auton = autonTwoCubeScale('left', 'L', 'L', self.drive)
         #self.auton = autonNearScale('left', 'L', 'L', self.drive)
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
