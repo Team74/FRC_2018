@@ -152,7 +152,7 @@ class operatorFunctions():
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines three set lift positions
         liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
-        liftPositionTwo = 1000#Lift position for
+        liftPositionTwo = 2000#Lift position for
         liftPositionThree = 21000#Lift position to place cubes on the switch in encoder values
         liftPositionFour = 67000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
@@ -171,7 +171,7 @@ class operatorFunctions():
                 speed = .6
         elif currentEncoderPosition >= (liftHeight + 1500):
             speed = -1#down
-            speed = max((-1 * (currentEncoderPosition/3000) + .3), -1)#up
+            speed = max((-1 * ((currentEncoderPosition/3000) + .3)), speed)#up
         else:
             speed = 0
             #print('Holding')
@@ -189,7 +189,7 @@ class operatorFunctions():
         currentEncoderPosition = self.liftMotor.getSelectedSensorPosition(0)
         #Defines four set lift positions
         liftPositionOne = -1000#Lift position when lift is all the way down in encoder values
-        liftPositionTwo = 500#Lift position for
+        liftPositionTwo = 2000#Lift position for carying cubes in encoder positions
         liftPositionThree = 21000#Lift position to place cubes on the switch in encoder values
         liftPositionFour = 67000#Lift position to place cubes on the scale in encoder values
         #Reads the desiried lift position and sets how high we need to lift the lift
@@ -231,6 +231,7 @@ class operatorFunctions():
         else:
             self.liftMotorControlGroup.set(0)
             return False
+
     def deployClimber(self, startButton, backButton):
             if (startButton or backButton) and (self.time.time >= self.TIME_LEFT_UNTIL_ENDGAME):#If start button or back button is pressed and we are in endgame, the climber will deploy
                 pass
@@ -238,7 +239,6 @@ class operatorFunctions():
                 pass
 
     def winchUpDown(self, rightY):#Operator can use right stick to raise the winch for climbing
-
         if self.time.time >= self.TIME_LEFT_UNTIL_ENDGAME:#Prevents climber from being deployed until the endgame starts
             #self.winchMotorControlGroup.set(rightY)
             pass
