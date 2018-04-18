@@ -184,7 +184,9 @@ class driveTrain():
         if self.firstRun:
             self.oldGyro = self.gyro.getAngle()
             self.firstRun = False
-        turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
+        turnSpeed -= (2*turnSpeed/(1+math.exp(0.049*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
+        print(turnSpeed)
+        #turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))#Old turning formula, states
         turnSpeed = max(turnSpeed, slowDownSpeed)
         if turnAngle < 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:

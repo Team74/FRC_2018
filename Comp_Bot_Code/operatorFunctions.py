@@ -101,7 +101,7 @@ class operatorFunctions():
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
             output = min(0, output)
         if self.isLiftUp.get():
-            self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
+            self.liftMotor.setSelectedSensorPosition(67000, 0, 0)
             output = max(0, output)
         self.liftMotorControlGroup.set(output)
     def printLiftEncoder(self):
@@ -180,7 +180,7 @@ class operatorFunctions():
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
             speed = max(0, speed)
         if self.isLiftUp.get():#Top limit switch
-            self.liftMotor.setSelectedSensorPosition(35600, 0, 0)
+            self.liftMotor.setSelectedSensorPosition(67000, 0, 0)
             speed = min(0, speed)
         #Set negative if motor is soldered up in reverse
         self.liftMotorControlGroup.set(-speed)

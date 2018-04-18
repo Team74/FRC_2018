@@ -21,9 +21,9 @@ class autonFarScale(autonBaseInit):
 
             self.drive.autonMove(2, 1, 0, 0, -82, .5, 2, 0)
 
-            self.drive.autonMove(3, 0, 1, 117, 0, 0, 3, 0)
+            self.drive.autonMove(3, 0, 1, 121, 0, 0, 3, 0)
 
-            self.drive.autonMove(4, 1, 0, 0, 100, .5, 3, 0)
+            self.drive.autonMove(4, 1, 0, 0, 103, .5, 3, 0)
 
             self.drive.autonMove(5, 0, .5, 10, 0, 0, 3, 0)
 

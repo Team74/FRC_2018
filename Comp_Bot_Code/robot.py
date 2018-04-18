@@ -18,6 +18,7 @@ from autonFarSwitch import *
 from autonFarScale import *
 from autonTwoCubeScale import *
 from autonNearScale import *
+from autonPrepScaleScore import *
 from autonDrive import *
 from autonTurningTuning import *
 from autonAngledTurnTesting import *
@@ -58,7 +59,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.switchLscaleL.addDefault('Switch and Scale LEFT', '1')
         self.switchLscaleL.addObject('Scale', 'scale')
         self.switchLscaleL.addObject('Switch', 'switch')
-        #switchLscaleL.addObject('PrepScaleScore', '4')
+        self.switchLscaleL.addObject('Prepare Scale Score', 'Prepare Scale Score')
         self.switchLscaleL.addDefault('Drive', 'drive')##Default for all sendable Choosers
         self.switchLscaleL.addObject('Two Cube Scale', 'Two Cube Scale')
 
@@ -66,7 +67,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.switchRscaleR.addDefault('Switch and Scale RIGHT', '1')
         self.switchRscaleR.addObject('Scale', 'scale')
         self.switchRscaleR.addObject('Switch', 'switch')
-        #switchRscaleR.addObject('PrepScaleScore', '4')
+        self.switchRscaleR.addObject('Prepare Scale Score', 'Prepare Scale Score')
         self.switchRscaleR.addDefault('Drive', 'drive')
         self.switchRscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
 
@@ -74,7 +75,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.switchRscaleL.addDefault('Switch RIGHT, Scale LEFT', '1')
         self.switchRscaleL.addObject('Scale', 'scale')
         self.switchRscaleL.addObject('Switch', 'switch')
-        #switchRscaleL.addObject('PrepScaleScore', '4')
+        self.switchRscaleL.addObject('Prepare Scale Score', 'Prepare Scale Score')
         self.switchRscaleL.addDefault('Drive', 'drive')
         self.switchRscaleL.addObject('Two Cube Scale', 'Two Cube Scale')
 
@@ -82,7 +83,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.switchLscaleR.addDefault('Switch LEFT, Scale RIGHT', '1')
         self.switchLscaleR.addObject('Scale', 'scale')
         self.switchLscaleR.addObject('Switch', 'switch')
-        #switchLscaleR.addObject('PrepScaleScore', '4')
+        self.switchLscaleR.addObject('Prepare Scale Score', 'Prepare Scale Score')
         self.switchLscaleR.addDefault('Drive', 'drive')
         self.switchLscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
 
@@ -144,6 +145,8 @@ class MyRobot(wpilib.IterativeRobot):
                 self.auton = autonFarScale(startingPosition, switchPosition, scalePosition, self.drive)
         elif objective == 'drive':
             self.auton = autonDrive(startingPosition, switchPosition, scalePosition, self.drive)
+        elif objective == 'Prepare Scale Score':
+            self.auton = autonPrepScaleScore(startingPosition, switchPosition, scalePosition, self.drive)
         print(self.auton)
 
     def autonomousInit(self):
@@ -153,7 +156,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.autonShift('high')#Forces into low gear at start of auton
         self.drive.operate.liftTilt(False, True)
         #print('reset moveNumber')
-        self.interperetDashboard()
+        self.interperetDashboard()#MATCH AUTO
         #self.auton = autonAngledTurnTesting('any', 'any', 'any', self.drive)
         #self.auton = autonLiftTest('any', 'any', 'any', self.drive)
         #self.auton = autonTurningTuning('any', 'any', 'any', self.drive)
