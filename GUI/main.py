@@ -615,7 +615,7 @@ class SetCommandButton(GridLayout):
             self.add_widget(self.add_up)
             self.add_widget(self.add_down)
     def edit_callback(self, instance):
-        blah = Popup(title="Choose Command", content=Spinner(text=self.edit.widget.text, values=self.commandOptions ), size_hint=(0.5,0.5))
+        blah = Popup(title="Choose Command", content=Spinner(values=self.commandOptions ), size_hint=(0.5,0.5))
         def choose(inst, value):
             self.main.text = self.command = blah.content.text
             blah.dismiss()
