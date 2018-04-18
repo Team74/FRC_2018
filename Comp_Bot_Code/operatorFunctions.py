@@ -59,6 +59,9 @@ class operatorFunctions():
         self.liftAccel = 0
         self.firstSpin = True
         self.spinCounter  = 0
+
+        self.led_bool = False
+        self.last_backButton_val = False
     def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(rightBumper, leftBumper)
@@ -67,6 +70,17 @@ class operatorFunctions():
         self.manipulatorControl(aButton, bButton, xButton, yButton, leftTrigger)
         #self.manipulatorControlTwo(rightY)
         self.zeroLiftEncoder(startButton)
+        self.control_led(backButton)
+
+    def control_led(self, backButton):
+        if self.last_backButton_val == False and backButton == True:
+            self.led_bool = not self.led_bool
+        self.last_backButton_val = backButton
+        self.set_led(self.led_bool)
+
+    def set_led(self, bool_input):
+        pass #to be implemented depending on hardware
+
 
     def liftTest(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
