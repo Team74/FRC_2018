@@ -60,7 +60,15 @@ class operatorFunctions():
         self.liftAccel = 0
         self.firstSpin = True
         self.spinCounter  = 0
+<<<<<<< HEAD
     def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton, dpadAngle):
+=======
+
+        self.led_bool = False
+        self.last_backButton_val = False
+        self.led_spark = wpilib.Spark(0)
+    def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
+>>>>>>> a0919c616b01be8e36cfc2b004ad142c701ae3f2
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(dpadAngle)
         self.raiseLowerLift(leftY)
@@ -69,6 +77,18 @@ class operatorFunctions():
         self.manipulatorControl(aButton, bButton, xButton, yButton, leftTrigger)
         #self.manipulatorControlTwo(rightY)
         self.zeroLiftEncoder(startButton)
+        self.control_led(backButton)
+
+    def control_led(self, backButton):
+        if self.last_backButton_val == False and backButton == True:
+            self.led_bool = not self.led_bool
+        self.last_backButton_val = backButton
+        self.set_led(self.led_bool)
+
+    def set_led(self, bool_input):
+        #pass #to be implemented depending on hardware
+        self.led_spark.set(int(bool_input))
+
 
     def deployHook(leftBumper, rightBumper):
         if leftBumper:
