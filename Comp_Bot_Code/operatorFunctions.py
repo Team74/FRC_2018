@@ -62,6 +62,7 @@ class operatorFunctions():
 
         self.led_bool = False
         self.last_backButton_val = False
+        self.led_spark = wpilib.Spark(0)
     def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(rightBumper, leftBumper)
@@ -79,7 +80,8 @@ class operatorFunctions():
         self.set_led(self.led_bool)
 
     def set_led(self, bool_input):
-        pass #to be implemented depending on hardware
+        #pass #to be implemented depending on hardware
+        self.led_spark.set(int(bool_input))
 
 
     def liftTest(self):
