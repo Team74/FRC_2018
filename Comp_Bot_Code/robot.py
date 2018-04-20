@@ -104,6 +104,7 @@ class MyRobot(wpilib.IterativeRobot):
     def interperetDashboard(self):
         startingPosition = self.positionChooser.getSelected()
         gameData = DriverStation.getInstance().getGameSpecificMessage()
+        print(gameData)
         gameData = gameData[:-1]
         gameData = gameData.upper()
         switchPosition = gameData[0]
@@ -155,7 +156,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.resetMoveNumber()
         self.drive.autonShift('high')#Forces into low gear at start of auton
         self.drive.operate.liftTilt(False, True)
-        #print('reset moveNumber')
         self.interperetDashboard()#MATCH AUTO
         #self.auton = autonAngledTurnTesting('any', 'any', 'any', self.drive)
         #self.auton = autonLiftTest('any', 'any', 'any', self.drive)
@@ -170,16 +170,12 @@ class MyRobot(wpilib.IterativeRobot):
         #self.auton = autonDrive('any', 'any', 'any', self.drive)
         #self.auton = autonCenterEitherSwitchAngledTurningTesting('left', 'L', 'L', self.drive)
     def autonomousPeriodic(self):
-        self.drive.operate.liftTilt(False, True)
+        self.drive.operate.liftTilt(90)
         self.drive.autonShift('high')#Keeps it in low gear during auton
-        #self.drive.printEncoderPosition()#Prints the position of the encoders
-        #print(self.drive.getGyroAngle())
         if self.autonCounter >= 26:
             self.auton.run()
-            #print('running')
         else:
-            #print('Waiting')
-            self.drive.operate.liftTilt(False, True)
+            self.drive.operate.liftTilt(90)
             self.drive.operate.autonIntakeControl(1)
             self.autonCounter = self.autonCounter + 1
         #self.AutonHandling.readCommandList(None, "square")
@@ -189,26 +185,23 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Left Velocity', self.drive.lbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Right Velocity', self.drive.rbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
-        #self.drive.printer()
+        wpilib.SmartDashboard.putNumber('Is lift down', self.drive.operate.isLiftDown.get())
+        wpilib.SmartDashboard.putNumber('Is lift up', self.drive.operate.isLiftUp.get())
+        wpilib.SmartDashboard.putNumber('Field position', DriverStation.getInstance().getGameSpecificMessage())
     def teleopPeriodic(self):
         wpilib.SmartDashboard.putNumber('Lift Encoder', self.drive.operate.liftMotor.getSelectedSensorPosition(0))
-        #self.drive.operate.printLiftOutputCurrent()
         wpilib.SmartDashboard.putNumber('Left Drive Encoders', -(self.drive.lbMotor.getQuadraturePosition()))
         wpilib.SmartDashboard.putNumber('Right Drive Encders', self.drive.rbMotor.getQuadraturePosition())
         wpilib.SmartDashboard.putNumber('Left Velocity', self.drive.lbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Right Velocity', self.drive.rbMotor.getQuadratureVelocity())
         wpilib.SmartDashboard.putNumber('Left Current', self.drive.lbMotor.getOutputCurrent())
         wpilib.SmartDashboard.putNumber('Right Current', self.drive.rbMotor.getOutputCurrent())
-        #print("Gyro Angle  ", self.drive.getGyroAngle())
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
-        #wpilib.SmartDashboard.putNumber('Number of Shits', self.drive.shiftCounterReturn())
-        #wpilib.SmartDashboard.putString('Gear Mode', self.drive.gearMode())
-        #self.drive.printer()
-        #self.drive.operate.liftTest()
-        #print('Down  ' + str(self.drive.operate.isLiftDown.get()))
-        #print('Up   ' + str(self.drive.operate.isLiftUp.get()))
+        wpilib.SmartDashboard.putNumber('Is lift down', self.drive.operate.isLiftDown.get())
+        wpilib.SmartDashboard.putNumber('Is lift up', self.drive.operate.isLiftUp.get())
+        wpilib.SmartDashboard.putNumber('Field position', DriverStation.getInstance().getGameSpecificMessage())
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA(), self.controllerOne.getRightTrigger())
-        self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack())
+        self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack(), self.controllerTwo.getPOV())
         #self.time.time += 1
 if __name__ == "__main__":
     wpilib.run(MyRobot)

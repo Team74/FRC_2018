@@ -25,13 +25,15 @@ class operatorFunctions():
         self.liftMotor.setSelectedSensorPosition(0, 0, 0)
         self.liftMotor.setSensorPhase(True)
         self.liftMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(7)
-        #self.liftMotorTwo.Follow(3)#Possible implementation of follower mode, test later
         self.liftMotor.setNeutralMode(2)
         self.liftMotorTwo.setNeutralMode(2)
-
         self.liftMotorControlGroup = wpilib.SpeedControllerGroup(self.liftMotor, self.liftMotorTwo)
-        self.winchMotorOne = ctre.wpi_victorspx.WPI_VictorSPX(6)
-        self.winchMotorTwo = ctre.wpi_victorspx.WPI_VictorSPX(10)
+
+        self.winchMotor = ctre.wpi_victorspx.WPI_VictorSPX(10)
+        self.winchMotor.setNeutralMode(2)
+
+        self.extendableArmMotor = ctre.wpi_victorspx.WPI_VictorSPX(6)
+        self.extendableArmMotor.setNeutralMode(1)
 
         self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
         self.rightManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(8)
@@ -50,7 +52,6 @@ class operatorFunctions():
         self.compressor = wpilib.Compressor()
         self.compressor.setClosedLoopControl(True)
 
-        self.winchMotorControlGroup = wpilib.SpeedControllerGroup(self.winchMotorOne, self.winchMotorTwo)
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
         self.ejectClockOne = 0
         self.ejectClockTwo = 0
@@ -59,26 +60,32 @@ class operatorFunctions():
         self.liftAccel = 0
         self.firstSpin = True
         self.spinCounter  = 0
-    def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton):
+    def operate(self, leftY, leftX, rightY, rightX, aButton, bButton, xButton, yButton, rightTrigger,rightBumper, leftTrigger, leftBumper, startButton, backButton, dpadAngle):
         #Passes inputs from operator controller to the appropriate operator functions
-        self.liftTilt(rightBumper, leftBumper)
+        self.liftTilt(dpadAngle)
         self.raiseLowerLift(leftY)
-        #self.winchUpDown(rightY)
+        self.deployHook(leftBumper, rightBumper)
+        self.climbControl(rightY)
         self.manipulatorControl(aButton, bButton, xButton, yButton, leftTrigger)
         #self.manipulatorControlTwo(rightY)
         self.zeroLiftEncoder(startButton)
 
+    def deployHook(leftBumper, rightBumper):
+        if leftBumper:
+            self.extendableArmMotor.set(1)
+        if rightBumper:
+            self.extendableArmMotor.set(-1)
+
+    def climbControl(rightY):
+        self.winchMotor.set(rightY)
+
     def liftTest(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
-    def liftTilt(self, rightBumper, leftBumper):#Controls the tilt of the lift
-        if leftBumper:
-            print('Tipping Foward')
-            #if self.tilter.get() == 1:#Checks to see what position the lift is in and tilts accordingly
+    def liftTilt(self, dpadAngle):#Controls the tilt of the lift
+        if dpadAngle == 90:
             self.tilter.set(2)
-        if rightBumper:
-            print('Tiping Back')
-            #if self.tilter.get() == 2 or self.tilter.get() == 0:
+        if dpadAngle == 270:
             self.tilter.set(1)
 
     def raiseLowerLift(self, leftY):
@@ -164,7 +171,6 @@ class operatorFunctions():
             liftHeight = liftPositionThree
         elif setLiftPosition == 3:
             liftHeight = liftPositionFour
-        print(currentEncoderPosition)
         if currentEncoderPosition <= (liftHeight - 1500):
             speed = min((currentEncoderPosition/3000) + .3, 1)#up
             if (liftHeight - currentEncoderPosition) < 4000:
@@ -174,7 +180,6 @@ class operatorFunctions():
             speed = max((-1 * ((currentEncoderPosition/3000) + .3)), speed)#up
         else:
             speed = 0
-            #print('Holding')
 
         if self.isLiftDown.get():#Bottom limit switch
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
@@ -295,17 +300,14 @@ class operatorFunctions():
 
     def autonIntakeControl(self, intakeMode):
         if intakeMode == 1:#Intake mode
-            print('Intaking')
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(-1)
             return True
         elif intakeMode == 2:#Eject Mode
-            print('Ejecting Half Power')
             self.leftManipulatorMotor.set(-.5)
             self.rightManipulatorMotor.set(.5)
             return True
         elif intakeMode == 3:#Full Power eject
-            print('Ejecting Full Power')
             self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(1)
             return True

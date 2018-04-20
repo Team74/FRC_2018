@@ -73,22 +73,16 @@ class driveTrain():
             rightOutput = rightOutput / 1.8
         self.tankDrive(leftOutput, rightOutput)
 
-    def printer(self):
-        print('Why does Hescott look so much like shrek?')
-
     def tankDrive(self, leftY, rightY):
         self.drive.tankDrive(leftY * self.MOTOR_SPEED_CONTROL, rightY * self.MOTOR_SPEED_CONTROL, True)#True squares the inputs, further testing requiered on weather that is a good idea
 
     def shift(self, leftBumper, rightBumper):
-        #print(self.shifter.get())
         if leftBumper:#When left bumper is pressed we shift gears
             if self.shifter.get() == 1:#Checks to see what gear we are in and shifts accordingly
                 self.shifter.set(2)
-                #print("shifting left")
         if rightBumper:
             if self.shifter.get() == 2 or self.shifter.get() == 0:
                 self.shifter.set(1)
-                #print("shifting right")
 
     def getGyroAngle(self):
     	return (self.gyro.getAngle()-self.oldGyro)
@@ -101,18 +95,12 @@ class driveTrain():
     def encoderReset(self):
         self.lbMotor.setQuadraturePosition(0, 0)
         self.rbMotor.setQuadraturePosition(0, 0)
-        #print("Encoders Reset")
 
     def printEncoderPosition(self):
         lbEncoder = -(self.lbMotor.getQuadraturePosition())
         rbEncoder = self.rbMotor.getQuadraturePosition()
         distanceDrivenInches = (lbEncoder / self.ENCODER_CODES_PER_REV) * self.WHEEL_CIRCUMFERENCE
-        #averageEncoders = (lbEncoder + rbEncoder) / 2
-        #print(averageEncoders)
-        print('Right   ' + str(rbEncoder))
-        print('Left   ' + str(lbEncoder))
-        #print(distanceDrivenInches)
-        #print(self.getGyroAngle())
+        averageEncoders = (lbEncoder + rbEncoder) / 2
 
     def manualEncoderReset(self, aButton):
         if aButton:
@@ -125,20 +113,16 @@ class driveTrain():
         if gear == 'low':
             if self.shifter.get() == 1 or self.shifter.get() == 0:
                 self.shifter.set(2)
-                #print('Shift to low')
                 #return False
         elif gear == 'high':
             if self.shifter.get() == 2 or self.shifter.get() == 0:
                 self.shifter.set(1)
-                #print('Shift to high')
                 #return False
         else:
             pass
 
     def autonAngledTurn(self, radius, turnAngle, turnSpeed):
         if self.firstAngleTurn:#Checks for first time through the function to only reset encoders on the first time
-            #print('passed first check')#Debugging
-            #self.encoderReset()#Resets encoders
             self.oldGyro = self.gyro.getAngle()
             self.oldPositionLeft =  (self.lbMotor.getQuadraturePosition())
             self.oldPositionRight =  -(self.rbMotor.getQuadraturePosition())
@@ -185,14 +169,12 @@ class driveTrain():
             self.oldGyro = self.gyro.getAngle()
             self.firstRun = False
         turnSpeed -= (2*turnSpeed/(1+math.exp(0.049*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))
-        print(turnSpeed)
         #turnSpeed -= (2*turnSpeed/(1+math.exp(0.045*(-1 if turnAngle>0 else 1)*(-turnAngle + self.getGyroAngle()))))#Old turning formula, states
         turnSpeed = max(turnSpeed, slowDownSpeed)
         if turnAngle < 0:
             if abs(turnAngle - self.getGyroAngle()) > correctionDeadzone:
                 if self.getGyroAngle() >= turnAngle:
                     self.drive.tankDrive(-(turnSpeed) * self.MOTOR_SPEED_CONTROL, (turnSpeed) * self.MOTOR_SPEED_CONTROL,False)
-                    #print('Turning Left')
                     return True
                 elif self.getGyroAngle() <= turnAngle:
                     self.drive.tankDrive(.2, -.2)
@@ -200,8 +182,6 @@ class driveTrain():
                 else:
                     pass
             else:
-                #print("Done Turning Left")
-                print(self.getGyroAngle())
                 self.drive.stopMotor()
                 self.firstRun = True
                 return False
@@ -221,7 +201,6 @@ class driveTrain():
                 return False
 
     def autonDriveStraight(self, speed, distance):
-        #print('entered auton straight')
         lSpeed = speed
         rSpeed = speed * self.RIGHT_MOTOR_BIAS
         encoderDistance = (distance / self.WHEEL_CIRCUMFERENCE) * self.ENCODER_CODES_PER_REV#Figueres out how far to spin the wheels in encoder codes, 265 is how many pins on current encoders
@@ -229,11 +208,7 @@ class driveTrain():
             speedAdjustmentMultiplier = 4
         else:
             speedAdjustmentMultiplier = 2.5
-        #print('Encoder Distance' + str(encoderDistance))
-
         if self.firstTime:#Checks for first time through the function to only reset encoders on the first time
-            #print('passed first check')#Debugging
-            #self.encoderReset()#Resets encoders
             self.oldGyro = self.gyro.getAngle()
             self.oldPositionLeft =  -(self.lbMotor.getQuadraturePosition())
             self.oldPositionRight =  self.rbMotor.getQuadraturePosition()
@@ -242,77 +217,56 @@ class driveTrain():
 
         self.lfEncoderPosition = abs(-(self.lbMotor.getQuadraturePosition()) - self.oldPositionLeft)
         self.rbEncoderPosition = abs(self.rbMotor.getQuadraturePosition() - self.oldPositionRight)
-        #print(self.lfEncoderPosition)
-        #print(self.rbEncoderPosition)
         averageEncoders = (self.lfEncoderPosition + self.rbEncoderPosition) / 2
-        #print('Average Encodes' + str(averageEncoders))
         if averageEncoders < encoderDistance and self.autonCounter == 0:
             speedAdjustment = (.1 * speedAdjustmentMultiplier)
             slowDownSpeed = .25
             gyroAngle = self.getGyroAngle()
             speedAdjustment /= 1+math.exp(-gyroAngle)
             speedAdjustment -= (0.05 * speedAdjustmentMultiplier)
-            print(speedAdjustment)
             rSpeed += speedAdjustment#Comment Line 248 and 249 out to remove the speed adjustment functions
             lSpeed -= speedAdjustment
             if averageEncoders > (encoderDistance - 500):
                 lSpeed = slowDownSpeed
                 rSpeed = slowDownSpeed
-                #print('Slowing Down')
             self.drive.tankDrive(lSpeed * self.MOTOR_SPEED_CONTROL, rSpeed * self.MOTOR_SPEED_CONTROL,False)
             return True
         else:
             if self.autonCounter < 4:
-                #print('Active Breaking')
                 self.drive.tankDrive(-.15 * self.MOTOR_SPEED_CONTROL, -.15 * self.MOTOR_SPEED_CONTROL,False)
                 self.autonCounter += 1
                 return True
             else:
-                #print('EndLoop')
                 self.firstTime = True
                 self.drive.stopMotor()
-                #print(self.lfEncoderPosition)
-                print(self.rbEncoderPosition)
                 return False
 
     def autonMove(self, moveNumberPass, commandNumber, speed = 0, distance = 0, turnAngle = 0, turnSpeed = 0, setLiftPosition = 0, intakeMode = 0, radius = 0):
-        print(moveNumberPass)
-        print('space')
-        print(commandNumber)
         if moveNumberPass == self.moveNumber:
             if commandNumber == 0:
                 if self.autonDriveStraight(speed, distance):
-                    #print(distance)
-                    print('Driving')
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
                         pass
                     if self.operate.autonIntakeControl(intakeMode):
                         pass
                 else:
-                    #print(self.getGyroAngle())
-                    #print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber += 1
             elif commandNumber == 1:
                 if self.autonPivot(turnAngle, turnSpeed):
-                    print('Turning')
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
                         pass
                     if self.operate.autonIntakeControl(intakeMode):
                         pass
                 else:
-                    #print(self.getGyroAngle())
-                    #print('Move ' + str(moveNumberPass) + ' Complete')
                     self.moveNumber += 1
             elif commandNumber == 2:
                 if self.operate.standaloneAutonRaiseLowerLift(setLiftPosition):
-                    print('Lift')
                     if self.operate.autonIntakeControl(intakeMode):
                         pass
                 else:
                     self.moveNumber += 1
             elif commandNumber == 3:
                 if self.operate.standaloneAutonIntakeControl(intakeMode):
-                    print('Manipulator')
                     if self.operate.autonRaiseLowerLift(setLiftPosition):
                         pass
                 else:
