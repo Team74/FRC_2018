@@ -187,7 +187,7 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         wpilib.SmartDashboard.putNumber('Is lift down', self.drive.operate.isLiftDown.get())
         wpilib.SmartDashboard.putNumber('Is lift up', self.drive.operate.isLiftUp.get())
-        wpilib.SmartDashboard.putNumber('Field position', DriverStation.getInstance().getGameSpecificMessage())
+        wpilib.SmartDashboard.putString('Field position', DriverStation.getInstance().getGameSpecificMessage())
     def teleopPeriodic(self):
         wpilib.SmartDashboard.putNumber('Lift Encoder', self.drive.operate.liftMotor.getSelectedSensorPosition(0))
         wpilib.SmartDashboard.putNumber('Left Drive Encoders', -(self.drive.lbMotor.getQuadraturePosition()))
@@ -199,7 +199,7 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Gyro Angle', self.drive.getGyroAngle())
         wpilib.SmartDashboard.putNumber('Is lift down', self.drive.operate.isLiftDown.get())
         wpilib.SmartDashboard.putNumber('Is lift up', self.drive.operate.isLiftUp.get())
-        wpilib.SmartDashboard.putNumber('Field position', DriverStation.getInstance().getGameSpecificMessage())
+        wpilib.SmartDashboard.putString('Field position', DriverStation.getInstance().getGameSpecificMessage())
         self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA(), self.controllerOne.getRightTrigger())
         self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack(), self.controllerTwo.getPOV())
         #self.time.time += 1

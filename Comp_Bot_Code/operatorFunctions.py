@@ -46,12 +46,15 @@ class operatorFunctions():
         self.proximitySensor = wpilib.DigitalInput(0)#Initilizes a proximity sensor used to see if we have a cube secured in the manipulator, sets it to read from DIO 0
         self.isLiftDown = wpilib.DigitalInput(1)#Initilizes a limit switch to see if the lift is at it's minnimum height, sets it to read from DIO 1
         self.isLiftUp = wpilib.DigitalInput(2)#Initilizes a limit switch to see if the lift is at it's maximum height, sets it to read from DIO 2
+        self.led_spike = wpilib.Relay(0, 1)
 
         self.toggle = 0
 
         self.compressor = wpilib.Compressor()
         self.compressor.setClosedLoopControl(True)
 
+        self.led_bool = False
+        self.last_backButton_val = False
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
         self.ejectClockOne = 0
         self.ejectClockTwo = 0
@@ -79,16 +82,18 @@ class operatorFunctions():
 
     def set_led(self, bool_input):
         #pass #to be implemented depending on hardware
-        self.led_spark.set(int(bool_input))
+        if bool_input:
+            self.led_spike.set(1)
+        else:
+            self.led_spike.set(0)
 
-
-    def deployHook(leftBumper, rightBumper):
+    def deployHook(self, leftBumper, rightBumper):
         if leftBumper:
             self.extendableArmMotor.set(1)
         if rightBumper:
             self.extendableArmMotor.set(-1)
 
-    def climbControl(rightY):
+    def climbControl(self, rightY):
         self.winchMotor.set(rightY)
 
     def liftTest(self):
