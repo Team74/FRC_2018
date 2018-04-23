@@ -53,8 +53,13 @@ class operatorFunctions():
         self.compressor = wpilib.Compressor()
         self.compressor.setClosedLoopControl(True)
 
-        self.led_bool = False
+        #Set up toggle for lift
+        self.lift_bool = True#True defaults to on, False to off
+        self.last_startButton_val = False
+        #Set up toggle for led
+        self.led_bool = False#True defaults to on, False defaults to off
         self.last_backButton_val = False
+
         self.firstEject = True#Says if it is our first time through the ejecting a cube in auton
         self.ejectClockOne = 0
         self.ejectClockTwo = 0
@@ -67,11 +72,11 @@ class operatorFunctions():
         #Passes inputs from operator controller to the appropriate operator functions
         self.liftTilt(dpadAngle)
         self.raiseLowerLift(leftY)
+        self.toggleLimitSwitches(startButton)
         self.deployHook(leftBumper, rightBumper)
         self.climbControl(rightY)
         self.manipulatorControl(aButton, bButton, xButton, yButton, leftTrigger)
-        #self.manipulatorControlTwo(rightY)
-        self.zeroLiftEncoder(startButton)
+        self.zeroLiftEncoder(rightTrigger)
         self.control_led(backButton)
 
     def control_led(self, backButton):
@@ -121,18 +126,25 @@ class operatorFunctions():
                 output = max(output, (-1 * maxSpeedLimit))
             else:
                 output = min(output, maxSpeedLimit)
-        if self.isLiftDown.get():
-            self.liftMotor.setSelectedSensorPosition(0, 0, 0)
-            output = min(0, output)
-        if self.isLiftUp.get():
-            self.liftMotor.setSelectedSensorPosition(67000, 0, 0)
-            output = max(0, output)
+        if self.lift_bool:
+            if self.isLiftDown.get():
+                self.liftMotor.setSelectedSensorPosition(0, 0, 0)
+                output = min(0, output)
+            if self.isLiftUp.get():
+                self.liftMotor.setSelectedSensorPosition(67000, 0, 0)
+                output = max(0, output)
         self.liftMotorControlGroup.set(output)
+
+    def toggleLimitSwitches(self, startButton):
+        if self.last_startButton_val == False and startButton == True:
+            self.lift_bool = not self.lift_bool
+        self.last_backButton_val = backButton
+
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
 
-    def zeroLiftEncoder(self, startButton):
-        if startButton:
+    def zeroLiftEncoder(self, rightTrigger):
+        if rightTrigger:
             self.liftMotor.setSelectedSensorPosition(0, 0, 0)
 
     def printLiftOutputCurrent(self):
