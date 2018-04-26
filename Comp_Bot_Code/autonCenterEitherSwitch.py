@@ -34,7 +34,7 @@ class autonCenterEitherSwitch(autonBaseInit):
             elif self.switchPosition == 'R':
                 self.drive.autonMove(1, 0, speed = .6, distance = 12, setLiftPosition = 1)
 
-                self.drive.autonMove(2, 1, turnAngle = 45, turnSpeed = .75)
+                self.drive.autonMove(2, 1, turnAngle = 45, turnSpeed = .75, setLiftPosition = 1)
 
                 self.drive.autonMove(3, 0, speed = 1, distance = 42, setLiftPosition = 2)
 
