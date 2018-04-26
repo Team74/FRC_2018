@@ -48,7 +48,60 @@ class MyRobot(wpilib.IterativeRobot):
         self.dashTimer = wpilib.Timer()     # Timer for SmartDashboard updating
         self.dashTimer.start()
         self.dash = SmartDashboard()
+        wpilib.CameraServer.launch('vision.py:main')
+        
+        self.positionChooser = wpilib.SendableChooser()
+        self.positionChooser.addDefault('Position Chooser', '1')
+        self.positionChooser.addObject('left', 'left')
+        self.positionChooser.addObject('right', 'right')
+        self.positionChooser.addObject('center', 'center')
 
+        self.switchLscaleL = wpilib.SendableChooser()
+        self.switchLscaleL.addDefault('Switch and Scale LEFT', '1')
+        self.switchLscaleL.addObject('Scale', 'scale')
+        self.switchLscaleL.addObject('Switch', 'switch')
+        self.switchLscaleL.addObject('Prepare Scale Score', 'Prepare Scale Score')
+        self.switchLscaleL.addDefault('Drive', 'drive')##Default for all sendable Choosers
+        self.switchLscaleL.addObject('Two Cube Scale', 'Two Cube Scale')
+
+        self.switchRscaleR = wpilib.SendableChooser()
+        self.switchRscaleR.addDefault('Switch and Scale RIGHT', '1')
+        self.switchRscaleR.addObject('Scale', 'scale')
+        self.switchRscaleR.addObject('Switch', 'switch')
+        self.switchRscaleR.addObject('Prepare Scale Score', 'Prepare Scale Score')
+        self.switchRscaleR.addDefault('Drive', 'drive')
+        self.switchRscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
+
+        self.switchRscaleL = wpilib.SendableChooser()
+        self.switchRscaleL.addDefault('Switch RIGHT, Scale LEFT', '1')
+        self.switchRscaleL.addObject('Scale', 'scale')
+        self.switchRscaleL.addObject('Switch', 'switch')
+        self.switchRscaleL.addObject('Prepare Scale Score', 'Prepare Scale Score')
+        self.switchRscaleL.addDefault('Drive', 'drive')
+        self.switchRscaleL.addObject('Two Cube Scale', 'Two Cube Scale')
+
+        self.switchLscaleR = wpilib.SendableChooser()
+        self.switchLscaleR.addDefault('Switch LEFT, Scale RIGHT', '1')
+        self.switchLscaleR.addObject('Scale', 'scale')
+        self.switchLscaleR.addObject('Switch', 'switch')
+        self.switchLscaleR.addObject('Prepare Scale Score', 'Prepare Scale Score')
+        self.switchLscaleR.addDefault('Drive', 'drive')
+        self.switchLscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
+
+        print('Dashboard Test')
+        wpilib.SmartDashboard.putData('Starting Position', self.positionChooser)
+        wpilib.SmartDashboard.putData('Switch and Scale Left', self.switchLscaleL)
+        wpilib.SmartDashboard.putData('Switch Right, Scale Left', self.switchRscaleL)
+        wpilib.SmartDashboard.putData('Switch and Scale Right', self.switchRscaleR)
+        wpilib.SmartDashboard.putData('Switch Left, Scale Right', self.switchLscaleR)
+        self.dash.putString('SanityCheck', '1')
+
+        self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
+        self.dashTimer.start()
+        #self.drive.encoderReset()
+
+    '''
+    def disabledPeriodic(self):
         self.positionChooser = wpilib.SendableChooser()
         self.positionChooser.addDefault('Position Chooser', '1')
         self.positionChooser.addObject('left', 'left')
@@ -88,19 +141,13 @@ class MyRobot(wpilib.IterativeRobot):
         self.switchLscaleR.addObject('Two Cube Scale', 'Two Cube Scale')
 
         wpilib.CameraServer.launch('vision.py:main')
-        #print('Dashboard Test')
         wpilib.SmartDashboard.putData('Starting Position', self.positionChooser)
         wpilib.SmartDashboard.putData('Switch and Scale Left', self.switchLscaleL)
         wpilib.SmartDashboard.putData('Switch Right, Scale Left', self.switchRscaleL)
         wpilib.SmartDashboard.putData('Switch and Scale Right', self.switchRscaleR)
         wpilib.SmartDashboard.putData('Switch Left, Scale Right', self.switchLscaleR)
-        #self.dash.putData('Switch Left, Scale Right', switchLscaleR)
         self.dash.putString('SanityCheck', '1')
-
-        self.dashTimer = wpilib.Timer()# Timer for SmartDashboard updating
-        self.dashTimer.start()
-        #self.drive.encoderReset()
-
+    '''
     def interperetDashboard(self):
         startingPosition = self.positionChooser.getSelected()
         gameData = DriverStation.getInstance().getGameSpecificMessage()
@@ -155,7 +202,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.zeroGyro()
         self.drive.resetMoveNumber()
         self.drive.autonShift('high')#Forces into low gear at start of auton
-        self.drive.operate.liftTilt(False, True)
+        self.drive.operate.liftTilt(90)
         self.interperetDashboard()#MATCH AUTO
         #self.auton = autonAngledTurnTesting('any', 'any', 'any', self.drive)
         #self.auton = autonLiftTest('any', 'any', 'any', self.drive)

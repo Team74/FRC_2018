@@ -29,11 +29,11 @@ class operatorFunctions():
         self.liftMotorTwo.setNeutralMode(2)
         self.liftMotorControlGroup = wpilib.SpeedControllerGroup(self.liftMotor, self.liftMotorTwo)
 
-        self.winchMotor = ctre.wpi_victorspx.WPI_VictorSPX(10)
+        self.winchMotor = ctre.wpi_victorspx.WPI_VictorSPX(6)
         self.winchMotor.setNeutralMode(2)
 
-        self.extendableArmMotor = ctre.wpi_victorspx.WPI_VictorSPX(6)
-        self.extendableArmMotor.setNeutralMode(1)
+        self.extendableArmMotor = ctre.wpi_victorspx.WPI_VictorSPX(10)
+        self.extendableArmMotor.setNeutralMode(2)
 
         self.leftManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(9)
         self.rightManipulatorMotor = ctre.wpi_victorspx.WPI_VictorSPX(8)
@@ -94,12 +94,14 @@ class operatorFunctions():
 
     def deployHook(self, leftBumper, rightBumper):
         if leftBumper:
-            self.extendableArmMotor.set(1)
-        if rightBumper:
+            self.extendableArmMotor.set(.25)
+        elif rightBumper:
             self.extendableArmMotor.set(-1)
+        else:
+            self.extendableArmMotor.set(0)
 
     def climbControl(self, rightY):
-        self.winchMotor.set(rightY)
+        self.winchMotor.set(-rightY)
 
     def liftTest(self):
         print(self.liftMotor.getSelectedSensorPosition(0))
@@ -138,7 +140,7 @@ class operatorFunctions():
     def toggleLimitSwitches(self, startButton):
         if self.last_startButton_val == False and startButton == True:
             self.lift_bool = not self.lift_bool
-        self.last_backButton_val = backButton
+        self.last_backButton_val = startButton
 
     def printLiftEncoder(self):
         print(self.liftMotor.getSelectedSensorPosition(0))

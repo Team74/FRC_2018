@@ -74,6 +74,8 @@ class driveTrain():
         self.tankDrive(leftOutput, rightOutput)
 
     def tankDrive(self, leftY, rightY):
+        print(leftY)
+        print(rightY)
         self.drive.tankDrive(leftY * self.MOTOR_SPEED_CONTROL, rightY * self.MOTOR_SPEED_CONTROL, True)#True squares the inputs, further testing requiered on weather that is a good idea
 
     def shift(self, leftBumper, rightBumper):

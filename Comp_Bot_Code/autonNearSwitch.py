@@ -28,13 +28,13 @@ class autonNearSwitch(autonBaseInit):
                 self.drive.autonMove(11, 3, setLiftPosition = 2, intakeMode = 3)
             '''
         elif self.side == 'right' and self.switchPosition == 'R':
-            self.drive.autonMove(1, 0, 1, 115, 0, 0, 2, 0)
+            self.drive.autonMove(1, 0, speed = 1, distance = 95, setLiftPosition = 2)
 
-            self.drive.autonMove(2, 1, 0, 0, -90, .75, 2, 0)
+            self.drive.autonMove(2, 1, turnAngle = -89, turnSpeed = .75, setLiftPosition = 2)
 
-            self.drive.autonMove(3, 0, .5, 17, 0, 0, 2, 0)
+            self.drive.autonMove(3, 0, speed = .5, distance = 10, setLiftPosition = 2)
 
-            self.drive.autonMove(4, 3, 0, 0, 0, 0, 2, 3)
+            self.drive.autonMove(4, 0, speed = -.6, distance = 15, setLiftPosition = 2, intakeMode = 3)
             '''
             self.drive.autonMove(5, 1, turnAngle = -90, turnSpeed = .7, setLiftPosition = 0)
             if self.scalePosition == 'L':
