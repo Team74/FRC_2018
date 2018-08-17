@@ -113,6 +113,9 @@ class operatorFunctions():
             self.tilter.set(1)
 
     def raiseLowerLift(self, leftY):
+        print("z")
+        print(self.isLiftDown.get())
+        print(self.isLiftUp.get())
         accelerationDeadzone = .1
         if abs(leftY) >= .05:
             output = leftY
@@ -289,9 +292,11 @@ class operatorFunctions():
 
     def manipulatorControl(self, aButton, bButton, xButton, yButton, leftTrigger):
         if aButton:#Intake
+            print("Intake")
             self.leftManipulatorMotor.set(1)
             self.rightManipulatorMotor.set(-1)
         elif bButton:#Automated function to spin cubes in the gripper to proper alignment
+            print("Spin")
             if leftTrigger:
                 if self.firstSpin:
                     self.spinCounter = 0
@@ -307,9 +312,11 @@ class operatorFunctions():
                 self.leftManipulatorMotor.set(1)
                 self.rightManipulatorMotor.set(1)
         elif xButton:#Eject 1/2
+            print("Eject 1/2")
             self.leftManipulatorMotor.set(-.5)
             self.rightManipulatorMotor.set(.5)
         elif yButton:#Eject Full
+            print("Eject Full")
             self.leftManipulatorMotor.set(-1)
             self.rightManipulatorMotor.set(1)
         else:
