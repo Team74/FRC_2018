@@ -1,10 +1,10 @@
 import wpilib
-import Subsystems
+from subsystem_manager import SubsystemManager
 
 class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
-        self.subsystems = Subsystems()
+        self.subsystemManager = SubsystemManager()
 
     def autonomousInit(self):
         pass
@@ -16,4 +16,4 @@ class MyRobot(wpilib.IterativeRobot):
         pass
 
     teleopPeriodic(self):
-        self.subsystems.run()
+        self.subsystemManager.run()
