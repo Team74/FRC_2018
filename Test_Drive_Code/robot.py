@@ -5,15 +5,17 @@ class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
         self.subsystemManager = SubsystemManager()
+        self.inputManager = InputManager()
 
     def autonomousInit(self):
-        pass
+        self.subsystemManager.master = SimpleAuton1_Master()#AutonMaster()
 
     def autonomousPeriodic(self):
-        pass
+        self.subsystemManager.update()
 
-    teleopInit(self):
-        pass
+    def teleopInit(self):
+        self.subsystemManager.master = TeleopMaster(inputManager)
 
-    teleopPeriodic(self):
-        self.subsystemManager.run()
+    def teleopPeriodic(self):
+        self.inputManager.update()
+        self.subsystemManager.update()

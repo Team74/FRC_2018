@@ -1,0 +1,123 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
+package org.usfirst.frc.team74.robot;
+
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+
+/**
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the IterativeRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the manifest file in the resource
+ * directory.
+ */
+public class Robot extends IterativeRobot {
+    public static final int LEFT_TALON = 2;
+    public static final int LEFT_VICTOR = 11;
+    public static final int RIGHT_TALON = 1;
+    public static final int RIGHT_VICTOR = 9;
+
+    private TalonSRX leftTalon = new TalonSRX(LEFT_TALON);
+    private VictorSPX leftVictor = new VictorSPX(LEFT_VICTOR);
+    private TalonSRX rightTalon = new TalonSRX(RIGHT_TALON);
+    private VictorSPX rightVictor = new VictorSPX(RIGHT_VICTOR);
+
+    private Joystick stick = new Joystick(0);
+    private Timer time = new Timer();
+
+    /**
+     * This function is run when the robot is first started up and should be
+     * used for any initialization code.
+     */
+    @Override
+    public void robotInit() {
+        leftTalon.set(ControlMode.PercentOutput, 0);
+        rightTalon.set(ControlMode.PercentOutput, 0);
+        leftVictor.set(ControlMode.Follower, LEFT_TALON);
+        rightVictor.set(ControlMode.Follower, RIGHT_TALON);
+    }
+
+    /**
+     * This function is run once each time the robot enters autonomous mode.
+     */
+    @Override
+    public void autonomousInit() {
+        time.reset();
+        time.start();
+    }
+
+    /**
+     * This function is called periodically during autonomous.
+     */
+    @Override
+    public void autonomousPeriodic() {
+    
+    }
+
+    /**
+     * This function is called once each time the robot enters teleoperated mode.
+     */
+    @Override
+    public void teleopInit() {
+        time.reset();
+        time.start();
+    }
+
+    /**
+     * This function is called periodically during teleoperated mode.
+     */
+    @Override
+    public void teleopPeriodic() {
+
+    }
+
+    /**
+     * This function is called periodically during test mode.
+     */
+    @Override
+    public void testPeriodic() {
+    }
+
+    private void drive(int speed) {
+        double scaledSpeed = speed / 100.0;
+        scaledSpeed = Math.min(1.0, scaledSpeed);
+        scaledSpeed = Math.max(-1.0, scaledSpeed);
+        leftTalon.set(ControlMode.PercentOutput, scaledSpeed);
+        rightTalon.set(ControlMode.PercentOutput, scaledSpeed);
+    }
+
+    private void turn(int speed) {
+        double scaledSpeed = speed / 100.0;
+        scaledSpeed = Math.min(1.0, scaledSpeed);
+        scaledSpeed = Math.max(-1.0, scaledSpeed);
+        leftTalon.set(ControlMode.PercentOutput, -1*scaledSpeed/2);
+        rightTalon.set(ControlMode.PercentOutput, scaledSpeed/2);
+    }
+
+    private boolean getButtonA() {
+        return stick.getRawButton(1);
+    }
+
+    private boolean getButtonB() {
+        return stick.getRawButton(2);
+    }
+
+    private boolean getButtonX() {
+        return stick.getRawButton(3);
+    }
+
+    private boolean getButtonY() {
+        return stick.getRawButton(4);
+    }
+}
