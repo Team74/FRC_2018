@@ -59,12 +59,12 @@ class driveTrain():
 
         self.lbMotor.setSensorPhase(True)
 
-    def drivePass(self, leftY, rightY, leftBumper, rightBumper, aButton, rightTrigger):
+    def drivePass(self, leftY, rightY, leftBumper, rightBumper, leftTrigger, rightTrigger, aButton, bButton, xButton, yButton, dpadAngle, startButton, backButton):
         self.shift(leftBumper, rightBumper)
         self.manualEncoderReset(aButton)
         self.scaleInputs(-leftY, -rightY, rightTrigger)
-        pass
-
+        #self.samsStupidExperimentalDrive(leftBumper, rightBumper, leftTrigger, rightTrigger, aButton, bButton, xButton, yButton, dpadAngle)
+        #self.shift(startButton, backButton)
     def scaleInputs(self,leftY, rightY, rightTrigger):
         leftOutput = leftY
         rightOutput = rightY
@@ -74,8 +74,6 @@ class driveTrain():
         self.tankDrive(leftOutput, rightOutput)
 
     def tankDrive(self, leftY, rightY):
-        print(leftY)
-        print(rightY)
         self.drive.tankDrive(leftY * self.MOTOR_SPEED_CONTROL, rightY * self.MOTOR_SPEED_CONTROL, True)#True squares the inputs, further testing requiered on weather that is a good idea
 
     def shift(self, leftBumper, rightBumper):
@@ -289,3 +287,38 @@ class driveTrain():
 
     def resetMoveNumber(self):
         self.moveNumber = 1
+
+    def samsStupidExperimentalDrive(self, aButton, bButton, xButton, yButton, rBumper, rTrigger, lBumper, lTrigger, dpad):
+        leftPower = 0
+        leftBackwards = False
+        rightPower = 0
+        rightBackwards = False
+        if lBumper:
+            leftPower = 1
+        if lTrigger:
+            leftBackwards = True
+        if dpad == 90:
+            leftPower *= .9
+        if dpad == 180:
+            leftPower *= .75
+        if dpad == 270:
+            leftPower *= .6
+        if dpad == 0:
+            leftPower *= .5
+        if leftBackwards:
+            leftPower *= -1
+        if rBumper:
+            rightPower = 1
+        if rTrigger:
+            rightBackwards = True
+        if xButton:
+            rightPower *= .9
+        if aButton:
+            rightPower *= .75
+        if bButton:
+            rightPower *= .6
+        if yButton:
+            rightPower *= .5
+        if rightBackwards:
+            rightPower *= -1
+        self.tankDrive(leftPower, rightPower * -1)

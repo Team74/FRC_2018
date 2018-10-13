@@ -49,7 +49,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.dashTimer.start()
         self.dash = SmartDashboard()
         wpilib.CameraServer.launch('vision.py:main')
-        
+
         self.positionChooser = wpilib.SendableChooser()
         self.positionChooser.addDefault('Position Chooser', '1')
         self.positionChooser.addObject('left', 'left')
@@ -247,7 +247,7 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.SmartDashboard.putNumber('Is lift down', self.drive.operate.isLiftDown.get())
         wpilib.SmartDashboard.putNumber('Is lift up', self.drive.operate.isLiftUp.get())
         wpilib.SmartDashboard.putString('Field position', DriverStation.getInstance().getGameSpecificMessage())
-        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getButtonA(), self.controllerOne.getRightTrigger())
+        self.drive.drivePass(self.controllerOne.getLeftY(), self.controllerOne.getRightY(), self.controllerOne.getLeftBumper(), self.controllerOne.getRightBumper(), self.controllerOne.getLeftTrigger(), self.controllerOne.getRightTrigger(), self.controllerOne.getButtonA(), self.controllerOne.getButtonB(), self.controllerOne.getButtonX(), self.controllerOne.getButtonY(), self.controllerOne.getPOV(), self.controllerOne.getStart(), self.controllerOne.getBack())
         self.drive.operate.operate(self.controllerTwo.getLeftY(), self.controllerTwo.getLeftX(), self.controllerTwo.getRightY(), self.controllerTwo.getRightX(), self.controllerTwo.getButtonA(),self.controllerTwo.getButtonB(), self.controllerTwo.getButtonX(), self.controllerTwo.getButtonY(), self.controllerTwo.getRightTrigger(), self.controllerTwo.getRightBumper(), self.controllerTwo.getLeftTrigger(), self.controllerTwo.getLeftBumper(), self.controllerTwo.getStart(), self.controllerTwo.getBack(), self.controllerTwo.getPOV())
         #self.time.time += 1
 if __name__ == "__main__":
